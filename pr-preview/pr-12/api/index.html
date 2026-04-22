@@ -11,23 +11,25 @@
       
       
       
+        <link rel="prev" href="..">
       
-        <link rel="next" href="api/">
+      
+        <link rel="next" href="chores/">
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
     
     
       
-        <title>Chores Documentation</title>
+        <title>Overview & Auth - Chores Documentation</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.a40c8224.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.a40c8224.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,9 +48,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#documentation" class="md-skip">
+        <a href="#api-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +90,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Chores Documentation" class="md-header__button md-logo" aria-label="Chores Documentation" data-md-component="logo">
+    <a href=".." title="Chores Documentation" class="md-header__button md-logo" aria-label="Chores Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Overview & Auth
             
           </span>
         </div>
@@ -215,11 +217,9 @@
         
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="." class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
         
   
     
@@ -234,11 +234,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="api/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   API Reference
@@ -254,7 +256,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="ARCHITECTURE/" class="md-tabs__link">
+      <a href="../ARCHITECTURE/" class="md-tabs__link">
         
   
     
@@ -271,7 +273,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="DEVELOPER/" class="md-tabs__link">
+      <a href="../DEVELOPER/" class="md-tabs__link">
         
   
     
@@ -288,7 +290,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="DEPLOYMENT/" class="md-tabs__link">
+      <a href="../DEPLOYMENT/" class="md-tabs__link">
         
   
     
@@ -322,7 +324,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Chores Documentation" class="md-nav__button md-logo" aria-label="Chores Documentation" data-md-component="logo">
+    <a href=".." title="Chores Documentation" class="md-nav__button md-logo" aria-label="Chores Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -349,6 +351,69 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
     
   
   
@@ -365,18 +430,18 @@
           
   
   <span class="md-ellipsis">
-    Home
+    Overview & Auth
   </span>
   
 
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="." class="md-nav__link md-nav__link--active">
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    Home
+    Overview & Auth
   </span>
   
 
@@ -398,37 +463,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#contents" class="md-nav__link">
+  <a href="#authentication" class="md-nav__link">
     <span class="md-ellipsis">
-      Contents
+      Authentication
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      Quick Start
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Quick Start">
+    <nav class="md-nav" aria-label="Authentication">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-users" class="md-nav__link">
+  <a href="#post-authlogin" class="md-nav__link">
     <span class="md-ellipsis">
-      For Users
+      POST /auth/login
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-developers" class="md-nav__link">
+  <a href="#get-authsetup-status" class="md-nav__link">
     <span class="md-ellipsis">
-      For Developers
+      GET /auth/setup-status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-authlogout" class="md-nav__link">
+    <span class="md-ellipsis">
+      POST /auth/logout
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-authpassword" class="md-nav__link">
+    <span class="md-ellipsis">
+      PUT /auth/password
     </span>
   </a>
   
@@ -440,54 +514,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
+  <a href="#error-responses" class="md-nav__link">
     <span class="md-ellipsis">
-      Project Structure
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Key Features
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technology-stack" class="md-nav__link">
-    <span class="md-ellipsis">
-      Technology Stack
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-base-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      API Base URL
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#support" class="md-nav__link">
-    <span class="md-ellipsis">
-      Support
+      Error Responses
     </span>
   </a>
   
@@ -500,64 +529,6 @@
     </li>
   
 
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    API Reference
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
-            API Reference
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Overview & Auth
-  </span>
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -567,7 +538,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/chores/" class="md-nav__link">
+      <a href="chores/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -588,7 +559,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/people/" class="md-nav__link">
+      <a href="people/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -609,7 +580,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/points/" class="md-nav__link">
+      <a href="points/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -630,7 +601,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/log/" class="md-nav__link">
+      <a href="log/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -651,7 +622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/themes/" class="md-nav__link">
+      <a href="themes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -672,7 +643,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/config/" class="md-nav__link">
+      <a href="config/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -700,7 +671,7 @@
   
   
     <li class="md-nav__item">
-      <a href="ARCHITECTURE/" class="md-nav__link">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -720,7 +691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="DEVELOPER/" class="md-nav__link">
+      <a href="../DEVELOPER/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -740,7 +711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="DEPLOYMENT/" class="md-nav__link">
+      <a href="../DEPLOYMENT/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -780,37 +751,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#contents" class="md-nav__link">
+  <a href="#authentication" class="md-nav__link">
     <span class="md-ellipsis">
-      Contents
+      Authentication
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      Quick Start
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Quick Start">
+    <nav class="md-nav" aria-label="Authentication">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#for-users" class="md-nav__link">
+  <a href="#post-authlogin" class="md-nav__link">
     <span class="md-ellipsis">
-      For Users
+      POST /auth/login
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#for-developers" class="md-nav__link">
+  <a href="#get-authsetup-status" class="md-nav__link">
     <span class="md-ellipsis">
-      For Developers
+      GET /auth/setup-status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-authlogout" class="md-nav__link">
+    <span class="md-ellipsis">
+      POST /auth/logout
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-authpassword" class="md-nav__link">
+    <span class="md-ellipsis">
+      PUT /auth/password
     </span>
   </a>
   
@@ -822,54 +802,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-structure" class="md-nav__link">
+  <a href="#error-responses" class="md-nav__link">
     <span class="md-ellipsis">
-      Project Structure
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Key Features
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technology-stack" class="md-nav__link">
-    <span class="md-ellipsis">
-      Technology Stack
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-base-url" class="md-nav__link">
-    <span class="md-ellipsis">
-      API Base URL
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      Contributing
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#support" class="md-nav__link">
-    <span class="md-ellipsis">
-      Support
+      Error Responses
     </span>
   </a>
   
@@ -893,78 +828,109 @@
   
 
 
-<h1 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h1>
-<p>Complete documentation for the Chores application.</p>
-<h2 id="contents">Contents<a class="headerlink" href="#contents" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong><a href="api/">API Documentation</a></strong> - REST API endpoints, request/response formats, examples</li>
-<li><strong><a href="ARCHITECTURE/">Architecture</a></strong> - System design, data model, component diagrams</li>
-<li><strong><a href="DEVELOPER/">Developer Guide</a></strong> - Setup, development workflow, testing</li>
-<li><strong><a href="DEPLOYMENT/">Deployment</a></strong> - Deployment instructions and configuration</li>
-</ul>
-<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<h3 id="for-users">For Users<a class="headerlink" href="#for-users" title="Permanent link">&para;</a></h3>
-<p>Visit the application in your browser. See deployment documentation for setup.</p>
-<h3 id="for-developers">For Developers<a class="headerlink" href="#for-developers" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Read <a href="DEVELOPER/">Developer Guide</a> for local setup</li>
-<li>Review <a href="ARCHITECTURE/">Architecture</a> to understand system design</li>
-<li>Reference <a href="api/">API Documentation</a> when building features</li>
-</ol>
-<h2 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>chores-web/
-├── frontend/              # React SPA
-│   ├── src/
-│   │   ├── pages/        # Route pages
-│   │   ├── components/   # Reusable components
-│   │   ├── api/          # API client
-│   │   └── utils/        # Utilities
-│   └── package.json
-├── backend/               # FastAPI REST API
-│   ├── app/
-│   │   ├── routers/      # API route handlers
-│   │   ├── services/     # Business logic
-│   │   ├── models.py     # Database models
-│   │   └── schemas.py    # Data schemas
-│   └── requirements.txt
-└── docs/                 # This documentation
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<p>REST API for managing household chores, assignments, and tracking. Built with FastAPI.</p>
+<p><strong>Base URL:</strong> <code>/api</code><br />
+<strong>Authentication:</strong> Bearer token (JWT)<br />
+<strong>Default Port:</strong> 8000<br />
+<strong>Interactive Docs:</strong> <code>http://localhost:8000/docs</code></p>
+<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
+<p>All endpoints except <code>/auth/setup-status</code> require Bearer token authentication.</p>
+<div class="highlight"><pre><span></span><code>Authorization: Bearer &lt;access_token&gt;
 </code></pre></div>
-<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Household Chore Management</strong> - Create, assign, and track chores</li>
-<li><strong>Flexible Scheduling</strong> - Weekly, monthly, or interval-based schedules</li>
-<li><strong>Point System</strong> - Award points for completed chores</li>
-<li><strong>User Assignments</strong> - Rotating or fixed assignments</li>
-<li><strong>Audit Logging</strong> - Complete history of all chore actions</li>
-<li><strong>Customizable Themes</strong> - User-specific theme preferences</li>
-<li><strong>Multi-user Support</strong> - Admin and regular user roles</li>
-</ul>
-<h2 id="technology-stack">Technology Stack<a class="headerlink" href="#technology-stack" title="Permanent link">&para;</a></h2>
-<p><strong>Frontend:</strong>
-- React 18
-- React Query (Tanstack Query)
-- Vitest + React Testing Library
-- Vite</p>
-<p><strong>Backend:</strong>
-- FastAPI
-- SQLAlchemy ORM
-- SQLite
-- APScheduler
-- Pydantic</p>
-<p><strong>DevOps:</strong>
-- Docker &amp; Docker Compose
-- GitHub Actions (future)</p>
-<h2 id="api-base-url">API Base URL<a class="headerlink" href="#api-base-url" title="Permanent link">&para;</a></h2>
-<p>Swagger UI: <code>http://localhost:8000/docs</code></p>
-<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Follow the architecture patterns in <a href="ARCHITECTURE/">Architecture</a></li>
-<li>Write tests for new features</li>
-<li>Update API documentation when adding/changing endpoints</li>
-<li>Ensure 100% test passing before committing</li>
-</ol>
-<h2 id="support">Support<a class="headerlink" href="#support" title="Permanent link">&para;</a></h2>
-<p>For questions or issues, refer to the relevant documentation or examine the codebase.</p>
+<h3 id="post-authlogin">POST /auth/login<a class="headerlink" href="#post-authlogin" title="Permanent link">&para;</a></h3>
+<p>Login with username and password.</p>
+<p><strong>Request:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Response (200):</strong>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;access_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;token_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;is_admin&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">boolea</span><span class="kc">n</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="get-authsetup-status">GET /auth/setup-status<a class="headerlink" href="#get-authsetup-status" title="Permanent link">&para;</a></h3>
+<p>Check if system is initialized (no users exist).</p>
+<p><strong>Response (200):</strong>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;is_setup&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">boolea</span><span class="kc">n</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="post-authlogout">POST /auth/logout<a class="headerlink" href="#post-authlogout" title="Permanent link">&para;</a></h3>
+<p>Logout and invalidate current token.</p>
+<p><strong>Response (200):</strong>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Logged out successfully&quot;</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="put-authpassword">PUT /auth/password<a class="headerlink" href="#put-authpassword" title="Permanent link">&para;</a></h3>
+<p>Change password for current user.</p>
+<p><strong>Request:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;old_password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;new_password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Response (200):</strong>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Password changed successfully&quot;</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h2 id="error-responses">Error Responses<a class="headerlink" href="#error-responses" title="Permanent link">&para;</a></h2>
+<p>All errors follow this format:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>201</td>
+<td>Created</td>
+</tr>
+<tr>
+<td>204</td>
+<td>No content (delete)</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Bad request / validation error</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Unauthorized — missing or invalid token</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden — insufficient permissions</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not found</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal server error</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -1047,10 +1013,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["content.code.copy", "content.code.annotate", "navigation.tabs", "navigation.top", "search.suggest", "search.highlight"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.annotate", "navigation.tabs", "navigation.top", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.60a45f97.min.js"></script>
+      <script src="../assets/javascripts/bundle.60a45f97.min.js"></script>
       
     
   </body>
