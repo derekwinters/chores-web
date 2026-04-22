@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winters Family Chores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F6F4EF;
+    --surface: #FFFFFF;
+    --ink: #1C1917;
+    --ink-2: #57534E;
+    --ink-3: #A8A29E;
+    --accent: #D97757;
+    --accent-light: #FDF0EB;
+    --gold: #C9A84C;
+    --gold-light: #FDF8EC;
+    --border: #E7E5E0;
+    --radius: 16px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-lg: 0 2px 8px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.08);
+  }
+  html, body { height: 100%; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  #root { height: 100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const PEOPLE = [
+  { id: 'derek', name: 'Derek', color: '#3B6EA0', initial: 'D' },
+  { id: 'amy',   name: 'Amy',   color: '#8B5E8A', initial: 'A' },
+  { id: 'connor',name: 'Connor',color: '#4A8C6F', initial: 'C' },
+  { id: 'lucas', name: 'Lucas', color: '#C4743A', initial: 'L' },
+];
+
+const CHORES = [
+  { id: 'dishes',   label: 'Unload Dishwasher', pts: 1, assignedTo: null },
+  { id: 'lawn',     label: 'Mow Lawn',           pts: 3, assignedTo: 'derek' },
+  { id: 'bathroom', label: 'Clean Bathroom',      pts: 5, assignedTo: null },
+];
+
+// Seed completions: random spread over past 30 days
+function seedCompletions() {
+  const stored = localStorage.getItem('chores_completions_v2');
+  if (stored) return JSON.parse(stored);
+  const now = Date.now();
+  const day = 86400000;
+  const completions = [];
+  let id = 1;
+  const counts = { derek:[4,2,1,3,2,1,2,3,1], amy:[3,1,2,1,3,2,1,2,1], connor:[2,1,1,2,1,1,2,1,2], lucas:[1,2,1,1,2,1,1,2,1] };
+  Object.entries(counts).forEach(([person, days]) => {
+    days.forEach((n, di) => {
+      for (let k = 0; k < n; k++) {
+        const chore = CHORES[Math.floor(Math.random() * CHORES.length)];
+        completions.push({ id: id++, person, choreId: chore.id, pts: chore.pts, ts: now - (di * day) - Math.random() * day });
+      }
+    });
+  });
+  return completions;
+}
+
+const GOAL_7D = 12;
+const GOAL_30D = 50;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function getPoints(completions, personId, days) {
+  const cutoff = Date.now() - days * 86400000;
+  return completions.filter(c => c.person === personId && c.ts >= cutoff).reduce((s, c) => s + c.pts, 0);
+}
+
+function getStreak(completions, personId) {
+  const days = new Set();
+  const now = Date.now();
+  completions.filter(c => c.person === personId).forEach(c => {
+    const d = Math.floor((now - c.ts) / 86400000);
+    days.add(d);
+  });
+  let streak = 0;
+  for (let d = 0; d <= 30; d++) {
+    if (days.has(d)) streak++; else break;
+  }
+  return streak;
+}
+
+// ── Components ────────────────────────────────────────────────────────────────
+
+function Avatar({ person, size = 44 }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%', background: person.color,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      color: '#fff', fontWeight: 600, fontSize: size * 0.38, flexShrink: 0,
+      letterSpacing: '-0.5px'
+    }}>{person.initial}</div>
+  );
+}
+
+function ProgressBar({ value, max, color }) {
+  const pct = Math.min(100, (value / max) * 100);
+  return (
+    <div style={{ background: '#ECEAE5', borderRadius: 99, height: 6, overflow: 'hidden' }}>
+      <div style={{
+        height: '100%', width: pct + '%', background: color,
+        borderRadius: 99, transition: 'width 0.6s cubic-bezier(.4,0,.2,1)'
+      }} />
+    </div>
+  );
+}
+
+function RankBadge({ rank }) {
+  return null;
+}
+
+function PersonCard({ person, rank, pts7, pts30, streak, onView }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      onClick={onView}
+      style={{
+        background: 'var(--surface)', borderRadius: 'var(--radius)', padding: '24px',
+        boxShadow: hov ? 'var(--shadow-lg)' : 'var(--shadow)',
+        border: '1px solid var(--border)', cursor: 'pointer',
+        transform: hov ? 'translateY(-2px)' : 'none',
+        transition: 'all 0.2s ease',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <Avatar person={person} size={48} />
+          <div>
+            <div style={{ fontWeight: 600, fontSize: 17, lineHeight: 1.2 }}>{person.name}</div>
+          </div>
+        </div>
+        <RankBadge rank={rank} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>Last 7 Days</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: person.color, lineHeight: 1 }}>{pts7}<span style={{ fontSize: 13, color: 'var(--ink-3)', fontWeight: 400, marginLeft: 3 }}>pts</span></div>
+          <div style={{ marginTop: 8 }}>
+            <ProgressBar value={pts7} max={GOAL_7D} color={person.color} />
+            <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>Goal: {GOAL_7D} pts</div>
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>Last 30 Days</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: person.color, lineHeight: 1 }}>{pts30}<span style={{ fontSize: 13, color: 'var(--ink-3)', fontWeight: 400, marginLeft: 3 }}>pts</span></div>
+          <div style={{ marginTop: 8 }}>
+            <ProgressBar value={pts30} max={GOAL_30D} color={person.color} />
+            <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 4 }}>Goal: {GOAL_30D} pts</div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 13, color: 'var(--ink-3)' }}>View chores</span>
+        <span style={{ fontSize: 13, color: person.color, fontWeight: 500 }}>→</span>
+      </div>
+    </div>
+  );
+}
+
+function ChoreRow({ chore, onComplete, justDone }) {
+  const person = chore.assignedTo ? PEOPLE.find(p => p.id === chore.assignedTo) : null;
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 16, padding: '18px 20px',
+        background: justDone ? 'var(--accent-light)' : hov ? '#FAFAF8' : 'transparent',
+        borderRadius: 12, transition: 'background 0.2s ease',
+        borderBottom: '1px solid var(--border)',
+      }}
+    >
+      <div style={{
+        width: 44, height: 44, borderRadius: 12,
+        background: justDone ? 'var(--accent)' : '#F0EDE8',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        transition: 'all 0.3s ease'
+      }}>
+        {justDone
+          ? <span style={{ fontSize: 20 }}>✓</span>
+          : <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--gold)', letterSpacing: '-0.5px' }}>{chore.pts}pt</span>
+        }
+      </div>
+
+      <div style={{ flex: 1 }}>
+        <div style={{ fontWeight: 500, fontSize: 15, color: justDone ? 'var(--ink-3)' : 'var(--ink)', textDecoration: justDone ? 'line-through' : 'none' }}>
+          {chore.label}
+        </div>
+        {person
+          ? <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: person.color }}/>
+              Assigned to {person.name}
+            </div>
+          : <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2 }}>Anyone</div>
+        }
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{
+          padding: '4px 10px', borderRadius: 99,
+          background: 'var(--gold-light)', color: 'var(--gold)',
+          fontSize: 12, fontWeight: 600
+        }}>+{chore.pts} pts</div>
+
+        <button onClick={() => onComplete(chore)} disabled={justDone} style={{
+          padding: '8px 18px', borderRadius: 99,
+          background: justDone ? 'transparent' : 'var(--ink)',
+          color: justDone ? 'var(--ink-3)' : '#fff',
+          border: justDone ? '1px solid var(--border)' : 'none',
+          fontSize: 13, fontWeight: 500, cursor: justDone ? 'default' : 'pointer',
+          transition: 'all 0.2s ease', whiteSpace: 'nowrap'
+        }}>
+          {justDone ? 'Done!' : 'Mark Done'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Toast({ msg, onDone }) {
+  useEffect(() => { const t = setTimeout(onDone, 2500); return () => clearTimeout(t); }, []);
+  return (
+    <div style={{
+      position: 'fixed', bottom: 32, left: '50%', transform: 'translateX(-50%)',
+      background: 'var(--ink)', color: '#fff', padding: '12px 24px', borderRadius: 99,
+      fontSize: 14, fontWeight: 500, boxShadow: 'var(--shadow-lg)', zIndex: 1000,
+      animation: 'slideUp 0.3s ease'
+    }}>{msg}</div>
+  );
+}
+
+// ── Chores Page ───────────────────────────────────────────────────────────────
+
+function ChoresPage({ completions, setCompletions, filterPerson, setFilterPerson }) {
+  const [doneChoreSessions, setDoneChoreSessions] = useState({});
+  const [whoModal, setWhoModal] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const filteredChores = filterPerson
+    ? CHORES.filter(c => !c.assignedTo || c.assignedTo === filterPerson)
+    : CHORES;
+
+  function handleMarkDone(chore) {
+    setWhoModal(chore);
+  }
+
+  function completeDone(chore, person) {
+    const entry = { id: Date.now(), person: person.id, choreId: chore.id, pts: chore.pts, ts: Date.now() };
+    const next = [...completions, entry];
+    setCompletions(next);
+    localStorage.setItem('chores_completions_v2', JSON.stringify(next));
+    setDoneChoreSessions(prev => ({ ...prev, [chore.id + '_' + person.id + '_' + Math.floor(Date.now()/5000)]: true }));
+    setWhoModal(null);
+    setToast(`+${chore.pts} pts for ${person.name}! 🎉`);
+  }
+
+  return (
+    <div>
+      {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
+
+      {/* Who filter */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 28, flexWrap: 'wrap' }}>
+        <button onClick={() => setFilterPerson(null)} style={{
+          padding: '8px 18px', borderRadius: 99, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          background: !filterPerson ? 'var(--ink)' : 'transparent',
+          color: !filterPerson ? '#fff' : 'var(--ink-2)',
+          border: !filterPerson ? 'none' : '1px solid var(--border)', transition: 'all 0.15s'
+        }}>All chores</button>
+        {PEOPLE.map(p => (
+          <button key={p.id} onClick={() => setFilterPerson(filterPerson === p.id ? null : p.id)} style={{
+            padding: '8px 18px', borderRadius: 99, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            background: filterPerson === p.id ? p.color : 'transparent',
+            color: filterPerson === p.id ? '#fff' : 'var(--ink-2)',
+            border: filterPerson === p.id ? 'none' : '1px solid var(--border)', transition: 'all 0.15s'
+          }}>{p.name}</button>
+        ))}
+      </div>
+
+      <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--shadow)' }}>
+        <div style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--border)', paddingBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontWeight: 600, fontSize: 15 }}>{filteredChores.length} chores</div>
+          <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>Click "Mark Done" to log a completion</div>
+        </div>
+        {filteredChores.map(chore => {
+          const recentKey = Object.keys(doneChoreSessions).find(k => k.startsWith(chore.id + '_'));
+          return <ChoreRow key={chore.id} chore={chore} justDone={!!recentKey} onComplete={handleMarkDone} />;
+        })}
+      </div>
+
+      {/* Who did it modal */}
+      {whoModal && (
+        <div onClick={() => setWhoModal(null)} style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', zIndex: 999, backdropFilter: 'blur(4px)'
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: 'var(--surface)', borderRadius: 20, padding: 32, width: 360,
+            boxShadow: 'var(--shadow-lg)'
+          }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 6 }}>Who completed this?</div>
+            <div style={{ color: 'var(--ink-3)', fontSize: 14, marginBottom: 24 }}>
+              {whoModal.label} · +{whoModal.pts} pts
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {PEOPLE.map(p => (
+                <button key={p.id} onClick={() => completeDone(whoModal, p)} style={{
+                  display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px',
+                  borderRadius: 12, border: '1px solid var(--border)', background: '#fff',
+                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+                  fontFamily: 'inherit'
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = p.color; e.currentTarget.style.background = '#FAFAF8'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = '#fff'; }}
+                >
+                  <Avatar person={p} size={36} />
+                  <span style={{ fontWeight: 500, fontSize: 15 }}>{p.name}</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--gold)', fontWeight: 600 }}>+{whoModal.pts} pts</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Home Page ─────────────────────────────────────────────────────────────────
+
+function HomePage({ completions, setPage, setFilterPerson }) {
+  const ranked = PEOPLE.map(p => ({
+    ...p,
+    pts7: getPoints(completions, p.id, 7),
+    pts30: getPoints(completions, p.id, 30),
+    streak: getStreak(completions, p.id),
+  })).sort((a, b) => b.pts30 - a.pts30);
+
+  function goToChores(person) {
+    setFilterPerson(person.id);
+    setPage('chores');
+  }
+
+  return (
+    <div>
+      {/* Leaderboard heading */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700 }}>Leaderboard</h2>
+        <button onClick={() => setPage('chores')} style={{
+          padding: '8px 18px', borderRadius: 99, fontSize: 13, fontWeight: 500,
+          background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer'
+        }}>View All Chores →</button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {ranked.map((person, i) => (
+          <PersonCard key={person.id} person={person} rank={i + 1}
+            pts7={person.pts7} pts30={person.pts30} streak={person.streak}
+            onView={() => goToChores(person)} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── App Shell ─────────────────────────────────────────────────────────────────
+
+function App() {
+  const [page, setPage] = useState(() => localStorage.getItem('chores_page') || 'home');
+  const [completions, setCompletions] = useState(() => seedCompletions());
+  const [filterPerson, setFilterPerson] = useState(null);
+  const [tweaksVisible, setTweaksVisible] = useState(false);
+
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "goal7d": 12,
+    "goal30d": 50,
+    "familyName": "Winters Family"
+  }/*EDITMODE-END*/;
+
+  const [tweaks, setTweaks] = useState(() => {
+    const saved = localStorage.getItem('chores_tweaks');
+    return saved ? { ...TWEAK_DEFAULTS, ...JSON.parse(saved) } : TWEAK_DEFAULTS;
+  });
+
+  useEffect(() => { localStorage.setItem('chores_page', page); }, [page]);
+
+  // Tweaks host protocol
+  useEffect(() => {
+    function onMsg(e) {
+      if (e.data?.type === '__activate_edit_mode') setTweaksVisible(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksVisible(false);
+    }
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  function applyTweak(key, val) {
+    const next = { ...tweaks, [key]: val };
+    setTweaks(next);
+    localStorage.setItem('chores_tweaks', JSON.stringify(next));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*');
+  }
+
+  const nav = [
+    { id: 'home', label: 'Overview' },
+    { id: 'chores', label: 'Chores' },
+  ];
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
+      <header style={{
+        background: 'var(--surface)', borderBottom: '1px solid var(--border)',
+        padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        height: 64, position: 'sticky', top: 0, zIndex: 10,
+        boxShadow: '0 1px 0 var(--border)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <span style={{ fontFamily: 'Playfair Display', fontSize: 20, fontWeight: 700, letterSpacing: '-0.5px' }}>
+            {tweaks.familyName}
+          </span>
+          <nav style={{ display: 'flex', gap: 4 }}>
+            {nav.map(n => (
+              <button key={n.id} onClick={() => setPage(n.id)} style={{
+                padding: '6px 16px', borderRadius: 99, fontSize: 13, fontWeight: 500,
+                background: page === n.id ? 'var(--ink)' : 'transparent',
+                color: page === n.id ? '#fff' : 'var(--ink-2)',
+                border: 'none', cursor: 'pointer', transition: 'all 0.15s'
+              }}>{n.label}</button>
+            ))}
+          </nav>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ display: 'flex', gap: -6 }}>
+            {PEOPLE.map((p, i) => (
+              <div key={p.id} style={{ marginLeft: i > 0 ? -8 : 0, border: '2px solid var(--surface)', borderRadius: '50%' }}>
+                <Avatar person={p} size={30} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      {/* Main */}
+      <main style={{ flex: 1, padding: '36px 32px', maxWidth: 1024, margin: '0 auto', width: '100%' }}>
+        <div style={{ marginBottom: 28 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.2 }}>
+            {page === 'home' ? 'Family Overview' : 'Chores'}
+          </h1>
+          <p style={{ color: 'var(--ink-3)', fontSize: 14, marginTop: 4 }}>
+            {page === 'home' ? 'Track progress and celebrate wins together.' : 'Log completed chores to earn points.'}
+          </p>
+        </div>
+
+        {page === 'home'
+          ? <HomePage completions={completions} setPage={setPage} setFilterPerson={setFilterPerson} />
+          : <ChoresPage completions={completions} setCompletions={setCompletions} filterPerson={filterPerson} setFilterPerson={setFilterPerson} />
+        }
+      </main>
+
+      {/* Tweaks Panel */}
+      {tweaksVisible && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, background: 'var(--surface)',
+          border: '1px solid var(--border)', borderRadius: 16, padding: 24,
+          width: 280, boxShadow: 'var(--shadow-lg)', zIndex: 999
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 20 }}>Tweaks</div>
+
+          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-3)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>Family Name</label>
+          <input value={tweaks.familyName} onChange={e => applyTweak('familyName', e.target.value)}
+            style={{ display: 'block', width: '100%', marginTop: 6, marginBottom: 16, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', fontFamily: 'inherit', fontSize: 14 }} />
+
+          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-3)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>7-Day Goal: {tweaks.goal7d} pts</label>
+          <input type="range" min={5} max={30} step={1} value={tweaks.goal7d}
+            onChange={e => applyTweak('goal7d', Number(e.target.value))}
+            style={{ display: 'block', width: '100%', marginTop: 6, marginBottom: 16 }} />
+
+          <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-3)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>30-Day Goal: {tweaks.goal30d} pts</label>
+          <input type="range" min={20} max={150} step={5} value={tweaks.goal30d}
+            onChange={e => applyTweak('goal30d', Number(e.target.value))}
+            style={{ display: 'block', width: '100%', marginTop: 6 }} />
+        </div>
+      )}
+
+      <style>{`
+        @keyframes slideUp { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        input[type=range] { accent-color: var(--ink); }
+      `}</style>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

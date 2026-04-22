@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+          package-name: chores-web
+          bump-minor-pre-major: true
+          skip-github-pull-request: false
+          skip-github-release: false
+          default-branch: main
+          monorepo-tags: true
+          include-component-when-empty: true
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+      - name: Tag Docker image
+        if: ${{ steps.release.outputs.release_created }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        if: ${{ steps.release.outputs.release_created }}
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push backend image
+        if: ${{ steps.release.outputs.release_created }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/backend:latest
+            ghcr.io/${{ github.repository }}/backend:${{ steps.release.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Build and push frontend image
+        if: ${{ steps.release.outputs.release_created }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/frontend:latest
+            ghcr.io/${{ github.repository }}/frontend:${{ steps.release.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Create release notes
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          cat > RELEASE_NOTES.md << EOF
+          # Version $RELEASE_VERSION
+
+          ## Docker Images
+
+          - Frontend: \`ghcr.io/${{ github.repository }}/frontend:$RELEASE_VERSION\`
+          - Backend: \`ghcr.io/${{ github.repository }}/backend:$RELEASE_VERSION\`
+
+          ## Run with Docker Compose
+
+          \`\`\`yaml
+          version: '3.8'
+          services:
+            frontend:
+              image: ghcr.io/${{ github.repository }}/frontend:$RELEASE_VERSION
+              ports:
+                - "3000:80"
+            backend:
+              image: ghcr.io/${{ github.repository }}/backend:$RELEASE_VERSION
+              ports:
+                - "8000:8000"
+          \`\`\`
+
+          See [Deployment Guide](./docs/DEPLOYMENT.md) for full setup instructions.
+          EOF
