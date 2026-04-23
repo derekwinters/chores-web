@@ -366,6 +366,7 @@ class TestLogAPI:
     @pytest.mark.asyncio
     async def test_log_filters_multiple_actions(self, authenticated_client):
         await authenticated_client.post("/people", json={"name": "Alice", "username": "alice"})
+        await authenticated_client.post("/people", json={"name": "Bob", "username": "bob"})
         r = await authenticated_client.post("/chores", json=ROTATING_CHORE)
         chore_id = r.json()["id"]
 
