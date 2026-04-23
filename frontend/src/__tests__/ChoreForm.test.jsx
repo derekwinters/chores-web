@@ -81,8 +81,9 @@ describe("ChoreForm — empty (create)", () => {
     fireEvent.click(screen.getByText("Mon"));
     const radios = screen.getAllByRole("radio");
     fireEvent.click(radios.find((r) => r.value === "rotating"));
-    // select only one person
-    fireEvent.click(screen.getByLabelText("Alice"));
+    // select only one person — people are rendered as buttons, not checkboxes
+    const aliceBtns = screen.getAllByText("Alice");
+    fireEvent.click(aliceBtns[aliceBtns.length - 1]);
     fireEvent.click(screen.getByText("Save"));
     await waitFor(() => expect(screen.getByText(/at least 2 people/i)).toBeInTheDocument());
     expect(onSubmit).not.toHaveBeenCalled();
@@ -117,7 +118,7 @@ describe("ChoreForm — prefilled (edit)", () => {
     expect(screen.getByDisplayValue("7")).toBeInTheDocument();
   });
 
-  it("pre-checks eligible people checkboxes", () => {
+  it("pre-checks eligible people buttons", () => {
     render(<ChoreForm initial={existingChore} people={PEOPLE} onSubmit={() => {}} onCancel={() => {}} />);
     const rotationRow = screen.getByText("Rotation").closest(".form-row");
     const aliceBtn = Array.from(rotationRow.querySelectorAll("button")).find((button) => button.textContent === "Alice");
@@ -134,7 +135,9 @@ describe("ChoreForm — prefilled (edit)", () => {
       next_due: "2026-05-15",
     };
     render(<ChoreForm initial={choreWithNextDue} people={PEOPLE} onSubmit={() => {}} onCancel={() => {}} />);
-    expect(screen.getByText("2026-05-15")).toBeInTheDocument();
+    // Date is displayed as formatted locale string, not raw ISO string
+    // "May 15, 2026" or similar locale-dependent format
+    expect(screen.getByText(/may.*15.*2026|2026.*may.*15/i)).toBeInTheDocument();
   });
 
   it("displays next assignee when editing rotating chore with next_assignee", () => {
