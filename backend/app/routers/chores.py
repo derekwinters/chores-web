@@ -180,6 +180,9 @@ async def update_chore(chore_id: int, body: ChoreUpdate, current_user: str = Dep
     target_assignee = updates.get("assignee", chore.assignee)
     target_current_assignee = current_assignee if current_assignee is not None else chore.current_assignee
 
+    if target_assignment_type == "fixed" and updates.get("assignee") is not None and current_assignee is None:
+        target_current_assignee = updates["assignee"]
+
     people_to_validate = updates.get("eligible_people")
     assignee_to_validate = updates.get("assignee")
     extra_people = [name for name in [current_assignee, next_assignee] if name is not None]
