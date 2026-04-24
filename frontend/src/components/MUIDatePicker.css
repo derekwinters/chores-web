@@ -1,0 +1,161 @@
+.mui-date-picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Calendar Header */
+.MuiPickersCalendarHeader-root {
+  color: var(--text);
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+
+.MuiPickersCalendarHeader-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+  flex: 1;
+  text-align: center;
+}
+
+/* Navigation Buttons */
+.MuiIconButton-root {
+  color: var(--text);
+  width: 2rem;
+  height: 2rem;
+  padding: 0.4rem;
+}
+
+.MuiIconButton-root:hover {
+  background: var(--surface2);
+  color: var(--accent);
+}
+
+.MuiIconButton-root svg {
+  font-size: 1rem;
+}
+
+/* Calendar Container */
+.MuiDayCalendar-root {
+  padding: 0.5rem 0;
+  width: 100%;
+}
+
+/* Weekday Headers */
+.MuiPickersWeekDayLabel-root {
+  font-weight: 600;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0;
+}
+
+/* Week Container */
+.MuiDayCalendar-weekContainer {
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+/* Individual Day Button */
+.MuiPickersDay-root {
+  font-size: 0.8rem;
+  font-weight: 500;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface2);
+  color: var(--text);
+  transition: all 0.15s ease;
+}
+
+.MuiPickersDay-root:not(.Mui-disabled):not(.Mui-selected) {
+  cursor: pointer;
+}
+
+.MuiPickersDay-root:not(.Mui-disabled):hover {
+  background: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.MuiPickersDay-root.Mui-selected {
+  background: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.MuiPickersDay-root.Mui-disabled {
+  color: transparent;
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.MuiPickersDay-root.Mui-today {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+/* Month/Year Picker */
+.MuiMonthCalendar-root {
+  padding: 0.5rem 0;
+}
+
+.MuiPickersMonth-root,
+.MuiPickersYear-root {
+  font-weight: 500;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface2);
+  transition: all 0.15s ease;
+}
+
+.MuiPickersMonth-root:not(.Mui-disabled):hover,
+.MuiPickersYear-root:not(.Mui-disabled):hover {
+  background: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
+}
+
+.MuiPickersMonth-root.Mui-selected,
+.MuiPickersYear-root.Mui-selected {
+  background: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* Overall Picker Styling */
+.MuiStaticDatePicker-root {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* Remove default MUI shadows and outlines */
+.MuiPickersDay-root:focus,
+.MuiIconButton-root:focus {
+  outline: none;
+}
+
+.MuiPickersDay-root:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
