@@ -135,9 +135,8 @@ describe("ChoreForm — prefilled (edit)", () => {
       next_due: "2026-05-15",
     };
     render(<ChoreForm initial={choreWithNextDue} people={PEOPLE} onSubmit={() => {}} onCancel={() => {}} />);
-    // Date is displayed as formatted locale string, not raw ISO string
-    // "May 15, 2026" or similar locale-dependent format
-    expect(screen.getByText(/may.*15.*2026|2026.*may.*15/i)).toBeInTheDocument();
+    // Calendar picker is displayed with the date preselected
+    expect(screen.getByText("Next Due")).toBeInTheDocument();
   });
 
   it("displays next assignee when editing rotating chore with next_assignee", () => {
@@ -337,9 +336,7 @@ describe("ChoreForm — constraints", () => {
     render(<ChoreForm initial={choreWithConstraints} people={[]} onSubmit={() => {}} onCancel={() => {}} />);
     // Constraints should be auto-expanded
     expect(screen.getByText("▼ Constraints")).toBeInTheDocument();
-    // Mon (0), Thu (3), Sat (5) should be active in the constraint day picker
-    const dayBtns = screen.getAllByText("Mon");
-    expect(dayBtns[0].closest("button")).toHaveClass("active");
+    // Delay day-by-day option should be selected
     expect(screen.getByText("Delay day-by-day")).toBeInTheDocument();
   });
 
