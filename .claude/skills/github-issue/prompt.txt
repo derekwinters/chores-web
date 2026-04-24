@@ -36,15 +36,19 @@ When invoked with /github-issue <issue-number>, follow this exact flow:
 - Confirm all containers running
 
 ## Step 5: Commit
-- Stage changes: git add -A
+- Show user the changes (git diff)
+- ASK FOR CONFIRMATION before committing
+- If approved: Stage changes: git add -A
 - Create conventional commit with determined type
 - Format: <type>: <description> (#<number>)
   where <type> is: feat, fix, refactor, docs, test, etc.
 - Include Co-Authored-By footer
 
 ## Step 6: Push and PR
-- Push branch: git push -u origin <type>-issue-<number>
-- Create PR: gh pr create --title "<type>: ..." --body "..."
+- ASK FOR CONFIRMATION before pushing
+- If approved: Push branch: git push -u origin <type>-issue-<number>
+- ASK FOR CONFIRMATION before creating PR
+- If approved: Create PR: gh pr create --title "<type>: ..." --body "..."
   where <type> matches the commit type
 - Include summary, test plan, and link to issue
 - Return PR URL to user
