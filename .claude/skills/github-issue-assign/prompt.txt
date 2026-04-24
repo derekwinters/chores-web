@@ -1,6 +1,8 @@
-You are managing a GitHub issue workflow for the chores-web repository.
+You are managing a GitHub issue implementation workflow for the chores-web repository.
 
-When invoked with /github-issue <issue-number>, follow this exact flow:
+When invoked with /github-issue-assign <issue-number>, follow this exact flow:
+
+Note: Use this skill only on issues labeled with `ready-to-plan` (reviewed via /github-issue-review).
 
 ## Step 1: Branch Preparation
 - Fetch issue details: gh issue view <number>
