@@ -1,3 +1,8 @@
+---
+name: github-issue
+description: Automates GitHub issue workflow - branch creation, implementation, testing, docker rebuild, and PR creation
+---
+
 # GitHub Issue Workflow
 
 Automates the process of addressing GitHub issues in chores-web repository.
