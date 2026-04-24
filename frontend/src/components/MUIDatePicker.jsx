@@ -48,7 +48,8 @@ export default function MUIDatePicker({ initialDate, onSelect, onCancel }) {
                   },
                 },
                 "& .MuiInputBase-input": {
-                  color: `var(--text)`,
+                  color: `var(--text) !important`,
+                  caretColor: `var(--text)`,
                 },
               },
             },
@@ -58,6 +59,18 @@ export default function MUIDatePicker({ initialDate, onSelect, onCancel }) {
                   backgroundColor: `var(--surface)`,
                   color: `var(--text)`,
                   border: `1px solid var(--border)`,
+                },
+                "& .MuiPickersCalendarHeader-root": {
+                  color: `var(--text)`,
+                },
+                "& .MuiPickersWeekDayLabel-root": {
+                  color: `var(--text-muted)`,
+                },
+                "& .MuiPickersDay-root": {
+                  color: `var(--text)`,
+                },
+                "& .MuiPickersMonth-root, & .MuiPickersYear-root": {
+                  color: `var(--text)`,
                 },
               },
             },
