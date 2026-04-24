@@ -16,13 +16,6 @@ export default function MUIDatePicker({ initialDate, onSelect, onCancel }) {
     }
   };
 
-  const getComputedStyle = (varName) => {
-    if (typeof window !== "undefined") {
-      return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-    }
-    return "";
-  };
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="mui-date-picker-wrapper">
@@ -56,40 +49,37 @@ export default function MUIDatePicker({ initialDate, onSelect, onCancel }) {
             popper: {
               sx: {
                 "& .MuiPaper-root": {
-                  backgroundColor: `var(--surface)`,
-                  color: `var(--text)`,
-                  border: `1px solid var(--border)`,
+                  backgroundColor: `var(--surface) !important`,
+                  color: `var(--text) !important`,
+                  border: `1px solid var(--border) !important`,
+                },
+                "& .MuiDayCalendar-root": {
+                  color: `var(--text) !important`,
                 },
                 "& .MuiPickersCalendarHeader-root": {
-                  color: `var(--text)`,
+                  color: `var(--text) !important`,
+                  borderColor: `var(--border) !important`,
                 },
                 "& .MuiPickersWeekDayLabel-root": {
-                  color: `var(--text-muted)`,
+                  color: `var(--text-muted) !important`,
                 },
                 "& .MuiPickersDay-root": {
-                  color: `var(--text)`,
+                  color: `var(--text) !important`,
+                  borderColor: `var(--border) !important`,
+                  backgroundColor: `var(--surface2) !important`,
+                },
+                "& .MuiPickersDay-root:hover": {
+                  backgroundColor: `var(--accent) !important`,
+                  color: `var(--surface) !important`,
+                },
+                "& .MuiPickersDay-root.Mui-selected": {
+                  backgroundColor: `var(--accent) !important`,
+                  color: `var(--surface) !important`,
                 },
                 "& .MuiPickersMonth-root, & .MuiPickersYear-root": {
-                  color: `var(--text)`,
-                },
-              },
-            },
-          }}
-          componentsProps={{
-            day: {
-              sx: {
-                color: `var(--text)`,
-                border: `1px solid var(--border)`,
-                backgroundColor: `var(--surface2)`,
-                "&:hover": {
-                  backgroundColor: `var(--accent)`,
-                  color: `var(--surface)`,
-                  borderColor: `var(--accent)`,
-                },
-                "&.Mui-selected": {
-                  backgroundColor: `var(--accent)`,
-                  color: `var(--surface)`,
-                  borderColor: `var(--accent)`,
+                  color: `var(--text) !important`,
+                  backgroundColor: `var(--surface2) !important`,
+                  borderColor: `var(--border) !important`,
                 },
               },
             },
