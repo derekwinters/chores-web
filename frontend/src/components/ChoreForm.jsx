@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import MUIDatePicker from "./MUIDatePicker";
+import CalendarPicker from "./CalendarPicker";
 import "./ChoreForm.css";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -631,7 +631,7 @@ export default function ChoreForm({ initial, people, onSubmit, onCancel, submitL
               </button>
             </div>
             <div className="modal-body">
-              <MUIDatePicker
+              <CalendarPicker
                 initialDate={s.next_due || initial.next_due}
                 onSelect={(date) => {
                   set("next_due", date);
