@@ -5,7 +5,7 @@ description: Automates GitHub issue implementation workflow - branch creation, i
 
 # GitHub Issue Implementation
 
-Automates the process of implementing and addressing GitHub issues in chores-web repository. Use after issue is reviewed and labeled `ready-to-plan` (via `/github-issue-review`).
+Automates the process of implementing and addressing GitHub issues in chores-web repository. Requires issue to be labeled `ready-for-work` before proceeding.
 
 ## Usage
 
