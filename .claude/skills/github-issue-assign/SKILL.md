@@ -65,6 +65,7 @@ Automates the process of implementing and addressing GitHub issues in chores-web
 ### 7. Create Pull Request
 - Push branch to origin
 - Create GitHub PR
+- **Include "Closes #<issue-number>" in PR body to auto-close issue**
 - Link to issue in PR description
 - Use conventional commit format for title
 
@@ -106,3 +107,4 @@ Analyzes issue #46, determines it's a feature, creates `feat-issue-46` branch
 - Each step can be reviewed and aborted
 - Show diffs before committing
 - Ask user approval at each critical step
+- **Always include "Closes #<issue-number>" in PR body to auto-close the issue when merged**

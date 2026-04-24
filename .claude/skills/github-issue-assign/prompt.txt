@@ -72,6 +72,7 @@ If user APPROVES COMMIT:
 - ASK FOR CONFIRMATION before creating PR
 - If approved: Create PR: gh pr create --title "<type>: ..." --body "..."
   where <type> matches the commit type
+- **IMPORTANT: Include "Closes #<number>" in PR body** to auto-close the issue
 - Include summary, test plan, and link to issue
 - Return PR URL to user
 
