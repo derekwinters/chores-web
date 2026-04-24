@@ -18,9 +18,10 @@ Automates the process of addressing GitHub issues in chores-web repository.
 1. **Branch creation**: Create `feat-issue-XX` branch from updated main
 2. **Implementation**: Address issue requirements
 3. **Testing**: Run test suite to verify changes
-4. **Docker rebuild**: Build and restart containers
-5. **Commit**: Create conventional commit with issue reference
-6. **PR creation**: Open pull request to main branch
+4. **Docker rebuild**: Build and restart containers with `docker compose up --build -d`
+5. **Manual review**: You review website, decide if changes are complete
+6. **Commit**: Create conventional commit with issue reference
+7. **PR creation**: Open pull request to main branch
 
 ## Flow Steps
 
@@ -47,16 +48,21 @@ Automates the process of addressing GitHub issues in chores-web repository.
 - Check for regressions
 
 ### 4. Docker Rebuild
-- Build new Docker images
-- Stop and restart containers
+- Rebuild and restart containers: `docker compose up --build -d`
 - Verify containers running
 
-### 5. Commit Changes
-- Stage all changes
-- Create conventional commit: `feat: <description>`
-- Include issue number in message if not in title
+### 5. Manual Review & Approval
+- Show summary of changes (files modified, lines changed)
+- Ask: Do you want to make more changes, or approve for commit?
+- **If more changes needed**: Loop back to Step 2
+- **If approved**: Proceed to commit
 
-### 6. Create Pull Request
+### 6. Commit Changes
+- Stage all changes
+- Create conventional commit: `<type>: <description> (#issue-number)`
+- Include Co-Authored-By footer
+
+### 7. Create Pull Request
 - Push branch to origin
 - Create GitHub PR
 - Link to issue in PR description
