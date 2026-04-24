@@ -1,0 +1,111 @@
+.mui-date-picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.date-picker-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.date-picker-actions .btn-secondary {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+/* Override MUI default styles for theme consistency */
+.MuiTextField-root {
+  width: 100%;
+}
+
+.MuiTextField-root .MuiInputBase-input {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.MuiTextField-root .MuiInputBase-input:focus {
+  border-color: var(--accent);
+}
+
+.MuiOutlinedInput-root {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--text-muted);
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--accent);
+}
+
+.MuiPickersPopper-root .MuiPaper-root {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.MuiDayCalendar-weekContainer {
+  gap: 0.25rem;
+}
+
+.MuiPickersDay-root {
+  font-size: 0.8rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--text);
+}
+
+.MuiPickersDay-root:not(.Mui-disabled) {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.MuiPickersDay-root:not(.Mui-disabled):hover {
+  background: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
+}
+
+.MuiPickersDay-root.Mui-selected {
+  background: var(--accent);
+  color: var(--surface);
+  border-color: var(--accent);
+}
+
+.MuiPickersCalendarHeader-root {
+  color: var(--text);
+  padding: 0.5rem;
+}
+
+.MuiIconButton-root {
+  color: var(--text);
+}
+
+.MuiIconButton-root:hover {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.MuiMonthCalendar-root {
+  gap: 0.5rem;
+}
+
+.MuiPickersMonth-root {
+  color: var(--text);
+}
+
+.MuiPickersMonth-root:not(.Mui-disabled):hover {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.MuiPickersMonth-root.Mui-selected {
+  background: var(--accent);
+  color: var(--surface);
+}
