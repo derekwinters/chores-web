@@ -4,32 +4,94 @@ import { describe, it, expect, vi } from "vitest";
 import ChoreCard from "../components/ChoreCard";
 
 const makeChore = (overrides = {}) => ({
-  unique_id: "vacuum",
+  id: "vacuum",
   name: "Vacuum",
   age: 0,
   state: "due",
+  points: 1,
+  next_due: "2026-04-25",
   ...overrides,
 });
 
 describe("ChoreCard", () => {
-  it("renders chore name", () => {
+  it("renders chore name in collapsed state", () => {
     render(<ChoreCard chore={makeChore()} selected={false} onClick={() => {}} />);
     expect(screen.getByText("Vacuum")).toBeInTheDocument();
   });
 
-  it("shows 'due today' when age is 0", () => {
-    render(<ChoreCard chore={makeChore({ age: 0 })} selected={false} onClick={() => {}} />);
-    expect(screen.getByText("due today")).toBeInTheDocument();
+  it("shows due date in collapsed state", () => {
+    render(<ChoreCard chore={makeChore({ next_due: "2026-04-25" })} selected={false} onClick={() => {}} />);
+    expect(screen.getByText("Apr 25")).toBeInTheDocument();
   });
 
-  it("shows overdue label when age > 0", () => {
-    render(<ChoreCard chore={makeChore({ age: 3 })} selected={false} onClick={() => {}} />);
-    expect(screen.getByText("3d overdue")).toBeInTheDocument();
+  it("starts in collapsed view", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} />
+    );
+    expect(container.querySelector(".collapsed-view")).toBeInTheDocument();
+    expect(container.querySelector(".expanded-view")).not.toBeInTheDocument();
   });
 
-  it("shows future label when age < 0", () => {
-    render(<ChoreCard chore={makeChore({ age: -5 })} selected={false} onClick={() => {}} />);
-    expect(screen.getByText("due in 5d")).toBeInTheDocument();
+  it("expands to show full details on click", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} status="Open" frequency="Every 7d" assignee="Me" />
+    );
+    const card = container.querySelector(".chore-card");
+    fireEvent.click(card);
+    expect(container.querySelector(".expanded-view")).toBeInTheDocument();
+    expect(container.querySelector(".collapsed-view")).not.toBeInTheDocument();
+  });
+
+  it("shows metadata when expanded", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} status="Open" frequency="Every 7d" assignee="Me" />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    expect(screen.getByText("Open")).toBeInTheDocument();
+    expect(screen.getByText("Every 7d")).toBeInTheDocument();
+    expect(screen.getByText("Me")).toBeInTheDocument();
+  });
+
+  it("shows action buttons when expanded with handlers", () => {
+    const onEdit = vi.fn();
+    const onHistory = vi.fn();
+    const onDelete = vi.fn();
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onEdit={onEdit} onHistory={onHistory} onDelete={onDelete} />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    expect(screen.getByText("Edit")).toBeInTheDocument();
+    expect(screen.getByText("History")).toBeInTheDocument();
+    expect(screen.getByText("Delete")).toBeInTheDocument();
+  });
+
+  it("calls onEdit when Edit button clicked", () => {
+    const onEdit = vi.fn();
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onEdit={onEdit} />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    fireEvent.click(screen.getByText("Edit"));
+    expect(onEdit).toHaveBeenCalledWith(makeChore());
+  });
+
+  it("calls onDelete when Delete button clicked", () => {
+    const onDelete = vi.fn();
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onDelete={onDelete} />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    fireEvent.click(screen.getByText("Delete"));
+    expect(onDelete).toHaveBeenCalledWith(makeChore());
+  });
+
+  it("calls onClick when card is clicked", () => {
+    const onClick = vi.fn();
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={onClick} />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it("applies selected class when selected", () => {
@@ -39,10 +101,43 @@ describe("ChoreCard", () => {
     expect(container.firstChild).toHaveClass("selected");
   });
 
-  it("calls onClick when clicked", () => {
-    const onClick = vi.fn();
-    render(<ChoreCard chore={makeChore()} selected={false} onClick={onClick} />);
-    fireEvent.click(screen.getByText("Vacuum"));
-    expect(onClick).toHaveBeenCalledTimes(1);
+  it("toggles expanded state on multiple clicks", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} />
+    );
+    const card = container.querySelector(".chore-card");
+    expect(container.querySelector(".collapsed-view")).toBeInTheDocument();
+    fireEvent.click(card);
+    expect(container.querySelector(".expanded-view")).toBeInTheDocument();
+    fireEvent.click(card);
+    expect(container.querySelector(".collapsed-view")).toBeInTheDocument();
+  });
+
+  it("applies severity class based on age", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore({ age: 3 })} selected={false} onClick={() => {}} />
+    );
+    expect(container.querySelector(".chore-card")).toHaveClass("overdue");
+  });
+
+  it("applies today class when age is 0", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore({ age: 0 })} selected={false} onClick={() => {}} />
+    );
+    expect(container.querySelector(".chore-card")).toHaveClass("today");
+  });
+
+  it("applies warn class when age is 1-2", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore({ age: 2 })} selected={false} onClick={() => {}} />
+    );
+    expect(container.querySelector(".chore-card")).toHaveClass("warn");
+  });
+
+  it("applies future class when age is negative", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore({ age: -5 })} selected={false} onClick={() => {}} />
+    );
+    expect(container.querySelector(".chore-card")).toHaveClass("future");
   });
 });

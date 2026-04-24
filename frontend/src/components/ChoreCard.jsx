@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ChoreCard.css";
 
 function ageLabel(age) {
@@ -15,20 +15,100 @@ function ageSeverity(age) {
   return "overdue";
 }
 
-export default function ChoreCard({ chore, selected, onClick }) {
+export default function ChoreCard({ chore, selected, onClick, onEdit, onDelete, onHistory, status, frequency, assignee }) {
+  const [expanded, setExpanded] = useState(false);
+  const severity = ageSeverity(chore.age);
+
+  const handleClick = (e) => {
+    e.stopPropagation?.();
+    setExpanded(!expanded);
+    onClick?.();
+  };
+
+  const handleAction = (action, e) => {
+    e.stopPropagation?.();
+    if (action === "edit") onEdit?.(chore);
+    if (action === "delete") onDelete?.(chore);
+    if (action === "history") onHistory?.(chore);
+  };
+
   const cls = [
     "chore-card",
     selected ? "selected" : "",
-    ageSeverity(chore.age),
+    expanded ? "expanded" : "collapsed",
+    severity,
   ]
     .filter(Boolean)
     .join(" ");
 
+  const dueDate = chore.next_due ? new Date(chore.next_due + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : null;
+
   return (
-    <div className={cls} onClick={onClick} role="button" tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onClick()}>
-      <span className="chore-name">{chore.name}</span>
-      <span className="chore-age">{ageLabel(chore.age)}</span>
+    <div className={cls} onClick={handleClick} role="button" tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && handleClick(e)}>
+      <div className="accent-bar"></div>
+      <div className="card-content">
+        {!expanded ? (
+          <div className="collapsed-view">
+            <span className="chore-name">{chore.name}</span>
+            {dueDate && <span className="chore-due-date">{dueDate}</span>}
+          </div>
+        ) : (
+          <div className="expanded-view">
+            <div className="expanded-header">
+              <h3 className="chore-name">{chore.name}</h3>
+              {dueDate && <span className="chore-due-date">{dueDate}</span>}
+            </div>
+
+            <div className="expanded-meta">
+              {status && (
+                <div className="meta-item">
+                  <span className="meta-label">Status</span>
+                  <span className="meta-value">{status}</span>
+                </div>
+              )}
+              {frequency && (
+                <div className="meta-item">
+                  <span className="meta-label">Frequency</span>
+                  <span className="meta-value">{frequency}</span>
+                </div>
+              )}
+              {chore.points != null && (
+                <div className="meta-item">
+                  <span className="meta-label">Points</span>
+                  <span className="meta-value">{chore.points}</span>
+                </div>
+              )}
+              {assignee && (
+                <div className="meta-item">
+                  <span className="meta-label">Assignee</span>
+                  <span className="meta-value">{assignee}</span>
+                </div>
+              )}
+            </div>
+
+            {(onEdit || onHistory || onDelete) && (
+              <div className="expanded-actions">
+                {onEdit && (
+                  <button className="action-btn" onClick={(e) => handleAction("edit", e)}>
+                    Edit
+                  </button>
+                )}
+                {onHistory && (
+                  <button className="action-btn" onClick={(e) => handleAction("history", e)}>
+                    History
+                  </button>
+                )}
+                {onDelete && (
+                  <button className="action-btn danger" onClick={(e) => handleAction("delete", e)}>
+                    Delete
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
