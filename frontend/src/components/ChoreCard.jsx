@@ -51,6 +51,7 @@ export default function ChoreCard({ chore, selected, onClick, onEdit, onDelete, 
         {!expanded ? (
           <div className="collapsed-view">
             <span className="chore-name">{chore.name}</span>
+            {assignee && assignee !== "Unassigned" && <span className="chore-assignee">{assignee}</span>}
             {dueDate && <span className="chore-due-date">{dueDate}</span>}
           </div>
         ) : (

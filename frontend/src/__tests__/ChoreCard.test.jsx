@@ -26,10 +26,24 @@ describe("ChoreCard", () => {
 
   it("starts in collapsed view", () => {
     const { container } = render(
-      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} />
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} assignee="Me" />
     );
     expect(container.querySelector(".collapsed-view")).toBeInTheDocument();
     expect(container.querySelector(".expanded-view")).not.toBeInTheDocument();
+  });
+
+  it("shows assignee in collapsed view when assigned", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} assignee="Alice" />
+    );
+    expect(screen.getByText("Alice")).toBeInTheDocument();
+  });
+
+  it("hides assignee in collapsed view when unassigned", () => {
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} assignee="Unassigned" />
+    );
+    expect(screen.queryByText("Unassigned")).not.toBeInTheDocument();
   });
 
   it("expands to show full details on click", () => {
