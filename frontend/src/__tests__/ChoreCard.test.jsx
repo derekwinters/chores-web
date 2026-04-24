@@ -72,8 +72,9 @@ describe("ChoreCard", () => {
     const onDelete = vi.fn();
     const onComplete = vi.fn();
     const onSkip = vi.fn();
+    const onMarkDue = vi.fn();
     const { container } = render(
-      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onEdit={onEdit} onHistory={onHistory} onDelete={onDelete} onComplete={onComplete} onSkip={onSkip} />
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} choreState="due" onEdit={onEdit} onHistory={onHistory} onDelete={onDelete} onComplete={onComplete} onSkip={onSkip} onMarkDue={onMarkDue} />
     );
     fireEvent.click(container.querySelector(".chore-card"));
     expect(screen.getByText("Complete")).toBeInTheDocument();
@@ -106,7 +107,7 @@ describe("ChoreCard", () => {
   it("calls onComplete when Complete button clicked", () => {
     const onComplete = vi.fn();
     const { container } = render(
-      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onComplete={onComplete} />
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} choreState="due" onComplete={onComplete} />
     );
     fireEvent.click(container.querySelector(".chore-card"));
     fireEvent.click(screen.getByText("Complete"));
@@ -116,11 +117,30 @@ describe("ChoreCard", () => {
   it("calls onSkip when Skip button clicked", () => {
     const onSkip = vi.fn();
     const { container } = render(
-      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onSkip={onSkip} />
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} choreState="due" onSkip={onSkip} />
     );
     fireEvent.click(container.querySelector(".chore-card"));
     fireEvent.click(screen.getByText("Skip"));
     expect(onSkip).toHaveBeenCalledWith(makeChore());
+  });
+
+  it("shows Mark Due Now button when chore is not due", () => {
+    const onMarkDue = vi.fn();
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} choreState="complete" onMarkDue={onMarkDue} />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    expect(screen.getByText("Mark Due Now")).toBeInTheDocument();
+  });
+
+  it("calls onMarkDue when Mark Due Now button clicked", () => {
+    const onMarkDue = vi.fn();
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} choreState="complete" onMarkDue={onMarkDue} />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    fireEvent.click(screen.getByText("Mark Due Now"));
+    expect(onMarkDue).toHaveBeenCalledWith(makeChore());
   });
 
   it("calls onClick when card is clicked", () => {

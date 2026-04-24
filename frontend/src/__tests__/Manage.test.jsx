@@ -128,6 +128,7 @@ describe("Manage page", () => {
     client.deleteChore.mockResolvedValue(null);
     client.completeChore.mockResolvedValue(null);
     client.skipChore.mockResolvedValue(null);
+    client.markDueChore.mockResolvedValue(null);
   });
 
   it("renders chore table with all chores", async () => {

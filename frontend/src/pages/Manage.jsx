@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { MdFilterList, MdAdd } from "react-icons/md";
 import { useAuth } from "../contexts/AuthContext";
-import { getChores, getPeople, createChore, updateChore, deleteChore, completeChore, skipChore } from "../api/client";
+import { getChores, getPeople, createChore, updateChore, deleteChore, completeChore, skipChore, markDueChore } from "../api/client";
 import ChoreForm from "../components/ChoreForm";
 import ChoreList from "../components/ChoreList";
 import Modal from "../components/Modal";
@@ -78,6 +78,11 @@ export default function Manage() {
 
   const skipMut = useMutation({
     mutationFn: (id) => skipChore(id),
+    onSuccess: () => { invalidate(); },
+  });
+
+  const markDueMut = useMutation({
+    mutationFn: (id) => markDueChore(id),
     onSuccess: () => { invalidate(); },
   });
 
@@ -251,6 +256,7 @@ export default function Manage() {
               }
             }}
             onSkip={(chore) => skipMut.mutate(chore.id)}
+            onMarkDue={(chore) => markDueMut.mutate(chore.id)}
           />
         </>
       )}
