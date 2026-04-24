@@ -96,5 +96,7 @@ Analyzes issue #46, determines it's a feature, creates `feat-issue-46` branch
 
 - All tests must pass before creating PR
 - Docker containers must be restarted after rebuild
-- Each step has manual confirmation option
-- Can abort at any time
+- **CONFIRMATION REQUIRED before commit, push, and PR creation**
+- Each step can be reviewed and aborted
+- Show diffs before committing
+- Ask user approval at each critical step
