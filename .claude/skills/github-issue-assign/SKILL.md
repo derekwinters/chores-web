@@ -1,16 +1,16 @@
 ---
-name: github-issue
-description: Automates GitHub issue workflow - branch creation, implementation, testing, docker rebuild, and PR creation
+name: github-issue-assign
+description: Automates GitHub issue implementation workflow - branch creation, implementation, testing, docker rebuild, and PR creation
 ---
 
-# GitHub Issue Workflow
+# GitHub Issue Implementation
 
-Automates the process of addressing GitHub issues in chores-web repository.
+Automates the process of implementing and addressing GitHub issues in chores-web repository. Requires issue to be labeled `ready-for-work` before proceeding.
 
 ## Usage
 
 ```
-/github-issue <issue-number>
+/github-issue-assign <issue-number>
 ```
 
 ## Workflow
@@ -89,12 +89,12 @@ Where `<type>` is determined from issue context:
 ## Examples
 
 ```
-/github-issue 41
+/github-issue-assign 41
 ```
 Analyzes issue #41, determines it's a bug fix, creates `fix-issue-41` branch
 
 ```
-/github-issue 46
+/github-issue-assign 46
 ```
 Analyzes issue #46, determines it's a feature, creates `feat-issue-46` branch
 
