@@ -44,7 +44,7 @@ export default function ChoreCard({ chore, selected, onClick, onEdit, onDelete, 
   const dueDate = chore.next_due ? new Date(chore.next_due + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : null;
 
   return (
-    <div className={cls} onClick={handleClick} role="button" tabIndex={0}
+    <article className={cls} onClick={handleClick} tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && handleClick(e)}>
       <div className="accent-bar"></div>
       <div className="card-content">
@@ -90,17 +90,17 @@ export default function ChoreCard({ chore, selected, onClick, onEdit, onDelete, 
             {(onEdit || onHistory || onDelete) && (
               <div className="expanded-actions">
                 {onEdit && (
-                  <button className="action-btn" onClick={(e) => handleAction("edit", e)}>
+                  <button className="action-btn" onClick={(e) => handleAction("edit", e)} aria-label={`Edit ${chore.name}`}>
                     Edit
                   </button>
                 )}
                 {onHistory && (
-                  <button className="action-btn" onClick={(e) => handleAction("history", e)}>
+                  <button className="action-btn" onClick={(e) => handleAction("history", e)} aria-label={`History for ${chore.name}`}>
                     History
                   </button>
                 )}
                 {onDelete && (
-                  <button className="action-btn danger" onClick={(e) => handleAction("delete", e)}>
+                  <button className="action-btn danger" onClick={(e) => handleAction("delete", e)} aria-label={`Delete ${chore.name}`}>
                     Delete
                   </button>
                 )}
@@ -109,6 +109,6 @@ export default function ChoreCard({ chore, selected, onClick, onEdit, onDelete, 
           </div>
         )}
       </div>
-    </div>
+    </article>
   );
 }
