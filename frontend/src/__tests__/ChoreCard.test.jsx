@@ -127,31 +127,31 @@ describe("ChoreCard", () => {
     expect(container.querySelector(".collapsed-view")).toBeInTheDocument();
   });
 
-  it("applies severity class based on age", () => {
+  it("applies severity class based on state", () => {
     const { container } = render(
-      <ChoreCard chore={makeChore({ age: 3 })} selected={false} onClick={() => {}} />
+      <ChoreCard chore={makeChore({ age: 3 })} choreState="due" selected={false} onClick={() => {}} />
     );
-    expect(container.querySelector(".chore-card")).toHaveClass("overdue");
+    expect(container.querySelector(".chore-card")).toHaveClass("due");
   });
 
-  it("applies overdue class when age is 0 or positive", () => {
+  it("applies due class when state is due", () => {
     const { container } = render(
-      <ChoreCard chore={makeChore({ age: 0 })} selected={false} onClick={() => {}} />
+      <ChoreCard chore={makeChore({ age: 0 })} choreState="due" selected={false} onClick={() => {}} />
     );
-    expect(container.querySelector(".chore-card")).toHaveClass("overdue");
+    expect(container.querySelector(".chore-card")).toHaveClass("due");
   });
 
-  it("applies soon class when age is -1 to -2 (due in next 2 days)", () => {
+  it("applies due class for all due states regardless of age", () => {
     const { container } = render(
-      <ChoreCard chore={makeChore({ age: -2 })} selected={false} onClick={() => {}} />
+      <ChoreCard chore={makeChore({ age: -5 })} choreState="due" selected={false} onClick={() => {}} />
     );
-    expect(container.querySelector(".chore-card")).toHaveClass("soon");
+    expect(container.querySelector(".chore-card")).toHaveClass("due");
   });
 
-  it("applies future class when age is less than -2", () => {
+  it("applies done class when state is complete", () => {
     const { container } = render(
-      <ChoreCard chore={makeChore({ age: -5 })} selected={false} onClick={() => {}} />
+      <ChoreCard chore={makeChore({ age: 0 })} choreState="complete" selected={false} onClick={() => {}} />
     );
-    expect(container.querySelector(".chore-card")).toHaveClass("future");
+    expect(container.querySelector(".chore-card")).toHaveClass("done");
   });
 });

@@ -52,6 +52,7 @@ export default function ChoreList({ onEdit, onDelete, chores: externalChores, pe
           <ChoreCard
             key={chore.id}
             chore={{ ...chore, age: calculateAge(chore.next_due) }}
+            choreState={chore.state}
             status={STATE_LABELS[chore.state] || chore.state}
             frequency={chore.schedule_summary}
             assignee={assigneeLabel}

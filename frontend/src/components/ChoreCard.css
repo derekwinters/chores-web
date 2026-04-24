@@ -22,9 +22,8 @@
   transition: background 0.2s;
 }
 
-.chore-card.overdue .accent-bar { background: var(--danger); }
-.chore-card.soon .accent-bar { background: var(--warning); }
-.chore-card.future .accent-bar { background: var(--accent); }
+.chore-card.due .accent-bar { background: var(--danger); }
+.chore-card.done .accent-bar { background: var(--text-muted); }
 
 .card-content {
   flex: 1;
@@ -67,9 +66,8 @@
   transition: color 0.2s;
 }
 
-.chore-card.overdue .chore-due-date { color: var(--danger); }
-.chore-card.soon .chore-due-date { color: var(--warning); }
-.chore-card.future .chore-due-date { color: var(--accent); }
+.chore-card.due .chore-due-date { color: var(--danger); }
+.chore-card.done .chore-due-date { color: var(--text-muted); }
 
 .expanded-view {
   display: flex;

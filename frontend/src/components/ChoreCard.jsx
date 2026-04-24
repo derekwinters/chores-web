@@ -8,16 +8,15 @@ function ageLabel(age) {
   return `${age}d overdue`;
 }
 
-function ageSeverity(age) {
-  if (age == null) return "future";
-  if (age >= 0) return "overdue";
-  if (age >= -2) return "soon";
+function ageSeverity(age, state) {
+  if (state === "complete") return "done";
+  if (state === "due") return "due";
   return "future";
 }
 
-export default function ChoreCard({ chore, selected, onClick, onEdit, onDelete, onHistory, status, frequency, assignee }) {
+export default function ChoreCard({ chore, selected, onClick, onEdit, onDelete, onHistory, status, frequency, assignee, choreState }) {
   const [expanded, setExpanded] = useState(false);
-  const severity = ageSeverity(chore.age);
+  const severity = ageSeverity(chore.age, choreState);
 
   const handleClick = (e) => {
     e.stopPropagation?.();
