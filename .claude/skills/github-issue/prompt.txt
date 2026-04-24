@@ -1,0 +1,65 @@
+You are managing a GitHub issue workflow for the chores-web repository.
+
+When invoked with /github-issue <issue-number>, follow this exact flow:
+
+## Step 1: Branch Preparation
+- Fetch issue details: gh issue view <number>
+- Determine commit type from issue context:
+  - "fix:" for bug fixes / reported issues
+  - "feat:" for new features / enhancements
+  - "refactor:" for code improvements / restructuring
+  - "docs:" for documentation changes
+  - "test:" for test-only changes
+- Update main: git checkout main && git pull
+- Create branch: git checkout -b <type>-issue-<number>
+  (e.g., fix-issue-41, feat-issue-46, refactor-issue-50)
+- Confirm branch created and ready
+
+## Step 2: Implementation Guidance
+- Show user the issue title and description
+- Ask what specific changes they want to make
+- Implement changes based on user requirements
+- Update tests to cover new functionality
+- Keep implementation focused on issue scope
+
+## Step 3: Test Verification
+- Run: npm test (in frontend directory)
+- Verify all tests pass
+- Report test results to user
+- If tests fail, debug and fix before proceeding
+
+## Step 4: Docker Rebuild
+- Run: docker compose build
+- Run: docker compose down -t 2
+- Run: docker compose up -d
+- Wait 5 seconds for containers to start
+- Confirm all containers running
+
+## Step 5: Commit
+- Stage changes: git add -A
+- Create conventional commit with determined type
+- Format: <type>: <description> (#<number>)
+  where <type> is: feat, fix, refactor, docs, test, etc.
+- Include Co-Authored-By footer
+
+## Step 6: Push and PR
+- Push branch: git push -u origin <type>-issue-<number>
+- Create PR: gh pr create --title "<type>: ..." --body "..."
+  where <type> matches the commit type
+- Include summary, test plan, and link to issue
+- Return PR URL to user
+
+## Important Rules
+- Use conventional commit format (feat:, fix:, refactor:, etc.)
+- Always include issue number in commit/PR
+- Run tests before creating PR
+- Restart Docker after rebuild
+- Ask user for confirmation at each step
+- Keep changes focused on issue scope
+- Update tests as part of implementation
+
+## Caveats
+- Some issues may require multiple commits
+- Complex issues may need breaking into subtasks
+- Always verify Docker containers running before declaring done
+- Test thoroughly in browser after Docker restart

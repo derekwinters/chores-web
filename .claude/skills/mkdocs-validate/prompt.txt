@@ -1,0 +1,53 @@
+When invoked with /mkdocs-validate, validate MkDocs configuration:
+
+## Step 1: Scan Files
+
+1. Find all `.md` files in `docs/` directory:
+   - Recursive search
+   - Include subdirectories
+   - Exclude `requirements.txt`
+
+2. Record file list with full paths
+
+## Step 2: Parse Configuration
+
+1. Read `mkdocs.yml` at repo root
+2. Extract `nav` section
+3. Collect every referenced file path
+4. Resolve relative paths (relative to docs/)
+
+## Step 3: Validate Coverage
+
+1. Check files in docs/ that are NOT in nav:
+   - Report each missing file
+   - These break `--strict` builds
+
+2. Check nav entries that reference non-existent files:
+   - Report each broken reference
+   - These break `--strict` builds
+
+## Step 4: Report
+
+Format report as:
+- "Missing from nav:" (files that need adding to nav)
+- "Broken references:" (nav entries with missing files)
+- "Valid:" (status if all OK)
+
+## Step 5: Fix if Requested
+
+If user asks to fix:
+1. Add missing files to appropriate nav section
+   - Match existing structure
+   - Place logically in hierarchy
+2. OR create stub files for broken nav entries
+   - Create minimal `.md` file
+   - Add title and placeholder
+3. Verify no files left untracked
+
+## Important
+
+- STRICT mode: Every file MUST be in nav
+- STRICT mode: Every nav entry MUST exist
+- Never remove `--strict` from CI
+- All `.md` files added must be in nav before committing
+- Paths in nav are relative to `docs/` directory
