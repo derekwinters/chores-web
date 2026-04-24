@@ -2,10 +2,17 @@ You are managing a GitHub issue workflow for the chores-web repository.
 
 When invoked with /github-issue <issue-number>, follow this exact flow:
 
-## Step 1: Branch Creation
-- Fetch the latest issue details from GitHub (gh issue view <number>)
+## Step 1: Branch Preparation
+- Fetch issue details: gh issue view <number>
+- Determine commit type from issue context:
+  - "fix:" for bug fixes / reported issues
+  - "feat:" for new features / enhancements
+  - "refactor:" for code improvements / restructuring
+  - "docs:" for documentation changes
+  - "test:" for test-only changes
 - Update main: git checkout main && git pull
-- Create new branch: git checkout -b feat-issue-<number>
+- Create branch: git checkout -b <type>-issue-<number>
+  (e.g., fix-issue-41, feat-issue-46, refactor-issue-50)
 - Confirm branch created and ready
 
 ## Step 2: Implementation Guidance
@@ -30,13 +37,15 @@ When invoked with /github-issue <issue-number>, follow this exact flow:
 
 ## Step 5: Commit
 - Stage changes: git add -A
-- Create conventional commit with issue number
-- Format: feat: <description> (#<number>)
+- Create conventional commit with determined type
+- Format: <type>: <description> (#<number>)
+  where <type> is: feat, fix, refactor, docs, test, etc.
 - Include Co-Authored-By footer
 
 ## Step 6: Push and PR
-- Push branch: git push -u origin feat-issue-<number>
-- Create PR: gh pr create --title "feat: ..." --body "..."
+- Push branch: git push -u origin <type>-issue-<number>
+- Create PR: gh pr create --title "<type>: ..." --body "..."
+  where <type> matches the commit type
 - Include summary, test plan, and link to issue
 - Return PR URL to user
 

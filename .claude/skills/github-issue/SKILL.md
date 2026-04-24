@@ -25,8 +25,15 @@ Automates the process of addressing GitHub issues in chores-web repository.
 ## Flow Steps
 
 ### 1. Prepare Branch
+- Fetch issue details from GitHub
+- Determine commit type based on issue context:
+  - `fix:` for bugs
+  - `feat:` for features
+  - `refactor:` for code improvements
+  - `docs:` for documentation
+  - `test:` for tests
 - Update main branch
-- Create new branch `feat-issue-XX`
+- Create branch `<type>-issue-XX` (e.g., `fix-issue-41`)
 - Verify branch created
 
 ### 2. Implementation
@@ -58,20 +65,32 @@ Automates the process of addressing GitHub issues in chores-web repository.
 ## Conventional Commit Format
 
 ```
-feat: <description> (#issue-number)
+<type>: <description> (#issue-number)
 
 Additional details about changes, decisions made, or context.
 
 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 ```
 
-## Example
+Where `<type>` is determined from issue context:
+- `feat` - New feature or enhancement
+- `fix` - Bug fix
+- `refactor` - Code restructuring without behavior change
+- `docs` - Documentation updates
+- `test` - Test-only changes
+- `chore` - Build, deps, or tooling
+
+## Examples
+
+```
+/github-issue 41
+```
+Analyzes issue #41, determines it's a bug fix, creates `fix-issue-41` branch
 
 ```
 /github-issue 46
 ```
-
-Creates feat-issue-46 branch and guides through addressing issue #46.
+Analyzes issue #46, determines it's a feature, creates `feat-issue-46` branch
 
 ## Notes
 

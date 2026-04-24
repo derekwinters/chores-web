@@ -97,13 +97,45 @@ export const markDueChore = (id) => ...
 ## Commit Message Template
 
 ```
-feat: Brief description (#issue-number)
+<type>: Brief description (#issue-number)
 
 Longer description of changes, why they were made, and any
 important implementation details.
 
 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
 ```
+
+### Commit Types
+
+- **feat:** New feature or enhancement to existing feature
+  ```
+  feat: Add complete and skip buttons to chores (#46)
+  ```
+
+- **fix:** Bug fix
+  ```
+  fix: Set default points to 1 instead of 0 (#41)
+  ```
+
+- **refactor:** Code restructuring without behavior changes
+  ```
+  refactor: Extract chore sorting logic to utility
+  ```
+
+- **docs:** Documentation updates
+  ```
+  docs: Update README with setup instructions
+  ```
+
+- **test:** Test additions or modifications
+  ```
+  test: Add integration tests for auth flow
+  ```
+
+- **chore:** Build, dependencies, tooling
+  ```
+  chore: Update dependencies
+  ```
 
 ## PR Description Template
 
