@@ -4,6 +4,51 @@
   width: 100%;
 }
 
+/* Text Input Field */
+.MuiTextField-root {
+  width: 100%;
+}
+
+.MuiTextField-root .MuiInputBase-root {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.MuiTextField-root .MuiOutlinedInput-root {
+  color: var(--text);
+}
+
+.MuiTextField-root .MuiOutlinedInput-notchedOutline {
+  border-color: var(--border);
+}
+
+.MuiTextField-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--text-muted);
+}
+
+.MuiTextField-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.MuiTextField-root .MuiInputBase-input {
+  color: var(--text);
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.MuiTextField-root .MuiInputBase-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* Calendar Popup */
+.MuiPickersPopper-root .MuiPaper-root {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
 /* Calendar Header */
 .MuiPickersCalendarHeader-root {
   color: var(--text);
@@ -139,14 +184,6 @@
   color: var(--surface);
   border-color: var(--accent);
   font-weight: 700;
-}
-
-/* Overall Picker Styling */
-.MuiStaticDatePicker-root {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
 }
 
 /* Remove default MUI shadows and outlines */
