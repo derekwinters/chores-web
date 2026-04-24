@@ -18,7 +18,7 @@ function calculateAge(nextDue) {
 
 const STATE_LABELS = { due: "Due", complete: "Done" };
 
-export default function ChoreList({ onEdit, onDelete, chores: externalChores, people: externalPeople }) {
+export default function ChoreList({ onEdit, onDelete, onComplete, onSkip, chores: externalChores, people: externalPeople }) {
   const navigate = useNavigate();
   const { data: queriedChores = [], isLoading: choresLoading } = useQuery({
     queryKey: ["chores"],
@@ -58,6 +58,8 @@ export default function ChoreList({ onEdit, onDelete, chores: externalChores, pe
             assignee={assigneeLabel}
             onEdit={onEdit}
             onDelete={onDelete}
+            onComplete={onComplete}
+            onSkip={onSkip}
             onHistory={(c) => navigate(`/log?chore_id=${encodeURIComponent(c.id)}`)}
             onClick={() => {}}
           />

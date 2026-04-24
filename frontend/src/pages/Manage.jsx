@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { MdFilterList, MdAdd } from "react-icons/md";
-import { getChores, getPeople, createChore, updateChore, deleteChore } from "../api/client";
+import { getChores, getPeople, createChore, updateChore, deleteChore, completeChore, skipChore } from "../api/client";
 import ChoreForm from "../components/ChoreForm";
 import ChoreList from "../components/ChoreList";
 import Modal from "../components/Modal";
@@ -66,6 +66,16 @@ export default function Manage() {
   const deleteMut = useMutation({
     mutationFn: (id) => deleteChore(id),
     onSuccess: () => { invalidate(); setDeleteTarget(null); },
+  });
+
+  const completeMut = useMutation({
+    mutationFn: (id) => completeChore(id),
+    onSuccess: () => { invalidate(); },
+  });
+
+  const skipMut = useMutation({
+    mutationFn: (id) => skipChore(id),
+    onSuccess: () => { invalidate(); },
   });
 
   const handleFilterChange = useCallback((key, value) => {
@@ -229,6 +239,8 @@ export default function Manage() {
             people={people}
             onEdit={(chore) => setModal({ mode: "edit", chore })}
             onDelete={(chore) => setDeleteTarget(chore)}
+            onComplete={(chore) => completeMut.mutate(chore.unique_id)}
+            onSkip={(chore) => skipMut.mutate(chore.unique_id)}
           />
         </>
       )}

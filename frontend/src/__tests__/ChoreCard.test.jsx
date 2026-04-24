@@ -70,10 +70,14 @@ describe("ChoreCard", () => {
     const onEdit = vi.fn();
     const onHistory = vi.fn();
     const onDelete = vi.fn();
+    const onComplete = vi.fn();
+    const onSkip = vi.fn();
     const { container } = render(
-      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onEdit={onEdit} onHistory={onHistory} onDelete={onDelete} />
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onEdit={onEdit} onHistory={onHistory} onDelete={onDelete} onComplete={onComplete} onSkip={onSkip} />
     );
     fireEvent.click(container.querySelector(".chore-card"));
+    expect(screen.getByText("Complete")).toBeInTheDocument();
+    expect(screen.getByText("Skip")).toBeInTheDocument();
     expect(screen.getByText("Edit")).toBeInTheDocument();
     expect(screen.getByText("History")).toBeInTheDocument();
     expect(screen.getByText("Delete")).toBeInTheDocument();
@@ -97,6 +101,26 @@ describe("ChoreCard", () => {
     fireEvent.click(container.querySelector(".chore-card"));
     fireEvent.click(screen.getByText("Delete"));
     expect(onDelete).toHaveBeenCalledWith(makeChore());
+  });
+
+  it("calls onComplete when Complete button clicked", () => {
+    const onComplete = vi.fn();
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onComplete={onComplete} />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    fireEvent.click(screen.getByText("Complete"));
+    expect(onComplete).toHaveBeenCalledWith(makeChore());
+  });
+
+  it("calls onSkip when Skip button clicked", () => {
+    const onSkip = vi.fn();
+    const { container } = render(
+      <ChoreCard chore={makeChore()} selected={false} onClick={() => {}} onSkip={onSkip} />
+    );
+    fireEvent.click(container.querySelector(".chore-card"));
+    fireEvent.click(screen.getByText("Skip"));
+    expect(onSkip).toHaveBeenCalledWith(makeChore());
   });
 
   it("calls onClick when card is clicked", () => {

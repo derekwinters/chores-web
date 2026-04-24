@@ -123,6 +123,8 @@ describe("Manage page", () => {
     client.createChore.mockResolvedValue({ ...CHORES[0], unique_id: "new_chore", name: "New Chore" });
     client.updateChore.mockResolvedValue({ ...CHORES[0], points: 10 });
     client.deleteChore.mockResolvedValue(null);
+    client.completeChore.mockResolvedValue(null);
+    client.skipChore.mockResolvedValue(null);
   });
 
   it("renders chore table with all chores", async () => {
@@ -384,5 +386,54 @@ describe("Manage page", () => {
     });
 
     expect(choreNames).toEqual(["Bathroom", "Dishes"]);
+  });
+
+  it("shows complete and skip buttons when card is expanded", async () => {
+    wrap(<Manage />);
+    await waitFor(() => expect(screen.getByText("Vacuum")).toBeInTheDocument());
+
+    const vacuumCard = screen.getByText("Vacuum").closest("article");
+    fireEvent.click(vacuumCard);
+
+    await waitFor(() => {
+      expect(screen.getByText("Complete")).toBeInTheDocument();
+      expect(screen.getByText("Skip")).toBeInTheDocument();
+    });
+  });
+
+  it("calls completeChore on Complete button click", async () => {
+    wrap(<Manage />);
+    await waitFor(() => expect(screen.getByText("Vacuum")).toBeInTheDocument());
+
+    const vacuumCard = screen.getByText("Vacuum").closest("article");
+    fireEvent.click(vacuumCard);
+
+    await waitFor(() => {
+      expect(screen.getByText("Complete")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Complete"));
+
+    await waitFor(() => {
+      expect(client.completeChore).toHaveBeenCalledWith("vacuum");
+    });
+  });
+
+  it("calls skipChore on Skip button click", async () => {
+    wrap(<Manage />);
+    await waitFor(() => expect(screen.getByText("Vacuum")).toBeInTheDocument());
+
+    const vacuumCard = screen.getByText("Vacuum").closest("article");
+    fireEvent.click(vacuumCard);
+
+    await waitFor(() => {
+      expect(screen.getByText("Skip")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Skip"));
+
+    await waitFor(() => {
+      expect(client.skipChore).toHaveBeenCalledWith("vacuum");
+    });
   });
 });
