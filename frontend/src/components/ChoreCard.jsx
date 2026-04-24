@@ -9,10 +9,10 @@ function ageLabel(age) {
 }
 
 function ageSeverity(age) {
-  if (age == null || age < 0) return "future";
-  if (age === 0) return "today";
-  if (age <= 2) return "warn";
-  return "overdue";
+  if (age == null) return "future";
+  if (age >= 0) return "overdue";
+  if (age >= -2) return "soon";
+  return "future";
 }
 
 export default function ChoreCard({ chore, selected, onClick, onEdit, onDelete, onHistory, status, frequency, assignee }) {

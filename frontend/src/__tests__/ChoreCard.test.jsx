@@ -134,21 +134,21 @@ describe("ChoreCard", () => {
     expect(container.querySelector(".chore-card")).toHaveClass("overdue");
   });
 
-  it("applies today class when age is 0", () => {
+  it("applies overdue class when age is 0 or positive", () => {
     const { container } = render(
       <ChoreCard chore={makeChore({ age: 0 })} selected={false} onClick={() => {}} />
     );
-    expect(container.querySelector(".chore-card")).toHaveClass("today");
+    expect(container.querySelector(".chore-card")).toHaveClass("overdue");
   });
 
-  it("applies warn class when age is 1-2", () => {
+  it("applies soon class when age is -1 to -2 (due in next 2 days)", () => {
     const { container } = render(
-      <ChoreCard chore={makeChore({ age: 2 })} selected={false} onClick={() => {}} />
+      <ChoreCard chore={makeChore({ age: -2 })} selected={false} onClick={() => {}} />
     );
-    expect(container.querySelector(".chore-card")).toHaveClass("warn");
+    expect(container.querySelector(".chore-card")).toHaveClass("soon");
   });
 
-  it("applies future class when age is negative", () => {
+  it("applies future class when age is less than -2", () => {
     const { container } = render(
       <ChoreCard chore={makeChore({ age: -5 })} selected={false} onClick={() => {}} />
     );
