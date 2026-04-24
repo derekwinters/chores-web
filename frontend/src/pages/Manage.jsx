@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { MdFilterList, MdAdd } from "react-icons/md";
+import { useAuth } from "../contexts/AuthContext";
 import { getChores, getPeople, createChore, updateChore, deleteChore, completeChore, skipChore } from "../api/client";
 import ChoreForm from "../components/ChoreForm";
 import ChoreList from "../components/ChoreList";
@@ -34,6 +35,7 @@ function getFiltersFromSearchParams(searchParams) {
 
 export default function Manage() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [modal, setModal] = useState(null); // null | { mode: "create" } | { mode: "edit", chore }
   const [deleteTarget, setDeleteTarget] = useState(null); // chore to confirm-delete
@@ -69,7 +71,7 @@ export default function Manage() {
   });
 
   const completeMut = useMutation({
-    mutationFn: (id) => completeChore(id),
+    mutationFn: (id) => completeChore(id, user),
     onSuccess: () => { invalidate(); },
   });
 
@@ -239,8 +241,8 @@ export default function Manage() {
             people={people}
             onEdit={(chore) => setModal({ mode: "edit", chore })}
             onDelete={(chore) => setDeleteTarget(chore)}
-            onComplete={(chore) => completeMut.mutate(chore.unique_id)}
-            onSkip={(chore) => skipMut.mutate(chore.unique_id)}
+            onComplete={(chore) => completeMut.mutate(chore.id)}
+            onSkip={(chore) => skipMut.mutate(chore.id)}
           />
         </>
       )}
