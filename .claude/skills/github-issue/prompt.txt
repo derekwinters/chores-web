@@ -29,22 +29,38 @@ When invoked with /github-issue <issue-number>, follow this exact flow:
 - If tests fail, debug and fix before proceeding
 
 ## Step 4: Docker Rebuild
-- Run: docker compose build
-- Run: docker compose down -t 2
-- Run: docker compose up -d
+- Run: docker compose up --build -d
 - Wait 5 seconds for containers to start
 - Confirm all containers running
 
-## Step 5: Commit
-- Show user the changes (git diff)
-- ASK FOR CONFIRMATION before committing
+## Step 5: Manual Review & Approval
+**This is the approval gate before committing.**
+
+- Show simple summary of changes:
+  - List files modified
+  - Brief description of what changed in each file
+  - Don't show full diffs (user reviews in browser)
+- Inform user: "Containers rebuilt and running. Ready for manual testing."
+- Ask user decision:
+  - "Do you want to make more changes, or can I commit to the repository?"
+
+If user wants MORE CHANGES:
+- Go back to Step 2 (Implementation Guidance)
+- Repeat cycle: implement → test → rebuild → review
+
+If user APPROVES COMMIT:
+- Proceed to Step 6
+
+## Step 6: Commit
+- Show user the full changes (git diff)
+- ASK FOR FINAL CONFIRMATION before committing
 - If approved: Stage changes: git add -A
 - Create conventional commit with determined type
 - Format: <type>: <description> (#<number>)
   where <type> is: feat, fix, refactor, docs, test, etc.
 - Include Co-Authored-By footer
 
-## Step 6: Push and PR
+## Step 7: Push and PR
 - ASK FOR CONFIRMATION before pushing
 - If approved: Push branch: git push -u origin <type>-issue-<number>
 - ASK FOR CONFIRMATION before creating PR
@@ -57,8 +73,9 @@ When invoked with /github-issue <issue-number>, follow this exact flow:
 - Use conventional commit format (feat:, fix:, refactor:, etc.)
 - Always include issue number in commit/PR
 - Run tests before creating PR
-- Restart Docker after rebuild
-- Ask user for confirmation at each step
+- Use docker compose up --build -d (not separate build/down/up)
+- Ask user for approval at manual review step (Step 5)
+- Support multiple iterations if user wants to make more changes
 - Keep changes focused on issue scope
 - Update tests as part of implementation
 
@@ -66,4 +83,5 @@ When invoked with /github-issue <issue-number>, follow this exact flow:
 - Some issues may require multiple commits
 - Complex issues may need breaking into subtasks
 - Always verify Docker containers running before declaring done
-- Test thoroughly in browser after Docker restart
+- Test thoroughly in browser after Docker rebuild
+- Loop back to implementation if user requests changes after review
