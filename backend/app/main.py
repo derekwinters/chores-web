@@ -28,6 +28,8 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
 
     async with AsyncSessionLocal() as db:
+        from .routers.theme import seed_default_themes
+        await seed_default_themes(db)
         await transition_overdue_chores(db)
 
     start_scheduler()

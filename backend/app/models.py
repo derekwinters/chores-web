@@ -92,3 +92,13 @@ class Settings(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     key: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     value: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class Theme(Base):
+    __tablename__ = "themes"
+
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    colors: Mapped[dict] = mapped_column(JSON, nullable=False)
+    is_default: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_builtin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
