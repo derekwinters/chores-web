@@ -29,6 +29,8 @@ Reviews GitHub issue content and works with user to determine the right implemen
 7. **Post plan**: Add finalized plan as issue comment
 8. **Update labels**: Remove `ready-to-plan`, add `ready-for-work`
 
+**⚠️ CRITICAL**: This skill defines and documents the plan only. It does NOT initiate implementation under any circumstances. User confirmation of the plan is NOT authorization to implement. Implementation can only begin when the `/github-issue-assign` skill is explicitly invoked.
+
 ## Solution Elements
 
 Propose:
@@ -57,3 +59,6 @@ Reviews issue #42, proposes solution, adds ready-for-work label after agreement
 - Seek clarification if requirements are unclear
 - Be specific in proposed solution, not vague
 - Ask user questions to refine approach
+- **NEVER start implementation** — only define and document the plan
+- User agreement with plan ≠ authorization to implement
+- Implementation begins ONLY when `/github-issue-assign` skill is invoked
