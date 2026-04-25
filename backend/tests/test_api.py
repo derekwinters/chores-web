@@ -345,6 +345,24 @@ class TestChoresAPI:
         assert r.json()["state"] == "due"
 
     @pytest.mark.asyncio
+    async def test_mark_due_action_updates_next_due_to_today(self, authenticated_client):
+        from datetime import date, timedelta
+
+        r = await authenticated_client.post("/chores", json=WEEKLY_CHORE)
+        chore_id = r.json()["id"]
+        original_next_due = r.json()["next_due"]
+
+        # Set next_due to future
+        future_date = (date.today() + timedelta(days=5)).isoformat()
+        await authenticated_client.put(f"/chores/{chore_id}", json={"next_due": future_date})
+
+        # Mark due should set next_due to today
+        r = await authenticated_client.post(f"/chores/{chore_id}/mark-due")
+        assert r.status_code == 200
+        assert r.json()["state"] == "due"
+        assert r.json()["next_due"] == date.today().isoformat()
+
+    @pytest.mark.asyncio
     async def test_skip_reassign_action(self, authenticated_client):
         await authenticated_client.post("/people", json={"name": "Alice", "username": "alice"})
         await authenticated_client.post("/people", json={"name": "Bob", "username": "bob"})
