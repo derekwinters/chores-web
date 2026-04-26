@@ -1488,22 +1488,22 @@
     API --&gt;|Update| DB</code></pre>
 <h2 id="frontend-architecture">Frontend Architecture<a class="headerlink" href="#frontend-architecture" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TB
-    App["App&lt;br/&gt;(auth context)"]
+    App["App.jsx&lt;br/&gt;(auth context)"]
 
-    Pages["Pages"]
-    Dashboard["Dashboard"]
-    Manage["Manage"]
-    UserDetail["UserDetail"]
-    Settings["Settings"]
+    Pages["Pages/"]
+    Dashboard["Dashboard.jsx"]
+    Chores["Chores.jsx"]
+    UserDetail["UserDetail.jsx"]
+    Settings["Settings.jsx"]
 
-    Components["Components"]
-    UserCard["UserCard"]
-    ChoreList["ChoreList"]
-    ChoreForm["ChoreForm"]
-    ThemeSettings["ThemeSettings"]
-    Log["Log"]
+    Components["Components/"]
+    UserCard["UserCard.jsx"]
+    ChoreList["ChoreList.jsx"]
+    ChoreForm["ChoreForm.jsx"]
+    ThemeSettings["ThemeSettings.jsx"]
+    Log["Log.jsx"]
 
-    Utils["Utils"]
+    Utils["Utils/"]
     Auth["auth.ts"]
     Theme["theme.ts"]
     PersonColors["personColors.ts"]
@@ -1514,13 +1514,13 @@
     App --&gt; Pages
     App --&gt; Components
     Pages --&gt; Dashboard
-    Pages --&gt; Manage
+    Pages --&gt; Chores
     Pages --&gt; UserDetail
     Pages --&gt; Settings
 
     Dashboard --&gt; UserCard
     Dashboard --&gt; ChoreList
-    Manage --&gt; ChoreForm
+    Chores --&gt; ChoreForm
     Settings --&gt; ThemeSettings
     Settings --&gt; Log
 
@@ -1533,9 +1533,9 @@
     Pages --&gt; Utils</code></pre>
 <h2 id="backend-architecture">Backend Architecture<a class="headerlink" href="#backend-architecture" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TB
-    API["FastAPI App"]
+    API["FastAPI App&lt;br/&gt;(main.py)"]
 
-    Routers["Routers"]
+    Routers["Routers/"]
     AuthRouter["auth.py"]
     ChoresRouter["chores.py"]
     PeopleRouter["people.py"]
@@ -1543,17 +1543,22 @@
     LogRouter["log.py"]
     ThemeRouter["theme.py"]
     ConfigRouter["config.py"]
+    ExportRouter["export.py"]
+    ImportRouter["data_import.py"]
 
-    Services["Services"]
+    Services["Services/"]
     ChoreService["chore_service.py"]
     Scheduler["scheduler.py"]
+    ExportService["export_service.py"]
+    ImportService["import_service.py"]
 
-    Models["Models"]
+    Models["Models/"]
     Person["Person"]
     Chore["Chore"]
     PointsLog["PointsLog"]
     ChoreLog["ChoreLog"]
     TokenBlacklist["TokenBlacklist"]
+    Settings["Settings"]
 
     Database["PostgreSQL Database"]
 
@@ -1561,10 +1566,14 @@
 
     AuthRouter --&gt; ChoreService
     ChoresRouter --&gt; ChoreService
+    ExportRouter --&gt; ExportService
+    ImportRouter --&gt; ImportService
     Routers --&gt; Services
     Scheduler --&gt; ChoreService
 
     ChoreService --&gt; Models
+    ExportService --&gt; Models
+    ImportService --&gt; Models
     Routers --&gt; Models
 
     Models --&gt; Database
