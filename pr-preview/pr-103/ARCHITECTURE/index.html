@@ -1478,7 +1478,7 @@
     Client["Browser Client&lt;br/&gt;(React)"]
     Frontend["Frontend&lt;br/&gt;(React SPA)"]
     API["REST API&lt;br/&gt;(FastAPI)"]
-    DB["Database&lt;br/&gt;(SQLite)"]
+    DB["Database&lt;br/&gt;(PostgreSQL)"]
     Scheduler["Scheduler&lt;br/&gt;(APScheduler)"]
 
     Client --&gt;|HTTP| Frontend
@@ -1555,7 +1555,7 @@
     ChoreLog["ChoreLog"]
     TokenBlacklist["TokenBlacklist"]
 
-    Database["SQLite Database"]
+    Database["PostgreSQL Database"]
 
     API --&gt; Routers
 
@@ -1802,13 +1802,13 @@ http://localhost:5173     http://localhost:8000
   - Database persists in volume /var/lib/postgresql/data
 </code></pre></div>
 <h3 id="development_1">Development<a class="headerlink" href="#development_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>Frontend (npm dev)     --&gt;  Backend (uvicorn)  --&gt;  SQLite DB
+<div class="highlight"><pre><span></span><code>Frontend (npm dev)     --&gt;  Backend (uvicorn)  --&gt;  PostgreSQL
 http://localhost:5173     http://localhost:8000
 </code></pre></div>
 <h3 id="production_1">Production<a class="headerlink" href="#production_1" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>Docker Compose:
-  - frontend:3000 (Nginx)    --&gt;  backend:8000 (FastAPI)  --&gt;  SQLite
-  - Backend initializes DB on startup
+  - frontend:3000 (Nginx)    --&gt;  backend:8000 (FastAPI)  --&gt;  PostgreSQL
+  - Backend initializes schema on startup
   - Scheduler runs inside backend container
 </code></pre></div>
 <h2 id="roles-permissions">Roles &amp; Permissions<a class="headerlink" href="#roles-permissions" title="Permanent link">&para;</a></h2>
