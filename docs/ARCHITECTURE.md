@@ -21,22 +21,22 @@ graph TB
 
 ```mermaid
 graph TB
-    App["App<br/>(auth context)"]
+    App["App.jsx<br/>(auth context)"]
     
-    Pages["Pages"]
-    Dashboard["Dashboard"]
-    Manage["Manage"]
-    UserDetail["UserDetail"]
-    Settings["Settings"]
+    Pages["Pages/"]
+    Dashboard["Dashboard.jsx"]
+    Chores["Chores.jsx"]
+    UserDetail["UserDetail.jsx"]
+    Settings["Settings.jsx"]
     
-    Components["Components"]
-    UserCard["UserCard"]
-    ChoreList["ChoreList"]
-    ChoreForm["ChoreForm"]
-    ThemeSettings["ThemeSettings"]
-    Log["Log"]
+    Components["Components/"]
+    UserCard["UserCard.jsx"]
+    ChoreList["ChoreList.jsx"]
+    ChoreForm["ChoreForm.jsx"]
+    ThemeSettings["ThemeSettings.jsx"]
+    Log["Log.jsx"]
     
-    Utils["Utils"]
+    Utils["Utils/"]
     Auth["auth.ts"]
     Theme["theme.ts"]
     PersonColors["personColors.ts"]
@@ -47,13 +47,13 @@ graph TB
     App --> Pages
     App --> Components
     Pages --> Dashboard
-    Pages --> Manage
+    Pages --> Chores
     Pages --> UserDetail
     Pages --> Settings
     
     Dashboard --> UserCard
     Dashboard --> ChoreList
-    Manage --> ChoreForm
+    Chores --> ChoreForm
     Settings --> ThemeSettings
     Settings --> Log
     
@@ -70,9 +70,9 @@ graph TB
 
 ```mermaid
 graph TB
-    API["FastAPI App"]
+    API["FastAPI App<br/>(main.py)"]
     
-    Routers["Routers"]
+    Routers["Routers/"]
     AuthRouter["auth.py"]
     ChoresRouter["chores.py"]
     PeopleRouter["people.py"]
@@ -80,17 +80,22 @@ graph TB
     LogRouter["log.py"]
     ThemeRouter["theme.py"]
     ConfigRouter["config.py"]
+    ExportRouter["export.py"]
+    ImportRouter["data_import.py"]
     
-    Services["Services"]
+    Services["Services/"]
     ChoreService["chore_service.py"]
     Scheduler["scheduler.py"]
+    ExportService["export_service.py"]
+    ImportService["import_service.py"]
     
-    Models["Models"]
+    Models["Models/"]
     Person["Person"]
     Chore["Chore"]
     PointsLog["PointsLog"]
     ChoreLog["ChoreLog"]
     TokenBlacklist["TokenBlacklist"]
+    Settings["Settings"]
     
     Database["PostgreSQL Database"]
     
@@ -98,10 +103,14 @@ graph TB
     
     AuthRouter --> ChoreService
     ChoresRouter --> ChoreService
+    ExportRouter --> ExportService
+    ImportRouter --> ImportService
     Routers --> Services
     Scheduler --> ChoreService
     
     ChoreService --> Models
+    ExportService --> Models
+    ImportService --> Models
     Routers --> Models
     
     Models --> Database
