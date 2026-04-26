@@ -308,24 +308,27 @@ stateDiagram-v2
 graph TB
     Frontend["Frontend<br/>(ThemeSettings)"]
     API["Theme API"]
-    Memory["In-Memory<br/>Custom Themes"]
+    Defaults["DEFAULT_THEMES<br/>(hardcoded)"]
+    Memory["Custom Themes<br/>(in-memory)"]
     Database["Database<br/>(Person.preferred_theme)"]
+    CSS["CSS Variables<br/>(--bg, --surface, etc)"]
     
     Frontend -->|GET /theme/list| API
-    API -->|DEFAULT_THEMES| API
-    API -->|_custom_themes| Memory
+    API -->|fetch| Defaults
+    API -->|fetch| Memory
+    API -->|themes list| Frontend
     
     Frontend -->|POST /theme/save| API
-    API -->|save| Memory
+    API -->|store| Memory
     
     Frontend -->|POST /theme/set/{id}| API
-    API -->|save to| Database
-    Database -->|return| Frontend
+    API -->|save| Database
+    Database -->|update| Frontend
     
     Frontend -->|DELETE /theme/delete/{id}| API
     API -->|remove| Memory
     
-    Frontend -->|CSS Variables| CSS["Styles<br/>--bg, --surface, etc"]
+    Frontend -->|apply| CSS
 ```
 
 ## Scheduler Architecture
