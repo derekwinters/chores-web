@@ -1738,24 +1738,27 @@
 <pre class="mermaid"><code>graph TB
     Frontend["Frontend&lt;br/&gt;(ThemeSettings)"]
     API["Theme API"]
-    Memory["In-Memory&lt;br/&gt;Custom Themes"]
+    Defaults["DEFAULT_THEMES&lt;br/&gt;(hardcoded)"]
+    Memory["Custom Themes&lt;br/&gt;(in-memory)"]
     Database["Database&lt;br/&gt;(Person.preferred_theme)"]
+    CSS["CSS Variables&lt;br/&gt;(--bg, --surface, etc)"]
 
     Frontend --&gt;|GET /theme/list| API
-    API --&gt;|DEFAULT_THEMES| API
-    API --&gt;|_custom_themes| Memory
+    API --&gt;|fetch| Defaults
+    API --&gt;|fetch| Memory
+    API --&gt;|themes list| Frontend
 
     Frontend --&gt;|POST /theme/save| API
-    API --&gt;|save| Memory
+    API --&gt;|store| Memory
 
     Frontend --&gt;|POST /theme/set/{id}| API
-    API --&gt;|save to| Database
-    Database --&gt;|return| Frontend
+    API --&gt;|save| Database
+    Database --&gt;|update| Frontend
 
     Frontend --&gt;|DELETE /theme/delete/{id}| API
     API --&gt;|remove| Memory
 
-    Frontend --&gt;|CSS Variables| CSS["Styles&lt;br/&gt;--bg, --surface, etc"]</code></pre>
+    Frontend --&gt;|apply| CSS</code></pre>
 <h2 id="scheduler-architecture">Scheduler Architecture<a class="headerlink" href="#scheduler-architecture" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TB
     Init["App Startup"]
