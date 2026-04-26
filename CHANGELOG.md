@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0](https://github.com/derekwinters/chores-web/compare/v1.0.0...v1.1.0) (2026-04-26)
+
+
+### Features
+
+* Add frontend admin UI for redeeming points ([#95](https://github.com/derekwinters/chores-web/issues/95)) ([#127](https://github.com/derekwinters/chores-web/issues/127)) ([ce0458b](https://github.com/derekwinters/chores-web/commit/ce0458b2ebb3147d6928ecbd217f3039929e68d3))
+* Add redemption history display in user detail ([#126](https://github.com/derekwinters/chores-web/issues/126)) ([3f20cb8](https://github.com/derekwinters/chores-web/commit/3f20cb8758db4e0b2ece63c535f8cb8fa693b586))
+* Add total points tracking and redemption API ([#124](https://github.com/derekwinters/chores-web/issues/124)) ([55cc745](https://github.com/derekwinters/chores-web/commit/55cc74598657d29212e7f48bd8933da4a4cd4b05))
+
 ## 1.0.0 (2026-04-26)
 
 
