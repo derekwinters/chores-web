@@ -49,7 +49,6 @@ class PersonUpdate(BaseModel):
     color: Optional[str] = None
     goal_7d: Optional[int] = None
     goal_30d: Optional[int] = None
-    points: Optional[int] = None
     is_admin: Optional[bool] = None
     preferred_theme: Optional[str] = None
     password: Optional[str] = None
