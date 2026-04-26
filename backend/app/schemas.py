@@ -55,6 +55,10 @@ class PersonUpdate(BaseModel):
     password: Optional[str] = None
 
 
+class PersonRedemption(BaseModel):
+    amount: int
+
+
 class PersonOut(BaseModel):
     id: int
     name: str
@@ -64,6 +68,7 @@ class PersonOut(BaseModel):
     goal_7d: int
     goal_30d: int
     points: int
+    points_redeemed: int
     preferred_theme: Optional[str] = None
 
     model_config = {"from_attributes": True}
@@ -154,6 +159,16 @@ class PointsLogOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class RedemptionLogOut(BaseModel):
+    id: int
+    person_id: int
+    amount: int
+    redeemed_by: str
+    timestamp: datetime
+
+    model_config = {"from_attributes": True}
+
+
 class ChoreLogOut(BaseModel):
     id: int
     chore_id: int
@@ -180,6 +195,7 @@ class PointsSummaryEntry(BaseModel):
 class UserStatsOut(BaseModel):
     name: str
     total_points: int
+    display_points: int
     points_7d: int
     points_30d: int
     completed_count: int

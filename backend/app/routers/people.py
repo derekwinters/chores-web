@@ -1,10 +1,12 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
-from ..models import Person
-from ..schemas import PersonCreate, PersonOut, PersonUpdate
+from ..models import Person, RedemptionLog
+from ..schemas import PersonCreate, PersonOut, PersonUpdate, PersonRedemption
 from ..dependencies import get_current_user, require_admin
 from ..security import hash_password
 
@@ -87,3 +89,30 @@ async def delete_person(person_id: int, current_user: str = Depends(require_admi
         raise HTTPException(status_code=404, detail="Person not found")
     await db.delete(person)
     await db.commit()
+
+
+@router.post("/{person_id}/redeem", response_model=PersonOut)
+async def redeem_points(person_id: int, body: PersonRedemption, current_user: str = Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Person).where(Person.id == person_id))
+    person = result.scalar_one_or_none()
+    if not person:
+        raise HTTPException(status_code=404, detail="Person not found")
+
+    if body.amount <= 0:
+        raise HTTPException(status_code=400, detail="Redemption amount must be positive")
+
+    available_points = person.points - person.points_redeemed
+    if body.amount > available_points:
+        raise HTTPException(status_code=400, detail=f"Insufficient points. Available: {available_points}")
+
+    person.points_redeemed += body.amount
+    redemption = RedemptionLog(
+        person_id=person_id,
+        amount=body.amount,
+        redeemed_by=current_user,
+        timestamp=datetime.now(timezone.utc)
+    )
+    db.add(redemption)
+    await db.commit()
+    await db.refresh(person)
+    return person
