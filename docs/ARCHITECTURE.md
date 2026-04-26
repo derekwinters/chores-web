@@ -7,7 +7,7 @@ graph TB
     Client["Browser Client<br/>(React)"]
     Frontend["Frontend<br/>(React SPA)"]
     API["REST API<br/>(FastAPI)"]
-    DB["Database<br/>(SQLite)"]
+    DB["Database<br/>(PostgreSQL)"]
     Scheduler["Scheduler<br/>(APScheduler)"]
     
     Client -->|HTTP| Frontend
@@ -92,7 +92,7 @@ graph TB
     ChoreLog["ChoreLog"]
     TokenBlacklist["TokenBlacklist"]
     
-    Database["SQLite Database"]
+    Database["PostgreSQL Database"]
     
     API --> Routers
     
@@ -392,7 +392,7 @@ Docker Compose:
 ### Development
 
 ```
-Frontend (npm dev)     -->  Backend (uvicorn)  -->  SQLite DB
+Frontend (npm dev)     -->  Backend (uvicorn)  -->  PostgreSQL
 http://localhost:5173     http://localhost:8000
 ```
 
@@ -400,8 +400,8 @@ http://localhost:5173     http://localhost:8000
 
 ```
 Docker Compose:
-  - frontend:3000 (Nginx)    -->  backend:8000 (FastAPI)  -->  SQLite
-  - Backend initializes DB on startup
+  - frontend:3000 (Nginx)    -->  backend:8000 (FastAPI)  -->  PostgreSQL
+  - Backend initializes schema on startup
   - Scheduler runs inside backend container
 ```
 
