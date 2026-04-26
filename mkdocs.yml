@@ -85,6 +85,8 @@ nav:
     - Log: api/log.md
     - Themes: api/themes.md
     - Config & Health: api/config.md
+    - Export: api/export.md
+    - Import: api/import.md
   - Architecture: ARCHITECTURE.md
   - Developer Guide: DEVELOPER.md
   - Deployment: DEPLOYMENT.md
