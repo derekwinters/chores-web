@@ -1,11 +1,16 @@
 ---
 name: github-issue-plan
-description: Review GitHub issue and determine implementation solution with user
+description: Lightweight issue planning (see @agent-github-issue-plan-orchestrator for full planning)
 ---
 
-# GitHub Issue Planning
+# GitHub Issue Planning (Lightweight)
 
-Reviews GitHub issue content and works with user to determine the right implementation approach. Adds `ready-for-work` label when solution is agreed upon.
+⚠️ **Recommended**: Use `@agent-github-issue-plan-orchestrator <issue-number>` for comprehensive planning instead.
+
+This lightweight skill reviews GitHub issue content and works with user to determine the right implementation approach. The agent provides:
+- Deeper codebase exploration (reads actual files)
+- State machine with progress tracking (resumable)
+- More thorough affected-files analysis
 
 ## Usage
 
