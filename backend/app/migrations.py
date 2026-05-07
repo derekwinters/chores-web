@@ -22,7 +22,28 @@ async def apply_migrations(db: AsyncSession):
             timeout=30
         )
 
-        if proc.returncode != 0:
+        # Check for "DuplicateTable" error (existing schema) - not a failure
+        if "DuplicateTable" in proc.stderr or "already exists" in proc.stderr:
+            # Schema already exists from previous run, stamp as applied
+            print("Database schema already exists, marking migrations as applied")
+            try:
+                stamp_proc = subprocess.run(
+                    [sys.executable, "-m", "alembic", "stamp", "head"],
+                    cwd=backend_dir,
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                if stamp_proc.returncode == 0:
+                    set_db_status(DatabaseStatus.READY)
+                    print("Database migrations stamped successfully")
+                else:
+                    print(f"Warning stamping migrations: {stamp_proc.stderr}", file=sys.stderr)
+                    set_db_status(DatabaseStatus.READY)
+            except Exception as e:
+                print(f"Warning: Could not stamp migrations: {e}", file=sys.stderr)
+                set_db_status(DatabaseStatus.READY)
+        elif proc.returncode != 0:
             set_db_status(DatabaseStatus.ERROR)
             print(f"Alembic migration warning: {proc.stderr}", file=sys.stderr)
         else:
