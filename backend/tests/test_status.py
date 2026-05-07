@@ -3,22 +3,26 @@ import pytest
 
 
 async def test_db_status_endpoint(client):
-    """Test /api/db-status returns ready status."""
+    """Test /api/db-status returns database status."""
     response = await client.get("/api/db-status")
     assert response.status_code == 200
 
     data = response.json()
-    assert "ready" in data
-    assert isinstance(data["ready"], bool)
-    assert data["ready"] is True
+    assert "status" in data
+    assert data["status"] in ["initializing", "ready", "error"]
+    assert "migrations_in_progress" in data
+    assert isinstance(data["migrations_in_progress"], bool)
 
 
-async def test_db_status_has_ready_field(client):
-    """Test /api/db-status always has ready field."""
+async def test_db_status_response_format(client):
+    """Test /api/db-status response has correct fields."""
+    from app.database import set_db_status, DatabaseStatus
+
+    # Simulate successful initialization
+    set_db_status(DatabaseStatus.READY)
+
     response = await client.get("/api/db-status")
     data = response.json()
 
-    # Must have ready field
-    assert "ready" in data
-    # ready should be boolean
-    assert isinstance(data["ready"], bool)
+    assert data["status"] == "ready"
+    assert data["migrations_in_progress"] is False
