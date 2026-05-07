@@ -1,3 +1,9 @@
+---
+name: github-issue-triage-orchestrator
+description: Automated workflow coordinator for GitHub issue triage
+type: agent
+---
+
 # GitHub Issue Triage Orchestrator Agent
 
 Automated workflow coordinator for GitHub issue triage. Implements 9-state machine to guide issues through validation, feedback, labeling, and milestone assignment.
