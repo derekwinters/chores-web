@@ -1,100 +1,32 @@
-You are planning GitHub issue solutions for the chores-web repository.
+## ⚠️ DEPRECATED: Use Agent Instead
 
-When invoked with /github-issue-plan <issue-number>, follow this exact flow:
+This skill is deprecated. Use the new planning agent instead:
 
-## Step 1: Fetch and Check Status
-- Fetch issue: gh issue view <number>
-- Extract labels from issue
-- Check if issue has `ready-to-plan` label
-- If NOT present, STOP and inform user: "Issue not labeled ready-to-plan. Cannot proceed with planning."
-- Check if issue has `ready-for-work` OR `ready-for-implementation` labels
-- If either exists, STOP and inform user: "Issue already ready for work, skipping planning"
-- Otherwise, continue to Step 2
+```
+@agent-github-issue-plan-orchestrator <issue-number>
+```
 
-## Step 2: Review Issue Content
-Analyze the issue:
-- Read title, description, and acceptance criteria
-- Understand the problem or feature request
-- Identify key requirements and constraints
-- Note any context or examples provided
+The agent provides:
+- Deeper codebase exploration (reads actual files, traces call paths)
+- State machine with progress tracking (resumable mid-planning)
+- Better structured plan output
 
-## Step 3: Propose Implementation Solution
-Provide specific proposal including:
+---
 
-**Affected Components** (CHECK ALL THREE LAYERS):
-- **Database**: Any schema changes? New tables? Migrations? State tracking?
-- **Backend**: API endpoints? Routes? Business logic? State management?
-- **Frontend**: UI components? API calls? User flows? State handling?
-- List specific files/components that need changes
-- Examples: "frontend/src/components/ChoreList.jsx", "backend/app/routers/chores.py"
+## Fallback: Original Lightweight Flow
 
-**Implementation Steps** (3-5 key steps):
-- Step-by-step approach to solve the issue
-- Be concrete, not vague
-- Example: "1. Add handleComplete prop to ChoreCard component..."
+If you cannot use the agent, this skill can still plan issues manually. Follow the original lightweight flow:
 
-**Testing Approach**:
-- How to verify fix/feature works (unit tests + end-to-end)
-- Backend tests: API endpoints, logic, state changes
-- Frontend tests: UI components, API integration, user interactions
-- Manual testing: Browser-based UI validation (CRITICAL: if UI doesn't work, feature is broken)
-- What tests to add/update
-- Manual testing steps if needed
+1. **Fetch issue**: gh issue view <number>
+2. **Check labels**: Require `ready-to-plan`, skip if already `ready-for-work`
+3. **Review content**: Title, description, acceptance criteria
+4. **Propose solution**: Affected files (DB/backend/frontend), implementation steps, testing approach
+5. **Discuss with user**: Refine based on feedback
+6. **Post plan**: Add as issue comment
+7. **Update labels**: Remove `ready-to-plan`, add `ready-for-work`
 
-**Potential Challenges**:
-- Edge cases to consider
-- Technical constraints
-- Design trade-offs
+**Rules**: Check all three layers (DB, backend, frontend). Validate end-to-end (UI testing). Get explicit user agreement before posting.
 
-**Why This Approach**:
-- Explain reasoning for chosen solution
-- Why better than alternatives (if any)
+---
 
-## Step 4: Discussion with User
-- Present proposal clearly
-- Ask user questions to refine:
-  - "Does this approach align with your vision?"
-  - "Any concerns about the implementation steps?"
-  - "Should we consider alternative approaches?"
-- Listen to feedback and adapt proposal
-- Continue discussion until user agrees
-
-## Step 5: Finalize and Comment
-- Confirm final solution with user: "Do you agree with this plan?"
-- Get explicit agreement before proceeding
-- Summarize final agreed-upon approach
-- Add plan as comment to issue: gh issue comment <number> --body "<plan-summary>"
-  Include: affected files, implementation steps, testing approach, any notes
-
-## Step 6: Update Labels
-- Remove ready-to-plan label: gh issue edit <number> --remove-label ready-to-plan
-- Add ready-for-work label: gh issue edit <number> --add-label ready-for-work
-- Confirm labels updated
-
-## Step 7: Summary
-Report to user:
-- Issue number and title
-- Final agreed solution (brief)
-- Plan posted as issue comment
-- ready-to-plan removed, ready-for-work added
-- Ready for implementation via /github-issue-assign
-
-## Important Rules
-- MUST have `ready-to-plan` label to proceed
-- **CHECK ALL THREE COMPONENTS**: Always identify database, backend, AND frontend changes
-- **VALIDATE END-TO-END**: Plan must include how to test UI works, not just backend tests
-- DO NOT remove/update labels until user explicitly agrees plan is done
-- Post plan as issue comment before updating labels
-- Remove `ready-to-plan` only after comment posted and user agrees
-- Add `ready-for-work` only after `ready-to-plan` removed
-- Be specific in proposals, not generic
-- Ask clarifying questions if requirements unclear
-- Consider existing codebase patterns
-- Discuss trade-offs and alternatives
-- Get explicit agreement: "Do you agree with this plan?"
-
-## Caveats
-- Some issues may need to loop back to /github-issue-review for more clarity
-- Complex issues may need multiple iterations
-- Be conversational and collaborative
-- Focus on understanding user's intent, not imposing solution
+For full planning workflow with state tracking and deep exploration, invoke the agent.
