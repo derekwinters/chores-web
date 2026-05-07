@@ -3,8 +3,8 @@ import pytest
 
 
 async def test_db_status_endpoint(client):
-    """Test /api/db-status returns database status."""
-    response = await client.get("/api/db-status")
+    """Test /status/db-status returns database status."""
+    response = await client.get("/status/db-status")
     assert response.status_code == 200
 
     data = response.json()
@@ -15,13 +15,13 @@ async def test_db_status_endpoint(client):
 
 
 async def test_db_status_response_format(client):
-    """Test /api/db-status response has correct fields."""
+    """Test /status/db-status response has correct fields."""
     from app.database import set_db_status, DatabaseStatus
 
     # Simulate successful initialization
     set_db_status(DatabaseStatus.READY)
 
-    response = await client.get("/api/db-status")
+    response = await client.get("/status/db-status")
     data = response.json()
 
     assert data["status"] == "ready"

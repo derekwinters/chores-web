@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from ..database import get_db_status as get_db_status_func, get_migrations_in_progress
 
-router = APIRouter(prefix="/api", tags=["status"])
+router = APIRouter(prefix="/status", tags=["status"])
 
 
 class DBStatusResponse(BaseModel):
