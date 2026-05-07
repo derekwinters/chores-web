@@ -21,8 +21,11 @@ Analyze the issue:
 ## Step 3: Propose Implementation Solution
 Provide specific proposal including:
 
-**Affected Components**:
-- List files/components that need changes
+**Affected Components** (CHECK ALL THREE LAYERS):
+- **Database**: Any schema changes? New tables? Migrations? State tracking?
+- **Backend**: API endpoints? Routes? Business logic? State management?
+- **Frontend**: UI components? API calls? User flows? State handling?
+- List specific files/components that need changes
 - Examples: "frontend/src/components/ChoreList.jsx", "backend/app/routers/chores.py"
 
 **Implementation Steps** (3-5 key steps):
@@ -31,7 +34,10 @@ Provide specific proposal including:
 - Example: "1. Add handleComplete prop to ChoreCard component..."
 
 **Testing Approach**:
-- How to verify fix/feature works
+- How to verify fix/feature works (unit tests + end-to-end)
+- Backend tests: API endpoints, logic, state changes
+- Frontend tests: UI components, API integration, user interactions
+- Manual testing: Browser-based UI validation (CRITICAL: if UI doesn't work, feature is broken)
 - What tests to add/update
 - Manual testing steps if needed
 
@@ -75,6 +81,8 @@ Report to user:
 
 ## Important Rules
 - MUST have `ready-to-plan` label to proceed
+- **CHECK ALL THREE COMPONENTS**: Always identify database, backend, AND frontend changes
+- **VALIDATE END-TO-END**: Plan must include how to test UI works, not just backend tests
 - DO NOT remove/update labels until user explicitly agrees plan is done
 - Post plan as issue comment before updating labels
 - Remove `ready-to-plan` only after comment posted and user agrees

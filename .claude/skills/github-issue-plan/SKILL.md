@@ -34,9 +34,13 @@ Reviews GitHub issue content and works with user to determine the right implemen
 ## Solution Elements
 
 Propose:
+- **Components affected**: Check all three layers:
+  - **Database**: Schema changes, migrations, state tracking
+  - **Backend**: API endpoints, routes, business logic, state management
+  - **Frontend**: UI components, API calls, state handling, user flow
 - **Files to change**: Which components/modules need updates
 - **Implementation steps**: 3-5 key steps to address issue
-- **Testing approach**: How to verify the fix/feature
+- **Testing approach**: How to verify the fix/feature (unit tests + end-to-end UI validation)
 - **Potential issues**: Edge cases or considerations
 - **Alternatives**: Other approaches considered and why chosen
 
@@ -59,6 +63,8 @@ Reviews issue #42, proposes solution, adds ready-for-work label after agreement
 - Seek clarification if requirements are unclear
 - Be specific in proposed solution, not vague
 - Ask user questions to refine approach
+- **Check all three components**: Always consider database, backend, AND frontend changes needed
+- **End-to-end validation**: Plan must include how to verify UI works, not just backend tests
 - **NEVER start implementation** — only define and document the plan
 - User agreement with plan ≠ authorization to implement
 - Implementation begins ONLY when `/github-issue-assign` skill is invoked
