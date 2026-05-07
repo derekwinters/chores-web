@@ -1,0 +1,18 @@
+Prepare git branch for issue implementation.
+
+Inputs: issue_number, commit_type
+
+Steps:
+1. Fetch and update main: git fetch origin && git checkout main && git pull origin main
+2. Create feature branch: git checkout -b <type>-issue-<number>
+   Example: git checkout -b feat-issue-129
+3. Verify branch is active: git branch --show-current
+4. Report success:
+   - Branch name: <type>-issue-<number>
+   - Status: Ready for implementation
+   - Next: Begin implementation per issue requirements
+
+Error cases:
+- Branch already exists locally: Suggest using existing branch
+- Git fetch/pull fails: Report network or permission issue
+- Branch creation fails: Report git error

@@ -1,0 +1,24 @@
+Run tests for implemented changes.
+
+No input required. Runs in current git branch.
+
+Steps:
+1. Run backend tests: cd backend && pytest -v
+2. Capture output: test count, passed/failed, coverage
+3. Check exit code: 0 = success, non-zero = failure
+4. Report results:
+   - If PASS: All X tests passed, Y% coverage. Ready for verification.
+   - If FAIL: X tests failed. List failed tests and error messages. Blocks workflow.
+
+Output format - Success:
+✅ All tests passed
+- Backend: 45 tests passed
+- Coverage: 82%
+- Status: Ready for verification phase
+
+Output format - Failure:
+❌ Tests failed
+- Backend: 45 tests, 3 failed
+  - test_skip_chore_with_days failed: AssertionError: ...
+  - test_skip_reassign_with_days failed: ...
+- Status: Blocked - fix tests and retry

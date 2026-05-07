@@ -1,0 +1,45 @@
+Verify Docker deployment and show changes summary for user review.
+
+Input: issue_number (optional)
+
+Steps:
+1. Docker rebuild: docker compose up --build -d
+2. Wait for containers to start and check status
+3. Prepare changes summary:
+   - git diff --stat to get file changes
+   - Count modified files
+   - Summarize what was changed (backend, frontend, DB, tests)
+4. Show summary with:
+   - Issue number and title
+   - Files modified (with line counts)
+   - Summary of changes
+   - Test results (from previous step)
+   - Docker status: all containers running
+5. Pause and ask user:
+   - Approve for commit?
+   - Request more changes?
+   - Abort?
+
+Output format:
+┌─────────────────────────────────────────┐
+│ Issue #129: Add flexible skip options   │
+│ Verification Complete                   │
+└─────────────────────────────────────────┘
+
+Files Modified:
+- backend/app/schemas.py: +5, -0 lines
+- backend/app/routers/chores.py: +8, -2 lines
+- backend/app/services/chore_service.py: +12, -3 lines
+- frontend/src/api/client.js: +4, -1 lines
+- frontend/src/components/ChoreRowActions.jsx: +20, -5 lines
+
+Summary:
+Added skip_days request parameter to skip endpoints. Updated skip_chore and skip_and_reassign_chore to calculate next_due = today + skip_days when provided. Added UI for selecting skip type (next scheduled vs specific days).
+
+Tests: ✅ All 45 tests passed
+Docker: ✅ All containers running
+
+Ready to proceed?
+- [Approve for commit]
+- [Request changes]
+- [Abort]

@@ -1,0 +1,41 @@
+Commit changes and create pull request.
+
+Inputs: issue_number, commit_type
+
+Steps:
+1. Stage all changes: git add -A
+2. Create conventional commit:
+   - Subject: <type>: <description> (#<number>)
+   - Example: feat: Add flexible skip options for chores (#129)
+   - Body: Explain why, decisions made, important context
+   - Footer: Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+3. Commit: git commit -m "..."
+4. Push branch: git push -u origin <branch>
+5. Create PR:
+   - Title: conventional commit subject
+   - Body format:
+     ## Summary
+     [Brief description of changes]
+
+     ## Implementation
+     - Backend: [what changed]
+     - Frontend: [what changed]
+     - Tests: [what was tested]
+
+     Closes #<number>
+
+     🤖 Generated with Claude Code
+   - Important: Each Closes statement on separate line (not comma-separated)
+6. Return PR URL: https://github.com/derekwinters/chores-web/pull/<pr-number>
+
+Success output:
+✅ PR Created
+- Commit: feat: Add flexible skip options for chores (#129)
+- Branch: feat-issue-129
+- PR URL: https://github.com/derekwinters/chores-web/pull/168
+
+Failure cases:
+- Staging fails: Report git error
+- Commit fails: Report message/format error
+- Push fails: Report network/permission error
+- PR creation fails: Report API error
