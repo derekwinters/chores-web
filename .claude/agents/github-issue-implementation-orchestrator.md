@@ -8,90 +8,54 @@ type: agent
 
 Automated workflow coordinator for implementing GitHub issues end-to-end. Implements 8-state machine to guide issues through branch creation, implementation, testing, and pull request creation.
 
-## State Machine
+## State Machine & Skill Orchestration
 
 ```
 START
   ↓
-[1] validate (auto)
-  ├─ Fetch issue: gh issue view <number> --json title,body,labels,state
-  ├─ Check: issue has `ready-for-work` label
-  ├─ Check: issue is OPEN
+[1] validate
+  ├─ Call: /implementation-validate <issue-number>
+  ├─ Validates: ready-for-work label, OPEN state, determines commit type
+  └─ Result: PASS → Continue, FAIL → ABORT
+          ↓
+[2] prepare
+  ├─ Call: /implementation-prepare <issue-number> <commit-type>
+  ├─ Creates: <type>-issue-<number> branch from updated main
+  └─ Result: Branch ready for implementation
+          ↓
+[3] implement
+  ├─ Call: /implementation-implement <issue-number>
+  ├─ Executes: Code changes across DB, backend, frontend, tests
+  ├─ Follows: Implementation plan from planning phase
+  └─ Result: Files modified, implementation complete
+          ↓
+[4] test
+  ├─ Call: /implementation-test
+  ├─ Executes: pytest (backend), frontend tests if applicable
   └─ Branch:
-      ├─ If invalid → ABORT with error message
-      └─ If valid → Continue
+      ├─ PASS → Continue to [5]
+      └─ FAIL → PAUSE for fixes, return to [3]
           ↓
-[2] prepare (auto)
-  ├─ Fetch main branch from origin
-  ├─ Update local main: git pull origin main
-  ├─ Determine commit type from issue
-  │  ├─ `feat:` for features
-  │  ├─ `fix:` for bugs
-  │  ├─ `refactor:` for improvements
-  │  ├─ `docs:` for documentation
-  │  └─ `test:` for test-only changes
-  ├─ Create branch: git checkout -b <type>-issue-<number>
-  └─ Continue
+[5] verify
+  ├─ Call: /implementation-verify <issue-number>
+  ├─ Executes: Docker rebuild, shows changes summary
+  └─ PAUSE: Awaits user approval
           ↓
-[3] implement (auto)
-  ├─ Read issue description and acceptance criteria
-  ├─ Explore existing implementation plan (posted comment)
-  ├─ Implement changes layer-by-layer
-  │  ├─ Database schema/migrations if needed
-  │  ├─ Backend: services, routers, schemas
-  │  ├─ Frontend: components, API client, UI updates
-  │  └─ Tests: unit + integration
-  ├─ Track files modified and lines changed
-  └─ Continue
+[6] User Review & Approval
+  ├─ User decides:
+  │  ├─ Approve → Continue to [7]
+  │  ├─ Request changes → Return to [3]
+  │  └─ Abort → END
           ↓
-[4] test (auto)
-  ├─ Run backend test suite: pytest
-  ├─ Run frontend test suite if applicable
-  ├─ Verify all tests pass
-  ├─ Check for regressions
-  └─ Branch:
-      ├─ If FAILED → Log errors, PAUSE for user review
-      └─ If PASSED → Continue
-          ↓
-[5] verify (auto)
-  ├─ Docker rebuild: docker compose up --build -d
-  ├─ Verify containers running
-  ├─ Manual testing preparation
-  └─ PAUSE: Present changes summary to user
-          ↓
-[6] PAUSE - User Review & Approval
-  ├─ Show:
-  │  ├─ Files modified (with line counts)
-  │  ├─ Summary of changes
-  │  └─ Test results
-  ├─ User choice:
-  │  ├─ Approve for commit
-  │  ├─ Request more changes (loop to [3])
-  │  └─ Abort
-  └─ Branch:
-      ├─ If APPROVED → Continue to [7]
-      └─ If CHANGES REQUESTED → Return to [3]
-          ↓
-[7] finalize (auto)
-  ├─ Stage all changes: git add -A
-  ├─ Create conventional commit
-  │  ├─ Message: `<type>: <description> (#<number>)`
-  │  ├─ Body: why, decisions, context
-  │  └─ Footer: Co-Authored-By
-  ├─ Push to origin: git push -u origin <branch>
-  ├─ Create GitHub PR
-  │  ├─ Title: conventional commit format
-  │  ├─ Body: includes closing references
-  │  │  ├─ Each issue on separate line: `Closes #123\nCloses #124`
-  │  │  ├─ NOT comma-separated: avoid `Closes #123, #124`
-  │  │  ├─ Link to issue
-  │  │  └─ Reference implementation plan
-  └─ Continue
+[7] finalize
+  ├─ Call: /implementation-finalize <issue-number> <commit-type>
+  ├─ Executes: Commit, push, PR creation
+  ├─ Format: Conventional commit with separate Closes per issue
+  └─ Result: PR URL returned
           ↓
 [8] complete
-  ├─ Return PR URL to user
-  ├─ Issue auto-closes when PR merged
-  ├─ Track implementation metrics
+  ├─ Display: PR URL to user
+  ├─ Info: Issue auto-closes when merged
   └─ END
 ```
 
@@ -137,12 +101,22 @@ Resumable by checking current branch state and git status.
 
 ### Output
 - Fully implemented issue with:
-  - Code changes across affected layers
-  - All tests passing
-  - Docker containers running with changes
-  - Conventional commit with issue reference
+  - Code changes across affected layers (via implementation-implement skill)
+  - All tests passing (via implementation-test skill)
+  - Docker containers running with changes (via implementation-verify skill)
+  - Conventional commit with issue reference (via implementation-finalize skill)
   - Pull request created with auto-close markers (Closes on separate lines)
   - PR links to issue and implementation plan
+
+### Skills Called (in order)
+
+1. **implementation-validate** - Validate issue readiness
+2. **implementation-prepare** - Create feature branch
+3. **implementation-implement** - Make code changes
+4. **implementation-test** - Run test suite
+5. **implementation-verify** - Docker rebuild + show summary
+6. *User review pause*
+7. **implementation-finalize** - Commit, push, create PR
 
 ### Error Handling
 - Invalid issue number → error message
@@ -152,16 +126,14 @@ Resumable by checking current branch state and git status.
 - Docker failures → PAUSE, show errors
 - Git push failures → PAUSE, investigate
 
-### Workflow Steps
+### Agent Responsibilities
 
-1. **Validate** - Confirm issue is ready for implementation
-2. **Prepare** - Create feature branch with correct naming
-3. **Implement** - Make code changes per issue requirements
-4. **Test** - Run full test suite, ensure no regressions
-5. **Verify** - Docker rebuild, show changes summary
-6. **User Review** - User approves or requests changes
-7. **Finalize** - Commit, push, create PR with auto-close
-8. **Complete** - Return PR URL
+Orchestrator:
+- Calls skills in sequence
+- Displays state progress at start of each response
+- Manages pause points for user review
+- Routes loops (e.g., changes requested → return to implement)
+- Returns final PR URL
 
 ## Key Features
 
@@ -194,10 +166,21 @@ Resumable by checking current branch state and git status.
 2. `github-issue-plan-orchestrator` → labels as `ready-for-work`
 3. `github-issue-implementation-orchestrator` → implements and creates PR
 
-## Related Agents
+## Related Agents & Skills
 
+### Agents
 - **github-issue-triage-orchestrator**: Validates and labels issues as `ready-to-plan`
 - **github-issue-plan-orchestrator**: Creates structured implementation plans, labels as `ready-for-work`
+
+### Supporting Skills
+- **implementation-validate**: Issue validation and commit type determination
+- **implementation-prepare**: Branch creation and setup
+- **implementation-implement**: Code change execution
+- **implementation-test**: Test suite verification
+- **implementation-verify**: Docker rebuild and changes summary
+- **implementation-finalize**: Commit, push, and PR creation
+
+Each skill has independent entry points and can be called standalone if needed.
 
 ## Notes
 
