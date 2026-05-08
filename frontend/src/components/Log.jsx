@@ -9,43 +9,32 @@ const ACTIONS = ["completed", "skipped", "reassigned", "created", "deleted", "up
 
 const PAGE_SIZE = 20;
 
-// Breakpoint detection
-const BREAKPOINTS = {
-  MOBILE: 480,
-  TABLET: 768,
-};
+// Breakpoint detection (aligned with App.css main breakpoint at 768px)
+const BREAKPOINT_MOBILE = 768;
 
 function useBreakpoint() {
-  const [breakpoint, setBreakpoint] = useState(() => {
-    if (typeof window === "undefined") return "desktop";
-    const width = window.innerWidth;
-    if (width < BREAKPOINTS.MOBILE) return "mobile";
-    if (width < BREAKPOINTS.TABLET) return "tablet";
-    return "desktop";
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < BREAKPOINT_MOBILE;
   });
 
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth;
-      const newBreakpoint =
-        width < BREAKPOINTS.MOBILE ? "mobile" :
-        width < BREAKPOINTS.TABLET ? "tablet" :
-        "desktop";
-      setBreakpoint(newBreakpoint);
+      setIsMobile(window.innerWidth < BREAKPOINT_MOBILE);
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return breakpoint;
+  return isMobile;
 }
 
 export default function Log() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [page, setPage] = useState(0);
-  const breakpoint = useBreakpoint();
+  const isMobile = useBreakpoint();
 
   const filters = (() => {
     const f = {};
@@ -100,7 +89,7 @@ export default function Log() {
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
     // On mobile, show time-only; on tablet/desktop, show full date and time
-    if (breakpoint === "mobile") {
+    if (isMobile) {
       return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     }
     return date.toLocaleString();
@@ -209,8 +198,8 @@ export default function Log() {
                 <tr>
                   <th>Timestamp</th>
                   <th>Action</th>
-                  {breakpoint !== "mobile" && <th>Target Type</th>}
-                  {breakpoint !== "mobile" && <th>Actor</th>}
+                  {!isMobile && <th>Target Type</th>}
+                  {!isMobile && <th>Actor</th>}
                   <th>Target</th>
                 </tr>
               </thead>
@@ -227,12 +216,12 @@ export default function Log() {
                           {entry.action}
                         </span>
                       </td>
-                      {breakpoint !== "mobile" && (
+                      {!isMobile && (
                         <td className="log-target-type">
                           <span className="target-badge">{targetType}</span>
                         </td>
                       )}
-                      {breakpoint !== "mobile" && (
+                      {!isMobile && (
                         <td className="log-actor">{entry.person}</td>
                       )}
                       <td className="log-target">{targetName}</td>

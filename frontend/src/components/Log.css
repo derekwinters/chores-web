@@ -226,10 +226,10 @@
   }
 }
 
-/* Mobile breakpoint: <480px */
-@media (max-width: 479px) {
+/* Mobile/Tablet breakpoint: aligns with app nav breakpoint at 768px */
+@media (max-width: 768px) {
   .log-table {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .log-table th,
@@ -238,12 +238,20 @@
   }
 
   .log-timestamp {
-    width: 80px;
+    width: 100px;
     font-size: 0.8rem;
   }
 
   .log-action {
     width: 80px;
+  }
+
+  .log-target-type {
+    width: 100px;
+  }
+
+  .log-actor {
+    width: 150px;
   }
 
   .action-badge {
@@ -255,24 +263,5 @@
     flex: 1;
     min-width: 100px;
     overflow-wrap: break-word;
-  }
-}
-
-/* Tablet breakpoint: 480px - 768px */
-@media (min-width: 480px) and (max-width: 768px) {
-  .log-table {
-    font-size: 0.85rem;
-  }
-
-  .log-timestamp {
-    width: 140px;
-  }
-
-  .log-target-type {
-    width: 100px;
-  }
-
-  .log-actor {
-    width: 150px;
   }
 }

@@ -275,12 +275,12 @@ describe("Log", () => {
     });
   });
 
-  describe("Responsive breakpoints", () => {
+  describe("Responsive breakpoints (aligned with 768px app nav breakpoint)", () => {
     afterEach(() => {
       setViewportWidth(1024); // Reset to desktop width
     });
 
-    it("shows 3 columns on mobile (<480px): Timestamp, Action, Target", async () => {
+    it("shows 3 columns on mobile (<768px): Timestamp, Action, Target", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
@@ -292,7 +292,7 @@ describe("Log", () => {
       });
     });
 
-    it("hides Target Type column on mobile", async () => {
+    it("hides Target Type column on mobile (<768px)", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
@@ -301,7 +301,7 @@ describe("Log", () => {
       });
     });
 
-    it("hides Actor column on mobile", async () => {
+    it("hides Actor column on mobile (<768px)", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
@@ -310,43 +310,31 @@ describe("Log", () => {
       });
       // Verify Actor cells are not rendered on mobile
       const aliceElements = screen.queryAllByText("Alice");
-      // Alice appears only once (in header context), not as actor data cells
       expect(aliceElements.length).toBe(0);
     });
 
-    it("shows 5 columns on tablet (481-768px): Timestamp, Action, Target Type, Actor, Target", async () => {
+    it("shows 3 columns on tablet (between breakpoints, <768px): Timestamp, Action, Target", async () => {
       setViewportWidth(600);
       wrap(<Log />);
       await waitFor(() => {
         const headers = screen.getAllByRole("columnheader");
-        expect(headers).toHaveLength(5);
+        expect(headers).toHaveLength(3);
         expect(headers[0]).toHaveTextContent("Timestamp");
         expect(headers[1]).toHaveTextContent("Action");
-        expect(headers[2]).toHaveTextContent("Target Type");
-        expect(headers[3]).toHaveTextContent("Actor");
-        expect(headers[4]).toHaveTextContent("Target");
+        expect(headers[2]).toHaveTextContent("Target");
       });
     });
 
-    it("shows Target Type on tablet", async () => {
+    it("hides Target Type on tablet (<768px)", async () => {
       setViewportWidth(600);
       wrap(<Log />);
       await waitFor(() => {
-        const targetTypeHeaders = screen.getAllByText("Target Type");
-        expect(targetTypeHeaders.length).toBeGreaterThan(0);
+        const targetTypeHeaders = screen.queryAllByText("Target Type");
+        expect(targetTypeHeaders.length).toBe(0);
       });
     });
 
-    it("shows Actor on tablet", async () => {
-      setViewportWidth(600);
-      wrap(<Log />);
-      await waitFor(() => {
-        const alices = screen.getAllByText("Alice");
-        expect(alices.length).toBeGreaterThan(0);
-      });
-    });
-
-    it("shows 5 columns on desktop (>768px): Timestamp, Action, Target Type, Actor, Target", async () => {
+    it("shows 5 columns on desktop (≥768px): Timestamp, Action, Target Type, Actor, Target", async () => {
       setViewportWidth(1024);
       wrap(<Log />);
       await waitFor(() => {
@@ -360,7 +348,7 @@ describe("Log", () => {
       });
     });
 
-    it("shows Target Type on desktop", async () => {
+    it("shows Target Type on desktop (≥768px)", async () => {
       setViewportWidth(1024);
       wrap(<Log />);
       await waitFor(() => {
@@ -369,7 +357,7 @@ describe("Log", () => {
       });
     });
 
-    it("shows Actor on desktop", async () => {
+    it("shows Actor on desktop (≥768px)", async () => {
       setViewportWidth(1024);
       wrap(<Log />);
       await waitFor(() => {
@@ -395,7 +383,7 @@ describe("Log", () => {
       }
     });
 
-    it("formats timestamp as time-only on mobile", async () => {
+    it("formats timestamp as time-only on mobile (<768px)", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
@@ -404,25 +392,17 @@ describe("Log", () => {
       });
     });
 
-    it("formats timestamp as full date on tablet and desktop", async () => {
-      for (const width of [600, 1024]) {
-        vi.resetAllMocks();
-        client.getLog.mockResolvedValue(LOG_ENTRIES);
-        client.getPeople.mockResolvedValue(PEOPLE);
-        client.getChores.mockResolvedValue(CHORES);
-
-        setViewportWidth(width);
-        const { unmount } = wrap(<Log />);
-        await waitFor(() => {
-          // Check for date patterns like "4/19/2026" or similar
-          const content = screen.getAllByText(/Vacuum|Alice|completed|skipped/);
-          expect(content.length).toBeGreaterThan(0);
-        });
-        unmount();
-      }
+    it("formats timestamp as full date on desktop (≥768px)", async () => {
+      setViewportWidth(1024);
+      wrap(<Log />);
+      await waitFor(() => {
+        // Check for presence of log entries with full rendering
+        const content = screen.getAllByText(/Vacuum|Alice|completed|skipped/);
+        expect(content.length).toBeGreaterThan(0);
+      });
     });
 
-    it("handles window resize from mobile to desktop", async () => {
+    it("handles window resize from mobile (<768px) to desktop (≥768px)", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
