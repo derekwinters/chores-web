@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.2.0](https://github.com/derekwinters/chores-web/compare/v1.1.0...v1.2.0) (2026-05-08)
+
+
+### Features
+
+* Add "Update In Progress" UI for database startup/migrations ([#157](https://github.com/derekwinters/chores-web/issues/157)) ([#160](https://github.com/derekwinters/chores-web/issues/160)) ([eba866f](https://github.com/derekwinters/chores-web/commit/eba866f17e4c406343a04ab36a708738956302c2))
+* Add configurable due soon threshold for flexible task filtering ([#163](https://github.com/derekwinters/chores-web/issues/163)) ([#174](https://github.com/derekwinters/chores-web/issues/174)) ([1de0dfa](https://github.com/derekwinters/chores-web/commit/1de0dfaf079eab2ca634192a34a78b21ff400864))
+* Add database status tracking and /db-status endpoint ([#164](https://github.com/derekwinters/chores-web/issues/164)) ([#165](https://github.com/derekwinters/chores-web/issues/165)) ([06cff38](https://github.com/derekwinters/chores-web/commit/06cff38bc0211da170e0ea00fe7450c014db7375))
+* Add github-issue-categorize skill ([#144](https://github.com/derekwinters/chores-web/issues/144)) ([#152](https://github.com/derekwinters/chores-web/issues/152)) ([ff0c130](https://github.com/derekwinters/chores-web/commit/ff0c1306be43770088d671ad07b62f26a91d09fc))
+* Add github-issue-implementation-orchestrator agent ([#168](https://github.com/derekwinters/chores-web/issues/168)) ([543072d](https://github.com/derekwinters/chores-web/commit/543072dd5e0958b54197cf9a55f98dfbdeb3f15f))
+* Add github-issue-plan-orchestrator agent for comprehensive issue planning ([#167](https://github.com/derekwinters/chores-web/issues/167)) ([f02ee2c](https://github.com/derekwinters/chores-web/commit/f02ee2c41d54dc2c9396783b795fe17268afc2d0))
+* Set up Alembic migrations for database schema management ([#158](https://github.com/derekwinters/chores-web/issues/158)) ([#159](https://github.com/derekwinters/chores-web/issues/159)) ([fb5d447](https://github.com/derekwinters/chores-web/commit/fb5d447063fd00c5ae8c42b577ca243939ad78e6))
+
+
+### Bug Fixes
+
+* Add documentation validation workflow for PR checks ([#171](https://github.com/derekwinters/chores-web/issues/171)) ([6a16a3a](https://github.com/derekwinters/chores-web/commit/6a16a3a64ff7e2034731060700c331d3dd388e84))
+* Add frontmatter to agent file for Claude Code visibility ([70f5fe1](https://github.com/derekwinters/chores-web/commit/70f5fe1a5c5f4c1281b6d44d67d8763bdd69ae74))
+* Add frontmatter to agent file for Claude Code visibility ([#166](https://github.com/derekwinters/chores-web/issues/166)) ([c9d67bd](https://github.com/derekwinters/chores-web/commit/c9d67bd6ef2372743ff4671f62c7ab1a8f417e3f))
+* Add missing permissions for Docker push to ghcr.io ([#169](https://github.com/derekwinters/chores-web/issues/169)) ([abf8bf2](https://github.com/derekwinters/chores-web/commit/abf8bf225f8e79cfffeb8859493fc06274d3df63))
+* Correct gh-pages deployment to handle history conflicts ([#173](https://github.com/derekwinters/chores-web/issues/173)) ([b586160](https://github.com/derekwinters/chores-web/commit/b586160ff71e1a6426365862bd6f2d7ecf09b22d))
+* Initialize database sequences to prevent primary key constraint violations ([#156](https://github.com/derekwinters/chores-web/issues/156)) ([#161](https://github.com/derekwinters/chores-web/issues/161)) ([bbaf2dc](https://github.com/derekwinters/chores-web/commit/bbaf2dc5b85b1d85c67b65ec81b8a4479f2669a5))
+* Resolve documentation build failures ([#170](https://github.com/derekwinters/chores-web/issues/170)) ([b2cdaae](https://github.com/derekwinters/chores-web/commit/b2cdaae9713bf7a08d6dd891fddbb8443812153e))
+
 ## [1.1.0](https://github.com/derekwinters/chores-web/compare/v1.0.0...v1.1.0) (2026-04-26)
 
 
