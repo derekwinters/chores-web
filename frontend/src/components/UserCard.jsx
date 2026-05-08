@@ -20,11 +20,14 @@ export default function UserCard({ person, chores, people, summary }) {
   const [dueSoonDays, setDueSoonDays] = useState(3);
 
   useEffect(() => {
-    getConfig().then(config => {
-      setDueSoonDays(config.due_soon_days);
-    }).catch(() => {
-      setDueSoonDays(3);
-    });
+    (async () => {
+      try {
+        const config = await getConfig();
+        setDueSoonDays(config.due_soon_days ?? 3);
+      } catch {
+        setDueSoonDays(3);
+      }
+    })();
   }, []);
 
   const color = person.color || getPersonColor(person.name);
