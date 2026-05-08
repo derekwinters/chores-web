@@ -155,6 +155,30 @@ Updated after each state transition. Allows resumption of in-progress planning.
 - **github-issue-triage-orchestrator**: Runs before planning (validates, categorizes, labels issues as `ready-to-plan`)
 - **github-issue-assign** (skill): Runs after planning (implements changes, creates PR)
 
+## Output Format
+
+Agent outputs workflow diagram at top of every response, highlighting current stage:
+
+```
+GITHUB ISSUE PLAN WORKFLOW
+==========================
+
+┌──────────┐  ┌─────────┐  ┌────────┐  ┌────────┐  ┌────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Explore ├─▶│Propose ├─▶│ Pause  ├─▶│ Refine ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  └────────┘  └────────┘  └────────┘  └──────────┘  └──────────┘
+```
+
+Current stage highlighted with double borders (┃, ┏┓┗┛). Example if at Explore stage:
+
+```
+GITHUB ISSUE PLAN WORKFLOW
+==========================
+
+┌──────────┐  ┏━━━━━━━━━┓  ┌────────┐  ┌────────┐  ┌────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶┃ Explore ┃─▶│Propose ├─▶│ Pause  ├─▶│ Refine ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  ┗━━━━━━━━━┛  └────────┘  └────────┘  └────────┘  └──────────┘  └──────────┘
+```
+
 ## Notes
 
 - Agent is idempotent (safe to re-run)
@@ -163,3 +187,4 @@ Updated after each state transition. Allows resumption of in-progress planning.
 - Proposal refinement loops until user approval
 - Plan posting happens only after explicit approval
 - Labels updated atomically with plan posting
+- Diagram shown on every response to provide visual context of current progress

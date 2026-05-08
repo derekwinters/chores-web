@@ -59,27 +59,38 @@ START
   └─ END
 ```
 
-## State Output
+## Output Format
 
-At the beginning of each response, agent displays current progress:
+Agent outputs workflow diagram at top of every response, highlighting current stage:
 
 ```
-┌─────────────────────────────────────────┐
-│ Issue #129: Add flexible skip options   │
-│ State: [3] implement                    │
-│ Progress: 3/8 (implementation phase)    │
-│ Branch: feat-issue-129                  │
-└─────────────────────────────────────────┘
+GITHUB ISSUE IMPLEMENTATION WORKFLOW
+====================================
+
+┌──────────┐  ┌─────────┐  ┌──────────┐  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Prepare ├─▶│Implement ├─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  └──────────┘  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘
 ```
 
-Format:
-- Issue title and number
-- Current state (e.g., `[3] implement`)
-- Progress fraction (current/total)
-- Current phase name
-- Active branch name
+Current stage highlighted with double borders (┃, ┏┓┗┛). Example if at Implement stage:
 
-This appears at the top of every message so user always knows where agent is in workflow.
+```
+GITHUB ISSUE IMPLEMENTATION WORKFLOW
+====================================
+
+┌──────────┐  ┌─────────┐  ┏━━━━━━━━━━┓  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Prepare ├─▶┃Implement ┃─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  ┗━━━━━━━━━━┛  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘
+```
+
+Also displays issue context:
+
+```
+Issue #129: Add flexible skip options
+State: [3] Implement
+Progress: 3/8
+Branch: feat-issue-129
+```
 
 ## State Persistence
 

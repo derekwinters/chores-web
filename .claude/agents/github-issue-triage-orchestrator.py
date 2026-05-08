@@ -51,6 +51,50 @@ Next: {self._next_state()}"""
         except ValueError:
             return "DONE"
 
+    def workflow_diagram(self) -> str:
+        """Generate workflow diagram with current state highlighted."""
+        states = [
+            ("Categorize", State.CATEGORIZE),
+            ("Check Dups", State.CHECK_DUPLICATES),
+            ("Validate", State.VALIDATE),
+            ("Feedback", State.FEEDBACK),
+            ("Pause", State.PAUSE),
+            ("Re-Valid", State.REVALIDATE),
+            ("Labels", State.APPLY_LABELS),
+            ("Milestone", State.SUGGEST_MILESTONE),
+            ("Complete", State.COMPLETE),
+        ]
+
+        # Build top and bottom borders
+        top = "┌──────────┐"
+        bottom = "└──────────┘"
+        current_top = "┏━━━━━━━━━━┓"
+        current_bottom = "┗━━━━━━━━━━┛"
+
+        top_line = "  ".join(
+            current_top if s[1] == self.current_state else top for s in states
+        )
+        bottom_line = "  ".join(
+            current_bottom if s[1] == self.current_state else bottom for s in states
+        )
+
+        # Build content line
+        content_parts = []
+        for name, state in states:
+            if state == self.current_state:
+                content_parts.append(f"┃{name:^10}┃")
+            else:
+                content_parts.append(f"│{name:^10}│")
+
+        content_line = "─▶".join(content_parts)
+
+        return f"""GITHUB ISSUE TRIAGE WORKFLOW
+============================
+
+{top_line}
+{content_line}
+{bottom_line}"""
+
 
 class GitHubIssueTriage:
     """Orchestrator for GitHub issue triage workflow."""
@@ -67,14 +111,19 @@ class GitHubIssueTriage:
 
     def run(self) -> Dict[str, Any]:
         """Execute triage workflow."""
+        print(self.state.workflow_diagram())
+        print()
+
         while self.state.current_state != State.COMPLETE:
             try:
                 self._execute_state()
                 self._update_issue_status()
             except Exception as e:
-                print(f"Error in {self.state.current_state.name}: {e}")
+                print(self.state.workflow_diagram())
+                print(f"\nError in {self.state.current_state.name}: {e}")
                 return {"error": str(e), "state": self.state.current_state.name}
 
+        print(self.state.workflow_diagram())
         return {"success": True, "issue": self.issue_number, "state": "COMPLETE"}
 
     def _execute_state(self):
@@ -228,9 +277,11 @@ class GitHubIssueTriage:
 
     def _update_issue_status(self):
         """Update pinned status comment."""
+        print(self.state.workflow_diagram())
+        print()
         status_comment = self.state.to_comment()
         # In real implementation, find existing status comment and update it
-        print(f"Status: {status_comment}")
+        print(f"Status: {status_comment}\n")
 
 
 def main():
