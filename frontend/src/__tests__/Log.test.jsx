@@ -275,12 +275,12 @@ describe("Log", () => {
     });
   });
 
-  describe("Responsive breakpoints (aligned with 768px app nav breakpoint)", () => {
+  describe("Responsive breakpoints (850px minimum for 5-column layout)", () => {
     afterEach(() => {
       setViewportWidth(1024); // Reset to desktop width
     });
 
-    it("shows 3 columns on mobile (<768px): Timestamp, Action, Target", async () => {
+    it("shows 3 columns on mobile (<850px): Timestamp, Action, Target", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
@@ -292,7 +292,7 @@ describe("Log", () => {
       });
     });
 
-    it("hides Target Type column on mobile (<768px)", async () => {
+    it("hides Target Type column on mobile (<850px)", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
@@ -301,7 +301,7 @@ describe("Log", () => {
       });
     });
 
-    it("hides Actor column on mobile (<768px)", async () => {
+    it("hides Actor column on mobile (<850px)", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
@@ -313,7 +313,7 @@ describe("Log", () => {
       expect(aliceElements.length).toBe(0);
     });
 
-    it("shows 3 columns on tablet (between breakpoints, <768px): Timestamp, Action, Target", async () => {
+    it("shows 3 columns on tablet (between breakpoints, <850px): Timestamp, Action, Target", async () => {
       setViewportWidth(600);
       wrap(<Log />);
       await waitFor(() => {
@@ -325,7 +325,7 @@ describe("Log", () => {
       });
     });
 
-    it("hides Target Type on tablet (<768px)", async () => {
+    it("hides Target Type on tablet (<850px)", async () => {
       setViewportWidth(600);
       wrap(<Log />);
       await waitFor(() => {
@@ -334,7 +334,7 @@ describe("Log", () => {
       });
     });
 
-    it("shows 5 columns on desktop (≥768px): Timestamp, Action, Target Type, Actor, Target", async () => {
+    it("shows 5 columns on desktop (≥850px): Timestamp, Action, Target Type, Actor, Target", async () => {
       setViewportWidth(1024);
       wrap(<Log />);
       await waitFor(() => {
@@ -348,7 +348,7 @@ describe("Log", () => {
       });
     });
 
-    it("shows Target Type on desktop (≥768px)", async () => {
+    it("shows Target Type on desktop (≥850px)", async () => {
       setViewportWidth(1024);
       wrap(<Log />);
       await waitFor(() => {
@@ -357,7 +357,7 @@ describe("Log", () => {
       });
     });
 
-    it("shows Actor on desktop (≥768px)", async () => {
+    it("shows Actor on desktop (≥850px)", async () => {
       setViewportWidth(1024);
       wrap(<Log />);
       await waitFor(() => {
@@ -383,7 +383,7 @@ describe("Log", () => {
       }
     });
 
-    it("formats timestamp as time-only on mobile (<768px)", async () => {
+    it("formats timestamp as time-only on mobile (<850px)", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {
@@ -392,7 +392,7 @@ describe("Log", () => {
       });
     });
 
-    it("formats timestamp as full date on desktop (≥768px)", async () => {
+    it("formats timestamp as full date on desktop (≥850px)", async () => {
       setViewportWidth(1024);
       wrap(<Log />);
       await waitFor(() => {
@@ -402,7 +402,7 @@ describe("Log", () => {
       });
     });
 
-    it("handles window resize from mobile (<768px) to desktop (≥768px)", async () => {
+    it("handles window resize from mobile (<850px) to desktop (≥850px)", async () => {
       setViewportWidth(375);
       wrap(<Log />);
       await waitFor(() => {

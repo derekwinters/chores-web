@@ -226,8 +226,8 @@
   }
 }
 
-/* Mobile/Tablet breakpoint: aligns with app nav breakpoint at 768px */
-@media (max-width: 768px) {
+/* Mobile/Tablet breakpoint: 850px minimum for comfortable 5-column display */
+@media (max-width: 849px) {
   .log-table {
     font-size: 0.85rem;
   }

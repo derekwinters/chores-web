@@ -9,8 +9,8 @@ const ACTIONS = ["completed", "skipped", "reassigned", "created", "deleted", "up
 
 const PAGE_SIZE = 20;
 
-// Breakpoint detection (aligned with App.css main breakpoint at 768px)
-const BREAKPOINT_MOBILE = 768;
+// Breakpoint detection (log table needs 850px to comfortably show 5 columns)
+const BREAKPOINT_MOBILE = 850;
 
 function useBreakpoint() {
   const [isMobile, setIsMobile] = useState(() => {
