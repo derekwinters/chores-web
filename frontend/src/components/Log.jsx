@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { MdFilterList } from "react-icons/md";
@@ -9,10 +9,43 @@ const ACTIONS = ["completed", "skipped", "reassigned", "created", "deleted", "up
 
 const PAGE_SIZE = 20;
 
+// Breakpoint detection
+const BREAKPOINTS = {
+  MOBILE: 480,
+  TABLET: 768,
+};
+
+function useBreakpoint() {
+  const [breakpoint, setBreakpoint] = useState(() => {
+    if (typeof window === "undefined") return "desktop";
+    const width = window.innerWidth;
+    if (width < BREAKPOINTS.MOBILE) return "mobile";
+    if (width < BREAKPOINTS.TABLET) return "tablet";
+    return "desktop";
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const newBreakpoint =
+        width < BREAKPOINTS.MOBILE ? "mobile" :
+        width < BREAKPOINTS.TABLET ? "tablet" :
+        "desktop";
+      setBreakpoint(newBreakpoint);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return breakpoint;
+}
+
 export default function Log() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [page, setPage] = useState(0);
+  const breakpoint = useBreakpoint();
 
   const filters = (() => {
     const f = {};
@@ -66,6 +99,10 @@ export default function Log() {
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
+    // On mobile, show time-only; on tablet/desktop, show full date and time
+    if (breakpoint === "mobile") {
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
     return date.toLocaleString();
   };
 
@@ -172,22 +209,15 @@ export default function Log() {
                 <tr>
                   <th>Timestamp</th>
                   <th>Action</th>
-                  <th>Target Type</th>
-                  <th>Actor</th>
+                  {breakpoint !== "mobile" && <th>Target Type</th>}
+                  {breakpoint !== "mobile" && <th>Actor</th>}
                   <th>Target</th>
-                  <th>Content</th>
                 </tr>
               </thead>
               <tbody>
                 {logEntries.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((entry) => {
                   const targetType = entry.chore_name.startsWith("Person:") ? "user" : "chore";
                   const targetName = entry.chore_name.replace("Person: ", "");
-                  let content = "—";
-                  if (entry.field_name) {
-                    content = `${entry.field_name}: ${entry.old_value} → ${entry.new_value}`;
-                  } else if (entry.reassigned_to) {
-                    content = `Reassigned to ${entry.reassigned_to}`;
-                  }
 
                   return (
                     <tr key={entry.id} className="log-table-row">
@@ -197,12 +227,15 @@ export default function Log() {
                           {entry.action}
                         </span>
                       </td>
-                      <td className="log-target-type">
-                        <span className="target-badge">{targetType}</span>
-                      </td>
-                      <td className="log-actor">{entry.person}</td>
+                      {breakpoint !== "mobile" && (
+                        <td className="log-target-type">
+                          <span className="target-badge">{targetType}</span>
+                        </td>
+                      )}
+                      {breakpoint !== "mobile" && (
+                        <td className="log-actor">{entry.person}</td>
+                      )}
                       <td className="log-target">{targetName}</td>
-                      <td className="log-content">{content}</td>
                     </tr>
                   );
                 })}

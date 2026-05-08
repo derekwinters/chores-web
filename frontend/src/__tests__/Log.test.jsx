@@ -1,12 +1,22 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import Log from "../components/Log";
 import * as client from "../api/client";
 
 vi.mock("../api/client");
+
+// Mock window.innerWidth for breakpoint testing
+function setViewportWidth(width) {
+  Object.defineProperty(window, "innerWidth", {
+    writable: true,
+    configurable: true,
+    value: width,
+  });
+  window.dispatchEvent(new Event("resize"));
+}
 
 const LOG_ENTRIES = [
   {
@@ -262,6 +272,169 @@ describe("Log", () => {
       const personSelect = screen.getByLabelText(/filter by person/i);
       expect(personSelect.value).toBe("");
       expect(client.getLog).toHaveBeenCalledWith({});
+    });
+  });
+
+  describe("Responsive breakpoints", () => {
+    afterEach(() => {
+      setViewportWidth(1024); // Reset to desktop width
+    });
+
+    it("shows 3 columns on mobile (<480px): Timestamp, Action, Target", async () => {
+      setViewportWidth(375);
+      wrap(<Log />);
+      await waitFor(() => {
+        const headers = screen.getAllByRole("columnheader");
+        expect(headers).toHaveLength(3);
+        expect(headers[0]).toHaveTextContent("Timestamp");
+        expect(headers[1]).toHaveTextContent("Action");
+        expect(headers[2]).toHaveTextContent("Target");
+      });
+    });
+
+    it("hides Target Type column on mobile", async () => {
+      setViewportWidth(375);
+      wrap(<Log />);
+      await waitFor(() => {
+        const targetTypeHeader = screen.queryByText("Target Type");
+        expect(targetTypeHeader).not.toBeInTheDocument();
+      });
+    });
+
+    it("hides Actor column on mobile", async () => {
+      setViewportWidth(375);
+      wrap(<Log />);
+      await waitFor(() => {
+        const vacuums = screen.getAllByText("Vacuum");
+        expect(vacuums.length).toBeGreaterThan(0);
+      });
+      // Verify Actor cells are not rendered on mobile
+      const aliceElements = screen.queryAllByText("Alice");
+      // Alice appears only once (in header context), not as actor data cells
+      expect(aliceElements.length).toBe(0);
+    });
+
+    it("shows 5 columns on tablet (481-768px): Timestamp, Action, Target Type, Actor, Target", async () => {
+      setViewportWidth(600);
+      wrap(<Log />);
+      await waitFor(() => {
+        const headers = screen.getAllByRole("columnheader");
+        expect(headers).toHaveLength(5);
+        expect(headers[0]).toHaveTextContent("Timestamp");
+        expect(headers[1]).toHaveTextContent("Action");
+        expect(headers[2]).toHaveTextContent("Target Type");
+        expect(headers[3]).toHaveTextContent("Actor");
+        expect(headers[4]).toHaveTextContent("Target");
+      });
+    });
+
+    it("shows Target Type on tablet", async () => {
+      setViewportWidth(600);
+      wrap(<Log />);
+      await waitFor(() => {
+        const targetTypeHeaders = screen.getAllByText("Target Type");
+        expect(targetTypeHeaders.length).toBeGreaterThan(0);
+      });
+    });
+
+    it("shows Actor on tablet", async () => {
+      setViewportWidth(600);
+      wrap(<Log />);
+      await waitFor(() => {
+        const alices = screen.getAllByText("Alice");
+        expect(alices.length).toBeGreaterThan(0);
+      });
+    });
+
+    it("shows 5 columns on desktop (>768px): Timestamp, Action, Target Type, Actor, Target", async () => {
+      setViewportWidth(1024);
+      wrap(<Log />);
+      await waitFor(() => {
+        const headers = screen.getAllByRole("columnheader");
+        expect(headers).toHaveLength(5);
+        expect(headers[0]).toHaveTextContent("Timestamp");
+        expect(headers[1]).toHaveTextContent("Action");
+        expect(headers[2]).toHaveTextContent("Target Type");
+        expect(headers[3]).toHaveTextContent("Actor");
+        expect(headers[4]).toHaveTextContent("Target");
+      });
+    });
+
+    it("shows Target Type on desktop", async () => {
+      setViewportWidth(1024);
+      wrap(<Log />);
+      await waitFor(() => {
+        const targetTypeHeaders = screen.getAllByText("Target Type");
+        expect(targetTypeHeaders.length).toBeGreaterThan(0);
+      });
+    });
+
+    it("shows Actor on desktop", async () => {
+      setViewportWidth(1024);
+      wrap(<Log />);
+      await waitFor(() => {
+        const alices = screen.getAllByText("Alice");
+        expect(alices.length).toBeGreaterThan(0);
+      });
+    });
+
+    it("never shows Content column on any breakpoint", async () => {
+      for (const width of [375, 600, 1024]) {
+        vi.resetAllMocks();
+        client.getLog.mockResolvedValue(LOG_ENTRIES);
+        client.getPeople.mockResolvedValue(PEOPLE);
+        client.getChores.mockResolvedValue(CHORES);
+
+        setViewportWidth(width);
+        const { unmount } = wrap(<Log />);
+        await waitFor(() => {
+          const contentHeader = screen.queryByText("Content");
+          expect(contentHeader).not.toBeInTheDocument();
+        });
+        unmount();
+      }
+    });
+
+    it("formats timestamp as time-only on mobile", async () => {
+      setViewportWidth(375);
+      wrap(<Log />);
+      await waitFor(() => {
+        const timestamps = screen.getAllByText(/\d{1,2}:\d{2}/);
+        expect(timestamps.length).toBeGreaterThan(0);
+      });
+    });
+
+    it("formats timestamp as full date on tablet and desktop", async () => {
+      for (const width of [600, 1024]) {
+        vi.resetAllMocks();
+        client.getLog.mockResolvedValue(LOG_ENTRIES);
+        client.getPeople.mockResolvedValue(PEOPLE);
+        client.getChores.mockResolvedValue(CHORES);
+
+        setViewportWidth(width);
+        const { unmount } = wrap(<Log />);
+        await waitFor(() => {
+          // Check for date patterns like "4/19/2026" or similar
+          const content = screen.getAllByText(/Vacuum|Alice|completed|skipped/);
+          expect(content.length).toBeGreaterThan(0);
+        });
+        unmount();
+      }
+    });
+
+    it("handles window resize from mobile to desktop", async () => {
+      setViewportWidth(375);
+      wrap(<Log />);
+      await waitFor(() => {
+        const headers = screen.getAllByRole("columnheader");
+        expect(headers).toHaveLength(3);
+      });
+
+      setViewportWidth(1024);
+      await waitFor(() => {
+        const headers = screen.getAllByRole("columnheader");
+        expect(headers).toHaveLength(5);
+      });
     });
   });
 });

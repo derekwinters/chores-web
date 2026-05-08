@@ -168,9 +168,7 @@
 }
 
 .log-content {
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  display: none;
 }
 
 .empty-state {
@@ -225,5 +223,56 @@
 
   .filter-group {
     width: 100%;
+  }
+}
+
+/* Mobile breakpoint: <480px */
+@media (max-width: 479px) {
+  .log-table {
+    font-size: 0.8rem;
+  }
+
+  .log-table th,
+  .log-table td {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .log-timestamp {
+    width: 80px;
+    font-size: 0.8rem;
+  }
+
+  .log-action {
+    width: 80px;
+  }
+
+  .action-badge {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.65rem;
+  }
+
+  .log-target {
+    flex: 1;
+    min-width: 100px;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Tablet breakpoint: 480px - 768px */
+@media (min-width: 480px) and (max-width: 768px) {
+  .log-table {
+    font-size: 0.85rem;
+  }
+
+  .log-timestamp {
+    width: 140px;
+  }
+
+  .log-target-type {
+    width: 100px;
+  }
+
+  .log-actor {
+    width: 150px;
   }
 }
