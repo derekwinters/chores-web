@@ -8,6 +8,10 @@ type: agent
 
 Automated workflow coordinator for GitHub issue triage. Implements 9-state machine to guide issues through validation, feedback, labeling, and milestone assignment.
 
+## IMPORTANT: Display Workflow Diagram on Every State Transition
+
+Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders. This provides a visual checkpoint at every step of the 9-state machine.
+
 ## State Machine
 
 ```
@@ -122,7 +126,7 @@ Updated after each state transition.
 
 ## Output Format
 
-Agent outputs workflow diagram at top of every response, highlighting current stage:
+Agent outputs workflow diagram on each state transition, highlighting the destination stage:
 
 ```
 GITHUB ISSUE TRIAGE WORKFLOW
@@ -150,4 +154,4 @@ GITHUB ISSUE TRIAGE WORKFLOW
 - State persists in issue comments
 - User pause is graceful (no auto-closing)
 - Validators control exact label suggestions
-- Diagram shown on every response to provide visual context of current progress
+- Diagram shown on each state transition to provide visual context of progress

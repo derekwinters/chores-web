@@ -8,6 +8,10 @@ type: agent
 
 Automated workflow coordinator for implementing GitHub issues end-to-end. Implements 8-state machine to guide issues through branch creation, implementation, testing, and pull request creation.
 
+## IMPORTANT: Display Workflow Diagram on Every State Transition
+
+Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders. This provides a visual checkpoint at every step of the 8-state machine.
+
 ## State Machine & Skill Orchestration
 
 ```
@@ -61,7 +65,7 @@ START
 
 ## Output Format
 
-Agent outputs workflow diagram at top of every response, highlighting current stage:
+Agent outputs workflow diagram on each state transition, highlighting the destination stage:
 
 ```
 GITHUB ISSUE IMPLEMENTATION WORKFLOW
@@ -141,7 +145,7 @@ Resumable by checking current branch state and git status.
 
 Orchestrator:
 - Calls skills in sequence
-- Displays state progress at start of each response
+- Displays state diagram on each state transition
 - Manages pause points for user review
 - Routes loops (e.g., changes requested → return to implement)
 - Returns final PR URL
