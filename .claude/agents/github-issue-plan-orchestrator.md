@@ -8,6 +8,10 @@ type: agent
 
 Automated workflow coordinator for comprehensive GitHub issue planning. Implements 7-state machine to guide issues through exploration, proposal, user review, and finalization.
 
+## IMPORTANT: Display Workflow Diagram on Every State Transition
+
+Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders (┏┓┗┛, ┃). This provides a visual checkpoint at every step of the 7-state machine.
+
 ## State Machine
 
 ```
@@ -34,6 +38,11 @@ START
   │  ├─ Trace call paths: router → service → model → DB
   │  ├─ Study similar existing implementations for patterns
   │  └─ Identify exact files/functions requiring changes
+  ├─ Identify affected tests
+  │  ├─ Find existing tests covering changed code (grep test files for function/route names)
+  │  ├─ Flag tests that will break due to signature, schema, or behavior changes
+  │  ├─ Identify gaps: new code paths with no test coverage
+  │  └─ Note tests to remove if functionality is deleted
   └─ Continue
           ↓
 [3] propose (auto)
@@ -47,7 +56,9 @@ START
   │  │  ├─ Schema modifications if applicable
   │  │  └─ UI/UX changes with examples
   │  ├─ Testing Approach
-  │  │  ├─ Unit tests (specific test files)
+  │  │  ├─ Tests to modify: exact file paths + what changes and why
+  │  │  ├─ Tests to add: specific cases for new behavior, with file locations
+  │  │  ├─ Tests to remove: dead tests for deleted functionality
   │  │  ├─ Integration/API tests
   │  │  └─ Manual UI testing in browser (critical)
   │  └─ Potential Challenges
@@ -75,7 +86,7 @@ START
   ├─ Format final plan summary (markdown)
   ├─ Post plan as issue comment
   │  ├─ gh issue comment <number> --body "<formatted-plan>"
-  │  └─ Include: affected files, steps, testing, challenges, rationale
+  │  └─ Include: affected files, steps, test changes (modify/add/remove), challenges, rationale
   ├─ Remove ready-to-plan label
   │  └─ gh issue edit <number> --remove-label ready-to-plan
   ├─ Add ready-for-work label
@@ -157,7 +168,7 @@ Updated after each state transition. Allows resumption of in-progress planning.
 
 ## Output Format
 
-Agent outputs workflow diagram at top of every response, highlighting current stage:
+Agent outputs workflow diagram on each state transition, highlighting the destination stage:
 
 ```
 GITHUB ISSUE PLAN WORKFLOW
@@ -187,4 +198,4 @@ GITHUB ISSUE PLAN WORKFLOW
 - Proposal refinement loops until user approval
 - Plan posting happens only after explicit approval
 - Labels updated atomically with plan posting
-- Diagram shown on every response to provide visual context of current progress
+- Diagram shown on each state transition to provide visual context of progress
