@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.3.0](https://github.com/derekwinters/chores-web/compare/v1.2.0...v1.3.0) (2026-05-10)
+
+
+### Features
+
+* Add periodic update checker with GitHub API integration ([#37](https://github.com/derekwinters/chores-web/issues/37)) ([#175](https://github.com/derekwinters/chores-web/issues/175)) ([457e7e8](https://github.com/derekwinters/chores-web/commit/457e7e8e1d43e6f8c903d9763a41568a0e8860a0))
+* Admin database management dashboard for PointsLog ([#97](https://github.com/derekwinters/chores-web/issues/97)) ([#200](https://github.com/derekwinters/chores-web/issues/200)) ([128c1f5](https://github.com/derekwinters/chores-web/commit/128c1f56f7c014d17e521d4c61f12385b59f2adb))
+* Log user goal value changes and unlogged chore modifications ([#107](https://github.com/derekwinters/chores-web/issues/107)) ([#198](https://github.com/derekwinters/chores-web/issues/198)) ([c8b59a2](https://github.com/derekwinters/chores-web/commit/c8b59a22578df87d5ced338c1b99f432e13fad38))
+* Make log entries clickable to expand inline as detail row ([#179](https://github.com/derekwinters/chores-web/issues/179)) ([#190](https://github.com/derekwinters/chores-web/issues/190)) ([095b0b9](https://github.com/derekwinters/chores-web/commit/095b0b9b0441b3522a06646279348cbc98600f74))
+* Reduce log columns on mobile to prevent horizontal scrolling ([#109](https://github.com/derekwinters/chores-web/issues/109)) ([#178](https://github.com/derekwinters/chores-web/issues/178)) ([c6a90e3](https://github.com/derekwinters/chores-web/commit/c6a90e3de0af2284cef001b692d76479e4bf1254))
+* Reorganize admin panel into separate pages by section ([#111](https://github.com/derekwinters/chores-web/issues/111)) ([#197](https://github.com/derekwinters/chores-web/issues/197)) ([51431e9](https://github.com/derekwinters/chores-web/commit/51431e923df2491d61129a33ba5136f7a9d3e5e7))
+* Separate actor and content in chore change logs ([#108](https://github.com/derekwinters/chores-web/issues/108)) ([#206](https://github.com/derekwinters/chores-web/issues/206)) ([d96eb69](https://github.com/derekwinters/chores-web/commit/d96eb690dbc8bb77f89173dccf5bba84e9105058))
+
+
+### Bug Fixes
+
+* Improve agent workflow with visuals ([#185](https://github.com/derekwinters/chores-web/issues/185)) ([dd4e9a4](https://github.com/derekwinters/chores-web/commit/dd4e9a4a16d2bf172ed7640221d5621b777d48ee))
+* Keep points and due grids at 2 columns on mobile ([#184](https://github.com/derekwinters/chores-web/issues/184)) ([#187](https://github.com/derekwinters/chores-web/issues/187)) ([a9c7863](https://github.com/derekwinters/chores-web/commit/a9c78631d026a8a794608c7d3518b174d6d4701d))
+* Log actual user instead of system when skipping chores ([#154](https://github.com/derekwinters/chores-web/issues/154)) ([#180](https://github.com/derekwinters/chores-web/issues/180)) ([57f2808](https://github.com/derekwinters/chores-web/commit/57f280802aa3cb7ca7befc921d21a8de70160f7d))
+* Normalize boolean config storage and export coercion ([#162](https://github.com/derekwinters/chores-web/issues/162)) ([#189](https://github.com/derekwinters/chores-web/issues/189)) ([4e11be9](https://github.com/derekwinters/chores-web/commit/4e11be9b7e57f785329f0746cb08088a78001a07))
+* Populate settings values on Admin Panel load ([#177](https://github.com/derekwinters/chores-web/issues/177)) ([#188](https://github.com/derekwinters/chores-web/issues/188)) ([4a440fd](https://github.com/derekwinters/chores-web/commit/4a440fd7d3a7642b4434446ca0b79e5eb2dca4cf))
+* resync sequences and stamp initial revision on DuplicateTable ([#193](https://github.com/derekwinters/chores-web/issues/193)) ([#194](https://github.com/derekwinters/chores-web/issues/194)) ([910ca5d](https://github.com/derekwinters/chores-web/commit/910ca5d1fdf2eb863de7241abf42644078f5ddc9))
+* Show state diagram on transitions, add test planning to plan agent ([#192](https://github.com/derekwinters/chores-web/issues/192)) ([8e6fa8b](https://github.com/derekwinters/chores-web/commit/8e6fa8bc28d13775ac1bf059b892892a18acff87))
+* Standardize actor logging to use usernames and distinguish schedule from system ([#135](https://github.com/derekwinters/chores-web/issues/135)) ([#182](https://github.com/derekwinters/chores-web/issues/182)) ([ae43689](https://github.com/derekwinters/chores-web/commit/ae436893b17ad80e9d8663f827bb7a8aa44348a7))
+
 ## [1.2.0](https://github.com/derekwinters/chores-web/compare/v1.1.0...v1.2.0) (2026-05-08)
 
 
