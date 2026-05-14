@@ -187,44 +187,53 @@ describe("ThemeSettings", () => {
     });
   });
 
-  it("shows 5 color swatches per theme card", async () => {
+  it("shows 4 color swatches per theme card", async () => {
     wrap(<ThemeSettings />);
     await waitFor(() => {
       const container = screen.getByText("Dark").closest(".theme-card");
       const colorSamples = container.querySelectorAll(".color-sample");
-      expect(colorSamples.length).toBe(5);
+      expect(colorSamples.length).toBe(4);
     });
   });
 
-  it("renders action buttons for non-protected themes", async () => {
+  it("renders copy button for built-in non-protected themes", async () => {
     wrap(<ThemeSettings />);
     await waitFor(() => screen.getByText("Charcoal"));
 
-    // Charcoal is not protected, check for theme-actions container
+    // Charcoal is built-in non-protected, should have copy only
     const charcoalCard = screen.getByText("Charcoal").closest(".theme-card-wrapper");
     const actionsContainer = charcoalCard.querySelector(".theme-actions");
     expect(actionsContainer).toBeInTheDocument();
 
-    // Verify action buttons exist
-    const editBtn = charcoalCard.querySelector('[aria-label="Edit Charcoal"]');
     const copyBtn = charcoalCard.querySelector('[aria-label="Copy Charcoal"]');
+    const editBtn = charcoalCard.querySelector('[aria-label="Edit Charcoal"]');
     const renameBtn = charcoalCard.querySelector('[aria-label="Rename Charcoal"]');
     const deleteBtn = charcoalCard.querySelector('[aria-label="Delete Charcoal"]');
 
-    expect(editBtn).toBeInTheDocument();
     expect(copyBtn).toBeInTheDocument();
-    expect(renameBtn).toBeInTheDocument();
-    expect(deleteBtn).toBeInTheDocument();
+    expect(editBtn).not.toBeInTheDocument();
+    expect(renameBtn).not.toBeInTheDocument();
+    expect(deleteBtn).not.toBeInTheDocument();
   });
 
-  it("does not render action buttons for protected themes", async () => {
+  it("renders copy button for protected themes", async () => {
     wrap(<ThemeSettings />);
     await waitFor(() => screen.getByText("Dark"));
 
-    // Dark is protected, should not have action buttons
+    // Dark is protected, should have copy only
     const darkCard = screen.getByText("Dark").closest(".theme-card-wrapper");
     const actionsContainer = darkCard.querySelector(".theme-actions");
-    expect(actionsContainer).not.toBeInTheDocument();
+    expect(actionsContainer).toBeInTheDocument();
+
+    const copyBtn = darkCard.querySelector('[aria-label="Copy Dark"]');
+    const editBtn = darkCard.querySelector('[aria-label="Edit Dark"]');
+    const renameBtn = darkCard.querySelector('[aria-label="Rename Dark"]');
+    const deleteBtn = darkCard.querySelector('[aria-label="Delete Dark"]');
+
+    expect(copyBtn).toBeInTheDocument();
+    expect(editBtn).not.toBeInTheDocument();
+    expect(renameBtn).not.toBeInTheDocument();
+    expect(deleteBtn).not.toBeInTheDocument();
   });
 
   it("applies theme colors globally", async () => {
@@ -287,12 +296,12 @@ describe("ThemeSettings", () => {
     expect(copyButtons.some(btn => btn.getAttribute("aria-label") === "Copy Charcoal")).toBe(true);
   });
 
-  it("renders rename button for non-protected themes", async () => {
+  it("renders rename button for custom themes", async () => {
     wrap(<ThemeSettings />);
-    await waitFor(() => screen.getByText("Charcoal"));
+    await waitFor(() => screen.getByText("My Custom Theme"));
 
-    const charcoalCard = screen.getByText("Charcoal").closest(".theme-card-wrapper");
-    const renameBtn = charcoalCard.querySelector('[aria-label="Rename Charcoal"]');
+    const customCard = screen.getByText("My Custom Theme").closest(".theme-card-wrapper");
+    const renameBtn = customCard.querySelector('[aria-label="Rename My Custom Theme"]');
     expect(renameBtn).toBeInTheDocument();
   });
 
