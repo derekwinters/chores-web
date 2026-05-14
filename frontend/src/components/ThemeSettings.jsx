@@ -197,7 +197,7 @@ export default function ThemeSettings() {
                             title="Edit theme"
                             aria-label={`Edit ${theme.name}`}
                           >
-                            ✏️
+                            <span className="material-icons">edit</span>
                           </button>
                           <button
                             className="action-btn copy-btn"
@@ -208,7 +208,7 @@ export default function ThemeSettings() {
                             title="Copy theme"
                             aria-label={`Copy ${theme.name}`}
                           >
-                            📋
+                            <span className="material-icons">content_copy</span>
                           </button>
                           <button
                             className="action-btn rename-btn"
@@ -220,7 +220,7 @@ export default function ThemeSettings() {
                             title="Rename theme"
                             aria-label={`Rename ${theme.name}`}
                           >
-                            🏷️
+                            <span className="material-icons">drive_file_rename_outline</span>
                           </button>
                           <button
                             className="action-btn delete-btn"
@@ -231,7 +231,7 @@ export default function ThemeSettings() {
                             title="Delete theme"
                             aria-label={`Delete ${theme.name}`}
                           >
-                            🗑️
+                            <span className="material-icons">delete</span>
                           </button>
                         </>
                       )}

@@ -94,12 +94,16 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 1rem;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s;
+  font-size: 0;
+}
+
+.action-btn .material-icons {
+  font-size: 20px;
 }
 
 .action-btn:hover {
