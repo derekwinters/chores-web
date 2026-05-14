@@ -52,8 +52,7 @@
 .theme-preview {
   display: flex;
   gap: 0.5rem;
-  transition: opacity 0.2s, pointer-events 0.2s;
-  pointer-events: none;
+  transition: opacity 0.2s;
 }
 
 .color-sample {
@@ -61,6 +60,7 @@
   height: 30px;
   border-radius: 4px;
   border: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .theme-name {
@@ -68,22 +68,23 @@
   text-align: left;
   font-size: 0.9rem;
   color: var(--text);
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 100px;
 }
 
 .theme-actions {
-  display: flex;
+  display: none;
   gap: 0.5rem;
-  opacity: 0;
-  transition: opacity 0.2s, pointer-events 0.2s;
-  pointer-events: none;
   align-items: center;
+  flex-shrink: 0;
 }
 
-.theme-card-wrapper:hover .theme-actions {
-  opacity: 1;
-  pointer-events: auto;
+.theme-card:hover .theme-preview {
+  display: none;
+}
+
+.theme-card:hover .theme-actions {
+  display: flex;
 }
 
 .action-btn {

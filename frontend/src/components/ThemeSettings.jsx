@@ -185,47 +185,58 @@ export default function ThemeSettings() {
                         />
                       ))}
                     </div>
-                  </button>
-
-                  {!isProtected && (
                     <div className="theme-actions">
-                      <button
-                        className="action-btn edit-btn"
-                        onClick={() => handleCustomize(theme)}
-                        title="Edit theme"
-                        aria-label={`Edit ${theme.name}`}
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="action-btn copy-btn"
-                        onClick={() => handleCopyTheme(theme)}
-                        title="Copy theme"
-                        aria-label={`Copy ${theme.name}`}
-                      >
-                        📋
-                      </button>
-                      <button
-                        className="action-btn rename-btn"
-                        onClick={() => {
-                          setRenameTarget(theme);
-                          setRenameName(theme.name);
-                        }}
-                        title="Rename theme"
-                        aria-label={`Rename ${theme.name}`}
-                      >
-                        🏷️
-                      </button>
-                      <button
-                        className="action-btn delete-btn"
-                        onClick={() => setDeleteTarget(theme)}
-                        title="Delete theme"
-                        aria-label={`Delete ${theme.name}`}
-                      >
-                        🗑️
-                      </button>
+                      {!isProtected && (
+                        <>
+                          <button
+                            className="action-btn edit-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCustomize(theme);
+                            }}
+                            title="Edit theme"
+                            aria-label={`Edit ${theme.name}`}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            className="action-btn copy-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopyTheme(theme);
+                            }}
+                            title="Copy theme"
+                            aria-label={`Copy ${theme.name}`}
+                          >
+                            📋
+                          </button>
+                          <button
+                            className="action-btn rename-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRenameTarget(theme);
+                              setRenameName(theme.name);
+                            }}
+                            title="Rename theme"
+                            aria-label={`Rename ${theme.name}`}
+                          >
+                            🏷️
+                          </button>
+                          <button
+                            className="action-btn delete-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteTarget(theme);
+                            }}
+                            title="Delete theme"
+                            aria-label={`Delete ${theme.name}`}
+                          >
+                            🗑️
+                          </button>
+                        </>
+                      )}
                     </div>
-                  )}
+                  </button>
                 </div>
               );
             })}
