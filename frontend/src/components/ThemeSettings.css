@@ -53,6 +53,8 @@
   display: flex;
   gap: 0.5rem;
   transition: opacity 0.2s;
+  min-width: 160px;
+  flex-shrink: 0;
 }
 
 .color-sample {
@@ -77,6 +79,7 @@
   gap: 0.5rem;
   align-items: center;
   flex-shrink: 0;
+  min-width: 160px;
 }
 
 .theme-card:hover .theme-preview {

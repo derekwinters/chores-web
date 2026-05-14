@@ -6,7 +6,7 @@ import "./ThemeSettings.css";
 
 const DEFAULT_THEME_IDS = ["dark", "light"];
 const PROTECTED_THEME_IDS = ["dark", "light"];
-const PREVIEW_COLORS = ["primary", "secondary", "accent", "bg", "surface"];
+const PREVIEW_COLORS = ["primary", "secondary", "accent", "bg"];
 
 export default function ThemeSettings() {
   const queryClient = useQueryClient();
