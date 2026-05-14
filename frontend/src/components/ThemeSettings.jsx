@@ -168,6 +168,8 @@ export default function ThemeSettings() {
           <div className="themes-list">
             {themes.map((theme) => {
               const isProtected = PROTECTED_THEME_IDS.includes(theme.id);
+              const isBuiltIn = DEFAULT_THEME_IDS.includes(theme.id);
+              const isCustom = !isBuiltIn;
               return (
                 <div key={theme.id} className={`theme-card-wrapper ${currentTheme?.id === theme.id ? "active" : ""}`}>
                   <button
@@ -188,17 +190,19 @@ export default function ThemeSettings() {
                     <div className="theme-actions">
                       {!isProtected && (
                         <>
-                          <button
-                            className="action-btn edit-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCustomize(theme);
-                            }}
-                            title="Edit theme"
-                            aria-label={`Edit ${theme.name}`}
-                          >
-                            <span className="material-icons">edit</span>
-                          </button>
+                          {isCustom && (
+                            <button
+                              className="action-btn edit-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCustomize(theme);
+                              }}
+                              title="Edit theme"
+                              aria-label={`Edit ${theme.name}`}
+                            >
+                              <span className="material-icons">edit</span>
+                            </button>
+                          )}
                           <button
                             className="action-btn copy-btn"
                             onClick={(e) => {
@@ -210,29 +214,33 @@ export default function ThemeSettings() {
                           >
                             <span className="material-icons">content_copy</span>
                           </button>
-                          <button
-                            className="action-btn rename-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setRenameTarget(theme);
-                              setRenameName(theme.name);
-                            }}
-                            title="Rename theme"
-                            aria-label={`Rename ${theme.name}`}
-                          >
-                            <span className="material-icons">drive_file_rename_outline</span>
-                          </button>
-                          <button
-                            className="action-btn delete-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setDeleteTarget(theme);
-                            }}
-                            title="Delete theme"
-                            aria-label={`Delete ${theme.name}`}
-                          >
-                            <span className="material-icons">delete</span>
-                          </button>
+                          {isCustom && (
+                            <>
+                              <button
+                                className="action-btn rename-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setRenameTarget(theme);
+                                  setRenameName(theme.name);
+                                }}
+                                title="Rename theme"
+                                aria-label={`Rename ${theme.name}`}
+                              >
+                                <span className="material-icons">drive_file_rename_outline</span>
+                              </button>
+                              <button
+                                className="action-btn delete-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeleteTarget(theme);
+                                }}
+                                title="Delete theme"
+                                aria-label={`Delete ${theme.name}`}
+                              >
+                                <span className="material-icons">delete</span>
+                              </button>
+                            </>
+                          )}
                         </>
                       )}
                     </div>
