@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
 from ..models import Person, Settings
-from ..schemas import ThemeOut, ThemeSave, ThemeColors, ThemeUpdate
+from ..schemas import ThemeOut, ThemeCurrentOut, ThemeDefaultInfo, ThemeSave, ThemeColors, ThemeUpdate
 from ..dependencies import get_current_user, require_admin
 
 router = APIRouter(prefix="/theme", tags=["theme"])
@@ -132,16 +132,21 @@ async def list_themes(current_user: str = Depends(get_current_user), db: AsyncSe
     return themes
 
 
-@router.get("/current", response_model=ThemeOut)
+@router.get("/current", response_model=ThemeCurrentOut)
 async def get_current_theme(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Person).where(Person.username == current_user))
     person = result.scalars().first()
 
+    has_personal = bool(person and person.preferred_theme)
     default_theme_id = await _get_default_theme(db)
-    theme_id = person.preferred_theme if person and person.preferred_theme else default_theme_id
+    theme_id = person.preferred_theme if has_personal else default_theme_id
+
     if theme_id in DEFAULT_THEMES:
-        return DEFAULT_THEMES[theme_id]
-    return _custom_themes.get(theme_id, DEFAULT_THEMES["dark"])
+        theme = DEFAULT_THEMES[theme_id]
+    else:
+        theme = _custom_themes.get(theme_id, DEFAULT_THEMES["dark"])
+
+    return ThemeCurrentOut(id=theme.id, name=theme.name, colors=theme.colors, is_personal=has_personal)
 
 
 @router.get("/default", response_model=ThemeOut)
@@ -151,6 +156,28 @@ async def get_default_theme(current_user: str = Depends(require_admin), db: Asyn
     if theme_id in DEFAULT_THEMES:
         return DEFAULT_THEMES[theme_id]
     return _custom_themes.get(theme_id, DEFAULT_THEMES["dark"])
+
+
+@router.get("/default-info", response_model=ThemeDefaultInfo)
+async def get_default_theme_info(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Return the site-wide default theme name and id. Accessible to all authenticated users."""
+    theme_id = await _get_default_theme(db)
+    if theme_id in DEFAULT_THEMES:
+        theme = DEFAULT_THEMES[theme_id]
+    else:
+        theme = _custom_themes.get(theme_id, DEFAULT_THEMES["dark"])
+    return ThemeDefaultInfo(id=theme.id, name=theme.name)
+
+
+@router.delete("/personal", status_code=204)
+async def clear_personal_theme(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Clear the current user's personal theme preference so they inherit the site default."""
+    result = await db.execute(select(Person).where(Person.username == current_user))
+    person = result.scalars().first()
+    if person:
+        person.preferred_theme = None
+        db.add(person)
+        await db.commit()
 
 
 @router.put("/default/{theme_id}", response_model=ThemeOut)

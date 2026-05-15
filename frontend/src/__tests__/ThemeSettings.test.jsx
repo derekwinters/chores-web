@@ -243,17 +243,23 @@ describe("ThemeSettings", () => {
     expect(deleteBtn).not.toBeInTheDocument();
   });
 
-  it("applies theme colors globally when default theme is set", async () => {
+  it("does not apply theme colors to the document when default theme is set", async () => {
+    // Setting the site-wide default theme should NOT affect the admin's visual theme;
+    // the admin's visual appearance is controlled by their personal preference.
     client.setDefaultTheme.mockResolvedValue(THEMES[1]);
     wrap(<ThemeSettings />);
     await waitFor(() => screen.getByText("Light"));
 
+    const rootBefore = document.documentElement.style.getPropertyValue("--bg");
+
     fireEvent.click(screen.getByText("Light"));
 
     await waitFor(() => {
-      const root = document.documentElement;
-      expect(root.style.getPropertyValue("--bg")).toBeTruthy();
+      expect(client.setDefaultTheme).toHaveBeenCalledWith("light");
     });
+
+    // CSS custom properties on documentElement should not have been altered by this action
+    expect(document.documentElement.style.getPropertyValue("--bg")).toBe(rootBefore);
   });
 
   it("renders action buttons for custom themes", async () => {

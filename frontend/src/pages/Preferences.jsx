@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getThemes, getCurrentTheme, setTheme } from "../api/client";
+import { getThemes, getCurrentTheme, getDefaultThemeInfo, setTheme, clearPersonalTheme } from "../api/client";
 import { applyTheme } from "../utils/theme";
 import "./Preferences.css";
 
@@ -19,6 +19,11 @@ export default function Preferences() {
     queryFn: getCurrentTheme,
   });
 
+  const { data: defaultThemeInfo, isLoading: defaultInfoLoading } = useQuery({
+    queryKey: ["default-theme-info"],
+    queryFn: getDefaultThemeInfo,
+  });
+
   const setThemeMutation = useMutation({
     mutationFn: (themeId) => setTheme(themeId),
     onSuccess: async (data) => {
@@ -27,9 +32,31 @@ export default function Preferences() {
     },
   });
 
-  if (themesLoading || currentLoading) {
+  const clearThemeMutation = useMutation({
+    mutationFn: clearPersonalTheme,
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["current-theme"] });
+      // Re-apply the default theme colors visually
+      if (defaultThemeInfo) {
+        const defaultTheme = themes.find((t) => t.id === defaultThemeInfo.id);
+        if (defaultTheme) {
+          applyTheme(defaultTheme.colors);
+        }
+      }
+    },
+  });
+
+  const isPending = setThemeMutation.isPending || clearThemeMutation.isPending;
+
+  if (themesLoading || currentLoading || defaultInfoLoading) {
     return <div className="loading">Loading preferences...</div>;
   }
+
+  // The "Default" card is active when the user has no personal theme set
+  const isDefaultActive = currentTheme && !currentTheme.is_personal;
+  const defaultCardLabel = defaultThemeInfo
+    ? `Default (${defaultThemeInfo.name})`
+    : "Default";
 
   return (
     <div className="preferences-page">
@@ -45,13 +72,38 @@ export default function Preferences() {
         </p>
 
         <div className="preferences-themes-list">
+          {/* Default card — clears personal preference so the site default applies */}
+          <button
+            className={`preferences-theme-card preferences-theme-card--default ${isDefaultActive ? "preferences-theme-active" : ""}`}
+            onClick={() => clearThemeMutation.mutate()}
+            disabled={isPending}
+            aria-pressed={isDefaultActive}
+          >
+            <div className="preferences-theme-name">{defaultCardLabel}</div>
+            <div className="preferences-theme-preview">
+              {defaultThemeInfo &&
+                PREVIEW_COLORS.map((colorKey) => {
+                  const defaultTheme = themes.find((t) => t.id === defaultThemeInfo.id);
+                  return (
+                    <div
+                      key={colorKey}
+                      className="preferences-color-sample"
+                      style={{
+                        backgroundColor: defaultTheme ? defaultTheme.colors[colorKey] : "transparent",
+                      }}
+                    />
+                  );
+                })}
+            </div>
+          </button>
+
           {themes.map((theme) => (
             <button
               key={theme.id}
-              className={`preferences-theme-card ${currentTheme?.id === theme.id ? "preferences-theme-active" : ""}`}
+              className={`preferences-theme-card ${currentTheme?.is_personal && currentTheme?.id === theme.id ? "preferences-theme-active" : ""}`}
               onClick={() => setThemeMutation.mutate(theme.id)}
-              disabled={setThemeMutation.isPending}
-              aria-pressed={currentTheme?.id === theme.id}
+              disabled={isPending}
+              aria-pressed={currentTheme?.is_personal && currentTheme?.id === theme.id}
             >
               <div className="preferences-theme-name">{theme.name}</div>
               <div className="preferences-theme-preview">

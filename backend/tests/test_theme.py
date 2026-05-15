@@ -123,3 +123,109 @@ async def test_set_theme_only_sets_personal_preference(authenticated_client: Asy
     r2 = await authenticated_client.get("/theme/default")
     assert r2.status_code == 200
     assert r2.json()["id"] == "charcoal"
+
+
+@pytest.mark.asyncio
+async def test_get_default_theme_info_accessible_to_regular_user(client: AsyncClient, db: AsyncSession):
+    """GET /theme/default-info returns default theme name/id for any authenticated user."""
+    from app.security import hash_password
+    from app.models import Person
+
+    # Enable auth
+    db.add(Settings(key="auth_enabled", value="true"))
+
+    # Create a non-admin user
+    person = Person(
+        name="RegularUser",
+        username="regularuser",
+        password_hash=hash_password("regularpass123"),
+        is_admin=False,
+    )
+    db.add(person)
+    await db.commit()
+
+    login_r = await client.post("/auth/login", json={"username": "regularuser", "password": "regularpass123"})
+    token = login_r.json()["access_token"]
+
+    r = await client.get("/theme/default-info", headers={"Authorization": f"Bearer {token}"})
+    assert r.status_code == 200
+    data = r.json()
+    assert data["id"] == "dark"
+    assert data["name"] == "Dark"
+
+
+@pytest.mark.asyncio
+async def test_get_default_theme_info_returns_current_default(authenticated_client: AsyncClient, db: AsyncSession):
+    """GET /theme/default-info reflects the currently configured default theme."""
+    db.add(Settings(key="default_theme", value="light"))
+    await db.commit()
+
+    r = await authenticated_client.get("/theme/default-info")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["id"] == "light"
+    assert data["name"] == "Light"
+
+
+@pytest.mark.asyncio
+async def test_clear_personal_theme_removes_preference(authenticated_client: AsyncClient, db: AsyncSession):
+    """DELETE /theme/personal clears the user's preferred_theme, reverting to site default."""
+    # First set a personal theme
+    r = await authenticated_client.post("/theme/set/light")
+    assert r.status_code == 200
+
+    # Verify is_personal is True
+    r2 = await authenticated_client.get("/theme/current")
+    assert r2.json()["is_personal"] is True
+
+    # Clear personal theme
+    r3 = await authenticated_client.delete("/theme/personal")
+    assert r3.status_code == 204
+
+    # is_personal should now be False and theme reverts to default
+    r4 = await authenticated_client.get("/theme/current")
+    data = r4.json()
+    assert data["is_personal"] is False
+    assert data["id"] == "dark"
+
+
+@pytest.mark.asyncio
+async def test_get_current_theme_includes_is_personal_flag(authenticated_client: AsyncClient, db: AsyncSession):
+    """GET /theme/current includes is_personal=False when user has no personal preference."""
+    r = await authenticated_client.get("/theme/current")
+    assert r.status_code == 200
+    data = r.json()
+    assert "is_personal" in data
+    assert data["is_personal"] is False
+
+
+@pytest.mark.asyncio
+async def test_get_current_theme_is_personal_true_after_set(authenticated_client: AsyncClient, db: AsyncSession):
+    """GET /theme/current includes is_personal=True after setting a personal theme."""
+    await authenticated_client.post("/theme/set/light")
+
+    r = await authenticated_client.get("/theme/current")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["is_personal"] is True
+    assert data["id"] == "light"
+
+
+@pytest.mark.asyncio
+async def test_set_default_theme_does_not_change_user_personal_theme(authenticated_client: AsyncClient, db: AsyncSession):
+    """PUT /theme/default/{theme_id} updates site default but never touches user preferred_theme."""
+    from app.models import Person
+    from sqlalchemy import select
+
+    # Set personal theme to light
+    await authenticated_client.post("/theme/set/light")
+
+    # Set site default to charcoal (admin action)
+    r = await authenticated_client.put("/theme/default/charcoal")
+    assert r.status_code == 200
+
+    # Personal theme in DB should still be light
+    r2 = await authenticated_client.get("/theme/current")
+    data = r2.json()
+    assert data["is_personal"] is True
+    assert data["id"] == "light"

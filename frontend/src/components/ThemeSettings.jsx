@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getThemes, getDefaultTheme, setDefaultTheme, saveTheme, deleteTheme, renameTheme, updateTheme } from "../api/client";
-import { applyTheme, DEFAULT_THEME_COLORS } from "../utils/theme";
+import { DEFAULT_THEME_COLORS } from "../utils/theme";
 import "./ThemeSettings.css";
 
 const DEFAULT_THEME_IDS = ["dark", "light", "charcoal", "paper", "pink", "frog"];
@@ -35,17 +35,12 @@ export default function ThemeSettings() {
     queryFn: getDefaultTheme,
   });
 
-  useEffect(() => {
-    if (defaultTheme?.colors) {
-      applyTheme(defaultTheme.colors);
-    }
-  }, [defaultTheme]);
-
   const setDefaultThemeMutation = useMutation({
     mutationFn: (themeId) => setDefaultTheme(themeId),
-    onSuccess: async (data) => {
-      applyTheme(data.colors);
+    onSuccess: async () => {
       await refetchDefaultTheme();
+      // Also invalidate default-theme-info so the Preferences page label stays fresh
+      queryClient.invalidateQueries({ queryKey: ["default-theme-info"] });
       setError(null);
     },
     onError: (err) => {

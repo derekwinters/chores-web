@@ -45,6 +45,10 @@ const MOCK_THEMES = [
   },
 ];
 
+const MOCK_CURRENT_THEME_PERSONAL = { ...MOCK_THEMES[0], is_personal: true };
+const MOCK_CURRENT_THEME_DEFAULT = { ...MOCK_THEMES[0], is_personal: false };
+const MOCK_DEFAULT_INFO = { id: "dark", name: "Dark" };
+
 function wrap() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
@@ -60,7 +64,8 @@ describe("Preferences", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     client.getThemes.mockResolvedValue(MOCK_THEMES);
-    client.getCurrentTheme.mockResolvedValue(MOCK_THEMES[0]);
+    client.getCurrentTheme.mockResolvedValue(MOCK_CURRENT_THEME_PERSONAL);
+    client.getDefaultThemeInfo.mockResolvedValue(MOCK_DEFAULT_INFO);
   });
 
   it("renders the Preferences page heading", async () => {
@@ -85,7 +90,41 @@ describe("Preferences", () => {
     });
   });
 
-  it("marks the current theme as active", async () => {
+  it("renders a Default card as the first option", async () => {
+    wrap();
+    await waitFor(() => {
+      expect(screen.getByText("Default (Dark)")).toBeInTheDocument();
+    });
+  });
+
+  it("Default card is first in the list", async () => {
+    wrap();
+    await waitFor(() => {
+      const buttons = screen.getAllByRole("button");
+      expect(buttons[0]).toHaveTextContent("Default (Dark)");
+    });
+  });
+
+  it("marks the Default card as active when user has no personal theme", async () => {
+    client.getCurrentTheme.mockResolvedValue(MOCK_CURRENT_THEME_DEFAULT);
+    wrap();
+    await waitFor(() => {
+      const defaultCard = screen.getByText("Default (Dark)").closest("button");
+      expect(defaultCard).toHaveClass("preferences-theme-active");
+    });
+  });
+
+  it("Default card is not active when user has a personal theme set", async () => {
+    client.getCurrentTheme.mockResolvedValue(MOCK_CURRENT_THEME_PERSONAL);
+    wrap();
+    await waitFor(() => {
+      const defaultCard = screen.getByText("Default (Dark)").closest("button");
+      expect(defaultCard).not.toHaveClass("preferences-theme-active");
+    });
+  });
+
+  it("marks the current personal theme card as active", async () => {
+    client.getCurrentTheme.mockResolvedValue(MOCK_CURRENT_THEME_PERSONAL);
     wrap();
     await waitFor(() => {
       const darkCard = screen.getByText("Dark").closest("button");
@@ -93,8 +132,20 @@ describe("Preferences", () => {
     });
   });
 
+  it("calls clearPersonalTheme when Default card is clicked", async () => {
+    client.clearPersonalTheme.mockResolvedValue(null);
+    wrap();
+    await waitFor(() => screen.getByText("Default (Dark)"));
+
+    fireEvent.click(screen.getByText("Default (Dark)").closest("button"));
+
+    await waitFor(() => {
+      expect(client.clearPersonalTheme).toHaveBeenCalled();
+    });
+  });
+
   it("calls setTheme when a theme card is clicked", async () => {
-    client.setTheme.mockResolvedValue(MOCK_THEMES[1]);
+    client.setTheme.mockResolvedValue({ ...MOCK_THEMES[1], is_personal: true });
     wrap();
     await waitFor(() => screen.getByText("Light"));
 
