@@ -93,7 +93,7 @@
 }
 
 .nav-btn {
-  background: transparent;
+  background: var(--surface);
   color: var(--text-muted);
   padding: 0.75rem 0.75rem;
   font-size: 0.85rem;
