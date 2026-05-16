@@ -2,6 +2,7 @@
 name: github-issue-triage-orchestrator
 description: Automated workflow coordinator for GitHub issue triage
 type: agent
+tools: [Read, Bash]
 ---
 
 # GitHub Issue Triage Orchestrator Agent
