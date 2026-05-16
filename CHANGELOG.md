@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.4.0](https://github.com/derekwinters/chores-web/compare/v1.3.0...v1.4.0) (2026-05-16)
+
+
+### Features
+
+* Add chore summary stats tiles to /chores page ([#81](https://github.com/derekwinters/chores-web/issues/81)) ([#221](https://github.com/derekwinters/chores-web/issues/221)) ([a78ff9c](https://github.com/derekwinters/chores-web/commit/a78ff9cc8a030a588d11fc6407713f00ef6ea712))
+* Add hex color input and color picker to theme editor ([#113](https://github.com/derekwinters/chores-web/issues/113)) ([#222](https://github.com/derekwinters/chores-web/issues/222)) ([6916947](https://github.com/derekwinters/chores-web/commit/691694740ca46fb45ba743b39f4bde974821713a))
+* **ai:** add grill-me skill and doc-aware planning/implementation ([#234](https://github.com/derekwinters/chores-web/issues/234)) ([14b3a59](https://github.com/derekwinters/chores-web/commit/14b3a5956791d6fcd12784f6f9cff2250bf6122d)), closes [#233](https://github.com/derekwinters/chores-web/issues/233)
+* Apply unified theme colors across all pages ([#115](https://github.com/derekwinters/chores-web/issues/115)-120) ([#223](https://github.com/derekwinters/chores-web/issues/223)) ([62e7a1b](https://github.com/derekwinters/chores-web/commit/62e7a1bdf01c07dc359e41a8c7338c4b2f514894))
+* **chores:** unassign open chores after completion ([#225](https://github.com/derekwinters/chores-web/issues/225)) ([#232](https://github.com/derekwinters/chores-web/issues/232)) ([a4a7207](https://github.com/derekwinters/chores-web/commit/a4a72073833c5810aa1ea5fd9e0bfd5a2c3b5c00))
+* Define unified theme color structure (9-color system) ([#114](https://github.com/derekwinters/chores-web/issues/114)) ([#213](https://github.com/derekwinters/chores-web/issues/213)) ([3b35860](https://github.com/derekwinters/chores-web/commit/3b3586031e10a8d5432bf02bc16bd43279f1969d))
+* **error-handling:** Improve UI error messages with fallback strategy ([#239](https://github.com/derekwinters/chores-web/issues/239)) ([ce41b09](https://github.com/derekwinters/chores-web/commit/ce41b094a688f0d0e5e5d9839f5138cc3a6649f3)), closes [#155](https://github.com/derekwinters/chores-web/issues/155)
+* **frontend:** refine log view with relative timestamps and redesigned badges ([#191](https://github.com/derekwinters/chores-web/issues/191)) ([#237](https://github.com/derekwinters/chores-web/issues/237)) ([96121fe](https://github.com/derekwinters/chores-web/commit/96121feceb41c076d1306f129bf52d6c78d337ca))
+* **frontend:** save button feedback for all save actions ([#71](https://github.com/derekwinters/chores-web/issues/71)) ([#238](https://github.com/derekwinters/chores-web/issues/238)) ([05d05cb](https://github.com/derekwinters/chores-web/commit/05d05cbf0ad748f4290967b86361d125884b6f52))
+* Improve theme list UX with action icons and color preview ([#122](https://github.com/derekwinters/chores-web/issues/122)) ([#219](https://github.com/derekwinters/chores-web/issues/219)) ([cf8a6e8](https://github.com/derekwinters/chores-web/commit/cf8a6e876b0f97d0e1356beba83964bd83a5fee8))
+* Separate personal theme selection from default theme setting ([#121](https://github.com/derekwinters/chores-web/issues/121)) ([#224](https://github.com/derekwinters/chores-web/issues/224)) ([f4b61ec](https://github.com/derekwinters/chores-web/commit/f4b61ec81c11078918f2d1693f05fe41a4dbde16))
+* **theme:** Paper default with borderless cards and consistent shadows ([#242](https://github.com/derekwinters/chores-web/issues/242)) ([21b4442](https://github.com/derekwinters/chores-web/commit/21b44425c6144fe4f9b096e2997ffdf9b2ff2f59))
+
+
+### Bug Fixes
+
+* **ai:** update orchestrator script implement step for doc pre/post work ([#236](https://github.com/derekwinters/chores-web/issues/236)) ([742e10b](https://github.com/derekwinters/chores-web/commit/742e10b2495ceff9f6e913b5d400f7d1c4495542))
+* Correct chore assignee filter to respect eligible_people ([#88](https://github.com/derekwinters/chores-web/issues/88)) ([#229](https://github.com/derekwinters/chores-web/issues/229)) ([f316186](https://github.com/derekwinters/chores-web/commit/f316186f18f6424462a5a71ef1386ad6ff5da35a))
+* correct points window filtering and dashboard lookup key ([#208](https://github.com/derekwinters/chores-web/issues/208)) ([#210](https://github.com/derekwinters/chores-web/issues/210)) ([f07c2f4](https://github.com/derekwinters/chores-web/commit/f07c2f4da869019716102fff93c19098360bdcc2))
+* **frontend:** keep highlight color on expanded chore card ([#226](https://github.com/derekwinters/chores-web/issues/226)) ([#235](https://github.com/derekwinters/chores-web/issues/235)) ([d07de47](https://github.com/derekwinters/chores-web/commit/d07de47fdf099bc21448891e93deb75777e1ae02))
+* **frontend:** prevent adjacent column cards from stretching on expand ([#227](https://github.com/derekwinters/chores-web/issues/227)) ([#231](https://github.com/derekwinters/chores-web/issues/231)) ([6a14834](https://github.com/derekwinters/chores-web/commit/6a14834a7ceec49b0e6667224390d311ef063993))
+* **frontend:** remove preferences from sidebar navigation ([#230](https://github.com/derekwinters/chores-web/issues/230)) ([cb1c886](https://github.com/derekwinters/chores-web/commit/cb1c886e6242595627ab00b13c6042c8772dbd2f))
+* **theme:** Calendar colors on edit screen for light themes ([#241](https://github.com/derekwinters/chores-web/issues/241)) ([2ca8b86](https://github.com/derekwinters/chores-web/commit/2ca8b86dcd65e3f36c671657a66992b1592e98ee))
+* **theme:** Reduce pink theme saturation to accent/highlight only ([#240](https://github.com/derekwinters/chores-web/issues/240)) ([b6d9e2b](https://github.com/derekwinters/chores-web/commit/b6d9e2b4074134e36d5d0ee609ac1bb4ea56b167)), closes [#112](https://github.com/derekwinters/chores-web/issues/112)
+
+
+### Documentation
+
+* Complete documentation audit and accuracy updates ([#243](https://github.com/derekwinters/chores-web/issues/243)) ([#244](https://github.com/derekwinters/chores-web/issues/244)) ([b4b2f4f](https://github.com/derekwinters/chores-web/commit/b4b2f4fcbf137b0acf574a7d243613c75fde587b))
+
+
+### CI/CD
+
+* **release:** Add release-please configuration ([#245](https://github.com/derekwinters/chores-web/issues/245)) ([f8ba8bb](https://github.com/derekwinters/chores-web/commit/f8ba8bbdfcbde3c207e5743c1d394914d9e0d3d5))
+
 ## [1.3.0](https://github.com/derekwinters/chores-web/compare/v1.2.0...v1.3.0) (2026-05-10)
 
 
