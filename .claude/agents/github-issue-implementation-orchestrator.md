@@ -6,11 +6,11 @@ type: agent
 
 # GitHub Issue Implementation Orchestrator Agent
 
-Automated workflow coordinator for implementing GitHub issues end-to-end. Implements 8-state machine to guide issues through branch creation, implementation, testing, and pull request creation.
+Automated workflow coordinator for implementing GitHub issues end-to-end. Implements 10-state machine to guide issues through branch creation, documentation, implementation, testing, and pull request creation.
 
 ## IMPORTANT: Display Workflow Diagram on Every State Transition
 
-Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders. This provides a visual checkpoint at every step of the 8-state machine.
+Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders. This provides a visual checkpoint at every step of the 10-state machine.
 
 ## State Machine & Skill Orchestration
 
@@ -27,45 +27,47 @@ START
   ├─ Creates: <type>-issue-<number> branch from updated main
   └─ Result: Branch ready for implementation
           ↓
-[3] implement
+[3] doc-pre
+  ├─ Read affected doc pages from plan's documentation section
+  ├─ Draft documentation changes for the planned feature/fix
+  └─ Result: Doc drafts staged for review alongside code
+          ↓
+[4] implement
   ├─ Call: /implementation-implement <issue-number>
-  ├─ Pre-work: Update docs/ pages identified in implementation plan before writing code
-  │  ├─ Read affected doc pages from plan's documentation section
-  │  ├─ Draft documentation changes for the planned feature/fix
-  │  └─ Commit doc drafts alongside code (or stage for final review)
   ├─ Executes: Code changes across DB, backend, frontend, tests
   ├─ Follows: Implementation plan from planning phase
-  ├─ Post-work: Review and correct documentation after code is complete
-  │  ├─ Re-read modified doc pages to verify accuracy against actual implementation
-  │  ├─ Correct any discrepancies between docs and code
-  │  └─ Add missing doc coverage for new behavior
-  └─ Result: Files modified, implementation complete, docs updated
+  └─ Result: Files modified, implementation complete
           ↓
-[4] test
+[5] test
   ├─ Call: /implementation-test
   ├─ Executes: pytest (backend), frontend tests if applicable
   └─ Branch:
-      ├─ PASS → Continue to [5]
+      ├─ PASS → Continue to [6]
       └─ FAIL → PAUSE for fixes, return to [3]
           ↓
-[5] verify
+[6] verify
   ├─ Call: /implementation-verify <issue-number>
   ├─ Executes: Docker rebuild, shows changes summary
   └─ PAUSE: Awaits user approval
           ↓
-[6] User Review & Approval
+[7] User Review & Approval
   ├─ User decides:
-  │  ├─ Approve → Continue to [7]
+  │  ├─ Approve → Continue to [8]
   │  ├─ Request changes → Return to [3]
   │  └─ Abort → END
           ↓
-[7] finalize
+[8] doc-post
+  ├─ Re-read modified doc pages to verify accuracy against actual implementation
+  ├─ Correct any discrepancies between docs and code
+  └─ Add missing doc coverage for new behavior
+          ↓
+[9] finalize
   ├─ Call: /implementation-finalize <issue-number> <commit-type>
   ├─ Executes: Commit, push, PR creation
   ├─ Format: Conventional commit with separate Closes per issue
   └─ Result: PR URL returned
           ↓
-[8] complete
+[10] complete
   ├─ Display: PR URL to user
   ├─ Info: Issue auto-closes when merged
   └─ END
@@ -79,9 +81,9 @@ Agent outputs workflow diagram on each state transition, highlighting the destin
 GITHUB ISSUE IMPLEMENTATION WORKFLOW
 ====================================
 
-┌──────────┐  ┌─────────┐  ┌──────────┐  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐
-│ Validate ├─▶│ Prepare ├─▶│Implement ├─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Finalize ├─▶│ Complete │
-└──────────┘  └─────────┘  └──────────┘  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Prepare ├─▶│ Doc Pre ├─▶│Implement ├─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Doc Post ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  └─────────┘  └──────────┘  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘  └──────────┘
 ```
 
 Current stage highlighted with double borders (┃, ┏┓┗┛). Example if at Implement stage:
@@ -90,17 +92,17 @@ Current stage highlighted with double borders (┃, ┏┓┗┛). Example if at
 GITHUB ISSUE IMPLEMENTATION WORKFLOW
 ====================================
 
-┌──────────┐  ┌─────────┐  ┏━━━━━━━━━━┓  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐
-│ Validate ├─▶│ Prepare ├─▶┃Implement ┃─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Finalize ├─▶│ Complete │
-└──────────┘  └─────────┘  ┗━━━━━━━━━━┛  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌─────────┐  ┌─────────┐  ┏━━━━━━━━━━┓  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Prepare ├─▶│ Doc Pre ├─▶┃Implement ┃─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Doc Post ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  └─────────┘  ┗━━━━━━━━━━┛  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘  └──────────┘
 ```
 
 Also displays issue context:
 
 ```
 Issue #129: Add flexible skip options
-State: [3] Implement
-Progress: 3/8
+State: [4] Implement
+Progress: 4/10
 Branch: feat-issue-129
 ```
 
@@ -125,7 +127,7 @@ Resumable by checking current branch state and git status.
 ### Output
 - Fully implemented issue with:
   - Code changes across affected layers (via implementation-implement skill)
-  - Documentation updated before and verified after implementation
+  - Documentation drafted before coding and verified/corrected after user approval
   - All tests passing (via implementation-test skill)
   - Docker containers running with changes (via implementation-verify skill)
   - Conventional commit with issue reference (via implementation-finalize skill)
@@ -136,17 +138,19 @@ Resumable by checking current branch state and git status.
 
 1. **implementation-validate** - Validate issue readiness
 2. **implementation-prepare** - Create feature branch
-3. **implementation-implement** - Make code changes
-4. **implementation-test** - Run test suite
-5. **implementation-verify** - Docker rebuild + show summary
-6. *User review pause*
-7. **implementation-finalize** - Commit, push, create PR
+3. *(doc-pre)* - Draft documentation updates before coding
+4. **implementation-implement** - Make code changes
+5. **implementation-test** - Run test suite
+6. **implementation-verify** - Docker rebuild + show summary
+7. *User review pause*
+8. *(doc-post)* - Review and correct documentation against actual implementation
+9. **implementation-finalize** - Commit, push, create PR
 
 ### Error Handling
 - Invalid issue number → error message
 - Issue missing `ready-for-work` label → ABORT
 - Issue already closed → ABORT
-- Test failures → PAUSE, show errors, return to implementation
+- Test failures → PAUSE, show errors, return to doc-pre / implementation
 - Docker failures → PAUSE, show errors
 - Git push failures → PAUSE, investigate
 
@@ -156,7 +160,7 @@ Orchestrator:
 - Calls skills in sequence
 - Displays state diagram on each state transition
 - Manages pause points for user review
-- Routes loops (e.g., changes requested → return to implement)
+- Routes loops (e.g., changes requested → return to doc-pre / implement)
 - Returns final PR URL
 
 ## Key Features
@@ -173,7 +177,7 @@ Orchestrator:
 
 **Auto-Close**: PR body includes "Closes #<number>" on separate line per issue for GitHub auto-closing
 
-**User Control**: Pause point after verification allows review before commit
+**User Control**: Pause point after verification allows review before doc-post and commit
 
 **State Progress**: Displays current state and progress at start of every response
 
@@ -211,6 +215,6 @@ Each skill has independent entry points and can be called standalone if needed.
 - Agent idempotent: safe to re-run from failed state
 - All git operations happen on isolated `<type>-issue-<number>` branch
 - Tests must pass before user review pause
-- User has final approval before commit/push
+- User has final approval before doc-post and commit/push
 - PR auto-closes issue when merged (with separate Closes line per issue)
 - Implementation plan from planning phase guides actual code changes
