@@ -27,7 +27,7 @@ export default function SettingsGeneral() {
   const [title, setTitle] = useState("");
   const [timezone, setTimezone] = useState("UTC");
   const [error, setError] = useState(null);
-  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError } = useSaveStatus();
 
   const { data: config, isLoading: configLoading } = useQuery({
     queryKey: ["config"],
@@ -61,10 +61,9 @@ export default function SettingsGeneral() {
       setError("Title cannot be empty");
       return;
     }
+    triggerSaving();
     generalMutation.mutate({ title, timezone });
   };
-
-  const saveBtnClass = saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary";
 
   if (configLoading) return <div className="loading">Loading settings…</div>;
 
@@ -80,7 +79,7 @@ export default function SettingsGeneral() {
             onClick={handleSaveGeneral}
             disabled={generalMutation.isPending}
           >
-            {generalMutation.isPending ? "Saving…" : "Save"}
+            {saveStatus === "saving" ? "Saving…" : saveStatus === "success" ? "Saved" : "Save"}
           </button>
         </div>
         <hr />
@@ -107,7 +106,7 @@ export default function SettingsGeneral() {
             onClick={handleSaveGeneral}
             disabled={generalMutation.isPending || !title.trim()}
           >
-            {generalMutation.isPending ? "Saving…" : "Save"}
+            {saveStatus === "saving" ? "Saving…" : saveStatus === "success" ? "Saved" : "Save"}
           </button>
         </div>
         <hr />

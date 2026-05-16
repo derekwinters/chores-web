@@ -170,7 +170,7 @@ export default function ChoreForm({ initial, people, onSubmit, onCancel, onSaveS
   const [s, setS] = useState(initial ? choreToState(initial) : emptyState());
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
-  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError } = useSaveStatus();
   const closeTimerRef = useRef(null);
 
   React.useEffect(() => {
@@ -211,6 +211,7 @@ export default function ChoreForm({ initial, people, onSubmit, onCancel, onSaveS
     if (err) { setError(err); return; }
     setBusy(true);
     setError(null);
+    triggerSaving();
     try {
       await onSubmit(stateToPayload(s, { isEditing: Boolean(initial) }));
       triggerSuccess();
@@ -619,10 +620,10 @@ export default function ChoreForm({ initial, people, onSubmit, onCancel, onSaveS
         </button>
         <button
           type="submit"
-          className={saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary"}
+          className={saveBtnClass}
           disabled={busy}
         >
-          {busy && !saveStatus ? "Saving…" : submitLabel}
+          {saveStatus === "saving" ? "Saving…" : saveStatus === "success" ? "Saved" : submitLabel}
         </button>
       </div>
     </form>

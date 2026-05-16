@@ -16,7 +16,7 @@ export default function SettingsAbout() {
   const [updateCheckEnabledInput, setUpdateCheckEnabledInput] = useState(true);
   const [updateCheckIntervalInput, setUpdateCheckIntervalInput] = useState(24);
   const [error, setError] = useState(null);
-  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError } = useSaveStatus();
 
   const { data: config } = useQuery({
     queryKey: ["config"],
@@ -76,14 +76,13 @@ export default function SettingsAbout() {
       setError("Update check interval must be at least 1 hour");
       return;
     }
+    triggerSaving();
     updateCheckConfigMutation.mutate();
   };
 
   const handleTriggerUpdateCheck = () => {
     triggerUpdateCheckMutation.mutate();
   };
-
-  const saveBtnClass = saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary";
 
   return (
     <div className="settings-page">
@@ -134,7 +133,7 @@ export default function SettingsAbout() {
             onClick={handleSaveUpdateCheckConfig}
             disabled={updateCheckConfigMutation.isPending || updateCheckLoading}
           >
-            {updateCheckConfigMutation.isPending ? "Saving…" : "Save Settings"}
+            {saveStatus === "saving" ? "Saving…" : saveStatus === "success" ? "Saved" : "Save Settings"}
           </button>
         </div>
         <hr />

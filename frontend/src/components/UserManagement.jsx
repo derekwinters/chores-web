@@ -30,7 +30,7 @@ export default function UserManagement() {
   });
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null); // null | { message, variant }
-  const { saveStatus, triggerSuccess, triggerError, reset: resetSaveStatus } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError, reset: resetSaveStatus } = useSaveStatus();
 
   const createMutation = useMutation({
     mutationFn: ({ name, password, color }) => createPerson(name, password, color),
@@ -117,6 +117,7 @@ export default function UserManagement() {
       return;
     }
 
+    triggerSaving();
     if (modal.mode === "create") {
       createMutation.mutate({
         name: editForm.name.trim(),
@@ -367,11 +368,11 @@ export default function UserManagement() {
                 Cancel
               </button>
               <button
-                className={saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary"}
+                className={saveBtnClass}
                 onClick={handleSaveForm}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
-                {createMutation.isPending || updateMutation.isPending ? "Saving…" : "Save"}
+                {saveStatus === "saving" ? "Saving…" : saveStatus === "success" ? "Saved" : "Save"}
               </button>
             </div>
           </div>

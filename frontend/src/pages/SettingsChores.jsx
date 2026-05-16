@@ -10,7 +10,7 @@ export default function SettingsChores() {
 
   const [dueSoonDaysInput, setDueSoonDaysInput] = useState("");
   const [error, setError] = useState(null);
-  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError } = useSaveStatus();
 
   const { data: config, isLoading: configLoading } = useQuery({
     queryKey: ["config"],
@@ -43,10 +43,9 @@ export default function SettingsChores() {
       setError("Due soon threshold must be between 1 and 365 days");
       return;
     }
+    triggerSaving();
     dueSoonDaysMutation.mutate(days);
   };
-
-  const saveBtnClass = saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary";
 
   if (configLoading) return <div className="loading">Loading settings…</div>;
 
@@ -62,7 +61,7 @@ export default function SettingsChores() {
             onClick={handleSaveDueSoonDays}
             disabled={dueSoonDaysMutation.isPending}
           >
-            {dueSoonDaysMutation.isPending ? "Saving…" : "Save"}
+            {saveStatus === "saving" ? "Saving…" : saveStatus === "success" ? "Saved" : "Save"}
           </button>
         </div>
         <hr />

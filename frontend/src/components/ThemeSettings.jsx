@@ -24,7 +24,7 @@ export default function ThemeSettings() {
   const [hexInputs, setHexInputs] = useState({});
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null); // null | { message, variant }
-  const { saveStatus: themeSaveStatus, triggerSuccess: triggerThemeSave, triggerError: triggerThemeSaveError, reset: resetThemeSave } = useSaveStatus();
+  const { saveStatus: themeSaveStatus, saveBtnClass: themeSaveBtnClass, triggerSaving: triggerThemeSaving, triggerSuccess: triggerThemeSave, triggerError: triggerThemeSaveError, reset: resetThemeSave } = useSaveStatus();
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [renameTarget, setRenameTarget] = useState(null);
   const [renameName, setRenameName] = useState("");
@@ -149,6 +149,7 @@ export default function ThemeSettings() {
       return;
     }
 
+    triggerThemeSaving();
     if (customizingTheme) {
       // Editing existing custom theme
       updateThemeMutation.mutate({
@@ -323,11 +324,11 @@ export default function ThemeSettings() {
 
           <div className="editor-actions">
             <button
-              className={themeSaveStatus === "success" ? "btn-success" : themeSaveStatus === "error" ? "btn-error" : "btn-primary"}
+              className={themeSaveBtnClass}
               onClick={handleSaveCustom}
               disabled={saveThemeMutation.isPending || updateThemeMutation.isPending}
             >
-              {customizingTheme ? "Update Theme" : "Save Theme"}
+              {themeSaveStatus === "saving" ? "Saving…" : themeSaveStatus === "success" ? "Saved" : customizingTheme ? "Update Theme" : "Save Theme"}
             </button>
             <button
               className="btn-secondary"

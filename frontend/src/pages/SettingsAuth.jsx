@@ -12,7 +12,7 @@ export default function SettingsAuth() {
 
   const [authEnabled, setAuthEnabled] = useState(true);
   const [error, setError] = useState(null);
-  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError } = useSaveStatus();
 
   const { data: config, isLoading: configLoading } = useQuery({
     queryKey: ["config"],
@@ -40,10 +40,9 @@ export default function SettingsAuth() {
   });
 
   const handleSave = () => {
+    triggerSaving();
     authMutation.mutate({ auth_enabled: authEnabled });
   };
-
-  const saveBtnClass = saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary";
 
   if (configLoading) return <div className="loading">Loading settings…</div>;
 
@@ -59,7 +58,7 @@ export default function SettingsAuth() {
             onClick={handleSave}
             disabled={authMutation.isPending}
           >
-            {authMutation.isPending ? "Saving…" : "Save"}
+            {saveStatus === "saving" ? "Saving…" : saveStatus === "success" ? "Saved" : "Save"}
           </button>
         </div>
         <hr />

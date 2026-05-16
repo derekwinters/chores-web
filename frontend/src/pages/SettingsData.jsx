@@ -10,7 +10,7 @@ import "./AdminPanel.css";
 export default function SettingsData() {
   const [retentionInput, setRetentionInput] = useState("");
   const [error, setError] = useState(null);
-  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError } = useSaveStatus();
 
   const { data: retentionData, isLoading: retentionLoading } = useQuery({
     queryKey: ["log-retention"],
@@ -42,10 +42,9 @@ export default function SettingsData() {
       setError("Days must be a number greater than 0");
       return;
     }
+    triggerSaving();
     retentionMutation.mutate(days);
   };
-
-  const saveBtnClass = saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary";
 
   return (
     <div className="settings-page">
@@ -67,7 +66,7 @@ export default function SettingsData() {
             onClick={handleSaveRetention}
             disabled={retentionMutation.isPending || retentionLoading}
           >
-            {retentionMutation.isPending ? "Saving…" : "Save"}
+            {saveStatus === "saving" ? "Saving…" : saveStatus === "success" ? "Saved" : "Save"}
           </button>
         </div>
         <hr />

@@ -21,7 +21,7 @@ export default function DatabaseSection() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const { saveStatus: rowSaveStatus, triggerSuccess: triggerRowSuccess, triggerError: triggerRowError } = useSaveStatus();
+  const { saveStatus: rowSaveStatus, saveBtnClass: rowSaveBtnClass, triggerSaving: triggerRowSaving, triggerSuccess: triggerRowSuccess, triggerError: triggerRowError } = useSaveStatus();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-points-log", offset],
@@ -89,6 +89,7 @@ export default function DatabaseSection() {
       setError("Person cannot be empty.");
       return;
     }
+    triggerRowSaving();
     updateMutation.mutate({ id, points: pts, person: editPerson.trim() });
   }
 
@@ -175,11 +176,11 @@ export default function DatabaseSection() {
                         <td>{new Date(item.completed_at).toLocaleString()}</td>
                         <td className="db-actions">
                           <button
-                            className={rowSaveStatus === "success" ? "btn-success" : rowSaveStatus === "error" ? "btn-error" : "btn-primary"}
+                            className={rowSaveBtnClass}
                             onClick={() => saveEdit(item.id)}
                             disabled={updateMutation.isPending}
                           >
-                            {updateMutation.isPending ? "Saving…" : "Save"}
+                            {rowSaveStatus === "saving" ? "Saving…" : rowSaveStatus === "success" ? "Saved" : "Save"}
                           </button>
                           <button
                             className="btn-secondary"
