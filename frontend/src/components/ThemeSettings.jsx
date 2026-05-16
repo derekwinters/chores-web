@@ -24,7 +24,7 @@ export default function ThemeSettings() {
   const [hexInputs, setHexInputs] = useState({});
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null); // null | { message, variant }
-  const { saveStatus: themeSaveStatus, saveBtnClass: themeSaveBtnClass, triggerSaving: triggerThemeSaving, triggerSuccess: triggerThemeSave, triggerError: triggerThemeSaveError, reset: resetThemeSave } = useSaveStatus();
+  const { saveStatus: themeSaveStatus, saveBtnClass: themeSaveBtnClass, triggerSaving: triggerThemeSaving, triggerSuccess: triggerThemeSave, triggerError: triggerThemeSaveError, reset: resetThemeSave, getCloseDelay: getThemeCloseDelay } = useSaveStatus();
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [renameTarget, setRenameTarget] = useState(null);
   const [renameName, setRenameName] = useState("");
@@ -67,7 +67,7 @@ export default function ThemeSettings() {
       queryClient.invalidateQueries({ queryKey: ["default-theme"] });
       setError(null);
       triggerThemeSave();
-      setTimeout(closeThemeEditor, 1000);
+      setTimeout(closeThemeEditor, getThemeCloseDelay());
     },
     onError: (err) => {
       triggerThemeSaveError();
@@ -82,7 +82,7 @@ export default function ThemeSettings() {
       queryClient.invalidateQueries({ queryKey: ["default-theme"] });
       setError(null);
       triggerThemeSave();
-      setTimeout(closeThemeEditor, 1000);
+      setTimeout(closeThemeEditor, getThemeCloseDelay());
     },
     onError: (err) => {
       triggerThemeSaveError();

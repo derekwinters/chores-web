@@ -103,12 +103,12 @@ export default function Manage() {
 
   const createMut = useMutation({
     mutationFn: createChore,
-    onSuccess: () => { invalidate(); setModal(null); },
+    onSuccess: () => { invalidate(); },
   });
 
   const updateMut = useMutation({
     mutationFn: ({ id, data }) => updateChore(id, data),
-    onSuccess: () => { invalidate(); setModal(null); },
+    onSuccess: () => { invalidate(); },
   });
 
   const deleteMut = useMutation({

@@ -30,7 +30,7 @@ export default function UserManagement() {
   });
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null); // null | { message, variant }
-  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError, reset: resetSaveStatus } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError, reset: resetSaveStatus, getCloseDelay } = useSaveStatus();
 
   const createMutation = useMutation({
     mutationFn: ({ name, password, color }) => createPerson(name, password, color),
@@ -38,7 +38,7 @@ export default function UserManagement() {
       queryClient.invalidateQueries({ queryKey: ["people"] });
       triggerSuccess();
       setError(null);
-      setTimeout(() => setModal(null), 1000);
+      setTimeout(() => setModal(null), getCloseDelay());
     },
     onError: (err) => {
       triggerError();
@@ -52,7 +52,7 @@ export default function UserManagement() {
       queryClient.invalidateQueries({ queryKey: ["people"] });
       triggerSuccess();
       setError(null);
-      setTimeout(() => setModal(null), 1000);
+      setTimeout(() => setModal(null), getCloseDelay());
     },
     onError: (err) => {
       triggerError();

@@ -21,7 +21,7 @@ export default function DatabaseSection() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const { saveStatus: rowSaveStatus, saveBtnClass: rowSaveBtnClass, triggerSaving: triggerRowSaving, triggerSuccess: triggerRowSuccess, triggerError: triggerRowError } = useSaveStatus();
+  const { saveStatus: rowSaveStatus, saveBtnClass: rowSaveBtnClass, triggerSaving: triggerRowSaving, triggerSuccess: triggerRowSuccess, triggerError: triggerRowError, getCloseDelay: getRowCloseDelay } = useSaveStatus();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-points-log", offset],
@@ -45,7 +45,7 @@ export default function DatabaseSection() {
       queryClient.invalidateQueries({ queryKey: ["admin-points-log"] });
       triggerRowSuccess();
       setError(null);
-      setTimeout(() => setEditId(null), 1000);
+      setTimeout(() => setEditId(null), getRowCloseDelay());
     },
     onError: (err) => {
       triggerRowError();

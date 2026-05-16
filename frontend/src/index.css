@@ -47,6 +47,8 @@ button {
   transition: opacity 0.15s, transform 0.15s;
 }
 button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.btn-saving:disabled,
+button.btn-success:disabled { opacity: 1; cursor: default; }
 button:not(:disabled):hover { opacity: 0.85; }
 
 .btn-primary { background: var(--accent-btn); color: var(--on-primary); }

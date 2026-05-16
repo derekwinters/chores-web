@@ -170,7 +170,7 @@ export default function ChoreForm({ initial, people, onSubmit, onCancel, onSaveS
   const [s, setS] = useState(initial ? choreToState(initial) : emptyState());
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
-  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError } = useSaveStatus();
+  const { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError, getCloseDelay } = useSaveStatus();
   const closeTimerRef = useRef(null);
 
   React.useEffect(() => {
@@ -215,10 +215,11 @@ export default function ChoreForm({ initial, people, onSubmit, onCancel, onSaveS
     try {
       await onSubmit(stateToPayload(s, { isEditing: Boolean(initial) }));
       triggerSuccess();
+      const delay = getCloseDelay();
       if (onSaveSuccess) {
-        closeTimerRef.current = setTimeout(onSaveSuccess, 1000);
+        closeTimerRef.current = setTimeout(onSaveSuccess, delay);
       } else {
-        closeTimerRef.current = setTimeout(() => setBusy(false), 1000);
+        closeTimerRef.current = setTimeout(() => setBusy(false), delay);
       }
     } catch (ex) {
       setError(ex.message);

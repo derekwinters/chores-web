@@ -2,15 +2,15 @@ import { useState, useEffect, useRef } from "react";
 
 /**
  * Manages save button visual state: null | 'saving' | 'success' | 'error'
- * - 'saving': request in flight (intermediate success-outline color)
- * - 'success': request completed successfully (full success color, auto-reverts)
+ * - 'saving': request in flight (intermediate success-outline color), shown for at least minSavingDelay
+ * - 'success': request completed successfully (full success color), shown for at least successDelay
  * - 'error': request failed (error color, auto-reverts)
- * Auto-reverts after successDelay (1s) or errorDelay (3s).
  * Cleans up timers on unmount.
  */
-export function useSaveStatus({ successDelay = 1000, errorDelay = 3000 } = {}) {
+export function useSaveStatus({ minSavingDelay = 1000, successDelay = 1000, errorDelay = 3000 } = {}) {
   const [saveStatus, setSaveStatus] = useState(null);
   const timerRef = useRef(null);
+  const savingStartRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -20,13 +20,18 @@ export function useSaveStatus({ successDelay = 1000, errorDelay = 3000 } = {}) {
 
   const triggerSaving = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
+    savingStartRef.current = Date.now();
     setSaveStatus("saving");
   };
 
   const triggerSuccess = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    setSaveStatus("success");
-    timerRef.current = setTimeout(() => setSaveStatus(null), successDelay);
+    const elapsed = savingStartRef.current ? Date.now() - savingStartRef.current : minSavingDelay;
+    const remaining = Math.max(0, minSavingDelay - elapsed);
+    timerRef.current = setTimeout(() => {
+      setSaveStatus("success");
+      timerRef.current = setTimeout(() => setSaveStatus(null), successDelay);
+    }, remaining);
   };
 
   const triggerError = () => {
@@ -45,5 +50,13 @@ export function useSaveStatus({ successDelay = 1000, errorDelay = 3000 } = {}) {
     saveStatus === "success" ? "btn-success" :
     saveStatus === "error"   ? "btn-error"   : "btn-primary";
 
-  return { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError, reset };
+  // Returns ms until button fully reverts after triggerSuccess() is called.
+  // Use this to time dialog/form close so "Saved" is fully visible first.
+  const getCloseDelay = () => {
+    const elapsed = savingStartRef.current ? Date.now() - savingStartRef.current : minSavingDelay;
+    const remaining = Math.max(0, minSavingDelay - elapsed);
+    return remaining + successDelay;
+  };
+
+  return { saveStatus, saveBtnClass, triggerSaving, triggerSuccess, triggerError, reset, getCloseDelay };
 }
