@@ -19,10 +19,10 @@ class State(Enum):
     PREPARE = 2
     DOC_PRE = 3
     IMPLEMENT = 4
-    DOC_POST = 5
-    TEST = 6
-    VERIFY = 7
-    USER_REVIEW = 8
+    TEST = 5
+    VERIFY = 6
+    USER_REVIEW = 7
+    DOC_POST = 8
     FINALIZE = 9
     COMPLETE = 10
 
@@ -33,7 +33,7 @@ class OrchestratorState:
     issue_number: int
     issue_title: str
     current_state: State
-    progress: int  # 0-8
+    progress: int  # 0-10
     history: List[str]  # completed states
     branch_name: str
     metadata: Dict[str, Any]  # implementation results, test status, etc.
@@ -63,10 +63,10 @@ Next: {self._next_state()}"""
             ("Prepare", State.PREPARE),
             ("Doc Pre", State.DOC_PRE),
             ("Implement", State.IMPLEMENT),
-            ("Doc Post", State.DOC_POST),
             ("Test", State.TEST),
             ("Verify", State.VERIFY),
             ("User Rev.", State.USER_REVIEW),
+            ("Doc Post", State.DOC_POST),
             ("Finalize", State.FINALIZE),
             ("Complete", State.COMPLETE),
         ]
@@ -158,14 +158,14 @@ class GitHubIssueImplementation:
             self._doc_pre()
         elif self.state.current_state == State.IMPLEMENT:
             self._implement()
-        elif self.state.current_state == State.DOC_POST:
-            self._doc_post()
         elif self.state.current_state == State.TEST:
             self._test()
         elif self.state.current_state == State.VERIFY:
             self._verify()
         elif self.state.current_state == State.USER_REVIEW:
             self._user_review()
+        elif self.state.current_state == State.DOC_POST:
+            self._doc_post()
         elif self.state.current_state == State.FINALIZE:
             self._finalize()
         elif self.state.current_state == State.COMPLETE:
@@ -204,23 +204,14 @@ class GitHubIssueImplementation:
         self.state.metadata["implementation"] = result
         self.state.history.append("implement")
         self.state.progress = 4
-        self._transition(State.DOC_POST)
-
-    def _doc_post(self):
-        """[5] Review and correct docs after coding."""
-        print("Re-reading modified doc pages...")
-        print("Verifying docs accurately reflect actual implementation...")
-        print("Correcting discrepancies and adding coverage for new behavior...")
-        self.state.history.append("doc-post")
-        self.state.progress = 5
         self._transition(State.TEST)
 
     def _test(self):
-        """[6] Run test suite."""
+        """[5] Run test suite."""
         result = self._call_skill("implementation-test", self.issue_number)
         self.state.metadata["tests"] = result
         self.state.history.append("test")
-        self.state.progress = 6
+        self.state.progress = 5
 
         if result.get("passed"):
             self._transition(State.VERIFY)
@@ -230,19 +221,29 @@ class GitHubIssueImplementation:
             self._transition(State.DOC_PRE)
 
     def _verify(self):
-        """[7] Verify Docker deployment."""
+        """[6] Verify Docker deployment."""
         result = self._call_skill("implementation-verify", self.issue_number)
         self.state.metadata["verification"] = result
         print(f"Docker verification complete. Changes summary:\n{result.get('summary', '')}")
         self.state.history.append("verify")
-        self.state.progress = 7
+        self.state.progress = 6
         self._transition(State.USER_REVIEW)
 
     def _user_review(self):
-        """[8] Pause for user review and approval."""
+        """[7] Pause for user review and approval."""
         self.state.history.append("user-review")
         print(f"Issue #{self.issue_number} awaiting user approval before finalization")
         # Agent would exit here, resume triggered by user command
+        self._transition(State.DOC_POST)
+
+    def _doc_post(self):
+        """[8] Review and correct docs before finalizing."""
+        print("Re-reading modified doc pages...")
+        print("Verifying docs accurately reflect actual implementation...")
+        print("Correcting discrepancies and adding coverage for new behavior...")
+        self.state.history.append("doc-post")
+        self.state.progress = 8
+        self._transition(State.FINALIZE)
 
     def _finalize(self):
         """[9] Finalize: commit, push, create PR."""
@@ -291,8 +292,3 @@ def main():
     issue_title = sys.argv[2] if len(sys.argv) > 2 else ""
     impl = GitHubIssueImplementation(issue_number, issue_title)
     result = impl.run()
-    print(json.dumps(result, indent=2))
-
-
-if __name__ == "__main__":
-    main()
