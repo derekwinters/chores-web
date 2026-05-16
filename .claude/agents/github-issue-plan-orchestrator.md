@@ -38,6 +38,11 @@ START
   │  ├─ Trace call paths: router → service → model → DB
   │  ├─ Study similar existing implementations for patterns
   │  └─ Identify exact files/functions requiring changes
+  ├─ Identify affected documentation
+  │  ├─ Search docs/ directory for pages related to changed features
+  │  ├─ Flag doc pages covering changed API endpoints, UI flows, or configuration
+  │  ├─ Note gaps: new features or changed behavior with no existing doc coverage
+  │  └─ List affected doc files in implementation plan for later update
   ├─ Identify affected tests
   │  ├─ Find existing tests covering changed code (grep test files for function/route names)
   │  ├─ Flag tests that will break due to signature, schema, or behavior changes
@@ -50,7 +55,8 @@ START
   │  ├─ Affected Files
   │  │  ├─ Database: specific migration files, model changes
   │  │  ├─ Backend: exact file paths and line ranges
-  │  │  └─ Frontend: exact component paths and functions
+  │  │  ├─ Frontend: exact component paths and functions
+  │  │  └─ Documentation: docs/ pages covering affected features or APIs
   │  ├─ Implementation Steps (3-5 concrete, ordered steps)
   │  │  ├─ Specific function/API changes
   │  │  ├─ Schema modifications if applicable
@@ -86,7 +92,7 @@ START
   ├─ Format final plan summary (markdown)
   ├─ Post plan as issue comment
   │  ├─ gh issue comment <number> --body "<formatted-plan>"
-  │  └─ Include: affected files, steps, test changes (modify/add/remove), challenges, rationale
+  │  └─ Include: affected files, steps, test changes (modify/add/remove), doc changes, challenges, rationale
   ├─ Remove ready-to-plan label
   │  └─ gh issue edit <number> --remove-label ready-to-plan
   ├─ Add ready-for-work label

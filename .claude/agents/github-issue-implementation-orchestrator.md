@@ -29,9 +29,17 @@ START
           ↓
 [3] implement
   ├─ Call: /implementation-implement <issue-number>
+  ├─ Pre-work: Update docs/ pages identified in implementation plan before writing code
+  │  ├─ Read affected doc pages from plan's documentation section
+  │  ├─ Draft documentation changes for the planned feature/fix
+  │  └─ Commit doc drafts alongside code (or stage for final review)
   ├─ Executes: Code changes across DB, backend, frontend, tests
   ├─ Follows: Implementation plan from planning phase
-  └─ Result: Files modified, implementation complete
+  ├─ Post-work: Review and correct documentation after code is complete
+  │  ├─ Re-read modified doc pages to verify accuracy against actual implementation
+  │  ├─ Correct any discrepancies between docs and code
+  │  └─ Add missing doc coverage for new behavior
+  └─ Result: Files modified, implementation complete, docs updated
           ↓
 [4] test
   ├─ Call: /implementation-test
@@ -117,6 +125,7 @@ Resumable by checking current branch state and git status.
 ### Output
 - Fully implemented issue with:
   - Code changes across affected layers (via implementation-implement skill)
+  - Documentation updated before and verified after implementation
   - All tests passing (via implementation-test skill)
   - Docker containers running with changes (via implementation-verify skill)
   - Conventional commit with issue reference (via implementation-finalize skill)
