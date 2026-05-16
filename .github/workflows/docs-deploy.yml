@@ -28,15 +28,8 @@ jobs:
       - name: Build documentation
         run: mkdocs build --strict
       - name: Deploy to gh-pages
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin gh-pages --depth=1 2>/dev/null || true
-          git checkout -b gh-pages origin/gh-pages 2>/dev/null || git checkout --orphan gh-pages
-          git rm -rf . || true
-          cp -r ../site/* .
-          git add .
-          git commit -m "docs: Publish documentation" || true
-          git push -f origin gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: peaceiris/actions-gh-pages@373f7f263a76c20977432d3185d300012e3e1d6e # v3.9.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          cname: false
