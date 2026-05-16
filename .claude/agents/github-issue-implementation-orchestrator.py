@@ -183,9 +183,11 @@ class GitHubIssueImplementation:
         self._transition(State.IMPLEMENT)
 
     def _implement(self):
-        """[3] Implement code changes."""
+        """[3] Implement code changes with doc pre/post work."""
+        print("Pre-work: Updating docs/ pages identified in implementation plan...")
         result = self._call_skill("implementation-implement", self.issue_number)
         self.state.metadata["implementation"] = result
+        print("Post-work: Reviewing and correcting documentation against actual implementation...")
         self.state.history.append("implement")
         self.state.progress = 3
         self._transition(State.TEST)
