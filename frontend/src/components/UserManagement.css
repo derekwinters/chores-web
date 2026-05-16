@@ -44,7 +44,7 @@
 
 .add-user-form input {
   padding: 0.5rem;
-  background: var(--surface);
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
@@ -156,7 +156,7 @@
 }
 
 .user-role-pill.member {
-  background: var(--surface);
+  background: var(--surface2);
   color: var(--text-muted);
   border: 1px solid var(--border);
 }
@@ -281,7 +281,7 @@
 
 .property input[type="number"] {
   padding: 0.5rem;
-  background: var(--surface);
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
@@ -343,7 +343,7 @@
 .password-input-group input {
   flex: 1;
   padding: 0.5rem;
-  background: var(--surface);
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
@@ -439,7 +439,7 @@
 
 .form-display {
   padding: 0.5rem 0.75rem;
-  background: var(--surface);
+  background: var(--surface2);
   border-radius: 4px;
   color: var(--text);
   font-size: 0.95rem;
@@ -457,7 +457,7 @@
 .form-row input[type="password"],
 .form-row input[type="text"] {
   padding: 0.5rem 0.75rem;
-  background: var(--surface);
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);

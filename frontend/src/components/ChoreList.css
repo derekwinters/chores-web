@@ -12,7 +12,7 @@
 }
 
 .chore-card {
-  background: var(--surface2);
+  background: var(--surface);
   border: none;
   border-radius: 8px;
   padding: 1.5rem;

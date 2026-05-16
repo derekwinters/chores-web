@@ -36,7 +36,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem;
-  background: var(--surface2);
+  background: var(--surface);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -145,7 +145,7 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: var(--surface2);
+  background: var(--surface);
   border: none;
   border-radius: 8px;
   box-shadow: var(--shadow);
