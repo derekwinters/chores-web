@@ -79,9 +79,9 @@ Agent outputs workflow diagram on each state transition, highlighting the destin
 GITHUB ISSUE IMPLEMENTATION WORKFLOW
 ====================================
 
-┌──────────┐  ┌─────────┐  ┌──────────┐  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐
-│ Validate ├─▶│ Prepare ├─▶│Implement ├─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Finalize ├─▶│ Complete │
-└──────────┘  └─────────┘  └──────────┘  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Prepare ├─▶│ Doc Pre ├─▶│Implement ├─▶│ Doc Post ├─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  └─────────┘  └──────────┘  └──────────┘  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘
 ```
 
 Current stage highlighted with double borders (┃, ┏┓┗┛). Example if at Implement stage:
@@ -90,17 +90,17 @@ Current stage highlighted with double borders (┃, ┏┓┗┛). Example if at
 GITHUB ISSUE IMPLEMENTATION WORKFLOW
 ====================================
 
-┌──────────┐  ┌─────────┐  ┏━━━━━━━━━━┓  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐
-│ Validate ├─▶│ Prepare ├─▶┃Implement ┃─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Finalize ├─▶│ Complete │
-└──────────┘  └─────────┘  ┗━━━━━━━━━━┛  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌─────────┐  ┌─────────┐  ┏━━━━━━━━━━┓  ┌──────────┐  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Prepare ├─▶│ Doc Pre ├─▶┃Implement ┃─▶│ Doc Post ├─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  └─────────┘  ┗━━━━━━━━━━┛  └──────────┘  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘
 ```
 
 Also displays issue context:
 
 ```
 Issue #129: Add flexible skip options
-State: [3] Implement
-Progress: 3/8
+State: [4] Implement
+Progress: 4/10
 Branch: feat-issue-129
 ```
 

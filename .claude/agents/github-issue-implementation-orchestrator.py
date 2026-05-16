@@ -17,12 +17,14 @@ class State(Enum):
     """Orchestrator state machine states."""
     VALIDATE = 1
     PREPARE = 2
-    IMPLEMENT = 3
-    TEST = 4
-    VERIFY = 5
-    USER_REVIEW = 6
-    FINALIZE = 7
-    COMPLETE = 8
+    DOC_PRE = 3
+    IMPLEMENT = 4
+    DOC_POST = 5
+    TEST = 6
+    VERIFY = 7
+    USER_REVIEW = 8
+    FINALIZE = 9
+    COMPLETE = 10
 
 
 @dataclass
@@ -42,7 +44,7 @@ class OrchestratorState:
         return f"""@bot-impl-status
 Issue: #{self.issue_number} {self.issue_title}
 Current State: {self.current_state.name}
-Progress: {self.progress}/8
+Progress: {self.progress}/10
 Branch: {self.branch_name}
 History: {history_str}
 Next: {self._next_state()}"""
@@ -59,7 +61,9 @@ Next: {self._next_state()}"""
         states = [
             ("Validate", State.VALIDATE),
             ("Prepare", State.PREPARE),
+            ("Doc Pre", State.DOC_PRE),
             ("Implement", State.IMPLEMENT),
+            ("Doc Post", State.DOC_POST),
             ("Test", State.TEST),
             ("Verify", State.VERIFY),
             ("User Rev.", State.USER_REVIEW),
@@ -92,7 +96,7 @@ Next: {self._next_state()}"""
 
         context = f"""Issue #{self.issue_number}: {self.issue_title}
 State: [{self.current_state.value}] {self.current_state.name}
-Progress: {self.progress}/8
+Progress: {self.progress}/10
 Branch: {self.branch_name}
 """
 
@@ -150,8 +154,12 @@ class GitHubIssueImplementation:
             self._validate()
         elif self.state.current_state == State.PREPARE:
             self._prepare()
+        elif self.state.current_state == State.DOC_PRE:
+            self._doc_pre()
         elif self.state.current_state == State.IMPLEMENT:
             self._implement()
+        elif self.state.current_state == State.DOC_POST:
+            self._doc_post()
         elif self.state.current_state == State.TEST:
             self._test()
         elif self.state.current_state == State.VERIFY:
@@ -180,56 +188,71 @@ class GitHubIssueImplementation:
         self.state.metadata["branch"] = result
         self.state.history.append("prepare")
         self.state.progress = 2
+        self._transition(State.DOC_PRE)
+
+    def _doc_pre(self):
+        """[3] Update docs/ pages before writing code."""
+        print("Reading affected doc pages from implementation plan...")
+        print("Drafting documentation changes for planned feature/fix...")
+        self.state.history.append("doc-pre")
+        self.state.progress = 3
         self._transition(State.IMPLEMENT)
 
     def _implement(self):
-        """[3] Implement code changes with doc pre/post work."""
-        print("Pre-work: Updating docs/ pages identified in implementation plan...")
+        """[4] Implement code changes."""
         result = self._call_skill("implementation-implement", self.issue_number)
         self.state.metadata["implementation"] = result
-        print("Post-work: Reviewing and correcting documentation against actual implementation...")
         self.state.history.append("implement")
-        self.state.progress = 3
+        self.state.progress = 4
+        self._transition(State.DOC_POST)
+
+    def _doc_post(self):
+        """[5] Review and correct docs after coding."""
+        print("Re-reading modified doc pages...")
+        print("Verifying docs accurately reflect actual implementation...")
+        print("Correcting discrepancies and adding coverage for new behavior...")
+        self.state.history.append("doc-post")
+        self.state.progress = 5
         self._transition(State.TEST)
 
     def _test(self):
-        """[4] Run test suite."""
+        """[6] Run test suite."""
         result = self._call_skill("implementation-test", self.issue_number)
         self.state.metadata["tests"] = result
         self.state.history.append("test")
-        self.state.progress = 4
+        self.state.progress = 6
 
         if result.get("passed"):
             self._transition(State.VERIFY)
         else:
-            # Test failed, return to implementation
-            print("Tests failed. Returning to implementation phase for fixes.")
-            self._transition(State.IMPLEMENT)
+            # Test failed, return to doc pre / implementation
+            print("Tests failed. Returning to doc pre / implementation phase for fixes.")
+            self._transition(State.DOC_PRE)
 
     def _verify(self):
-        """[5] Verify Docker deployment."""
+        """[7] Verify Docker deployment."""
         result = self._call_skill("implementation-verify", self.issue_number)
         self.state.metadata["verification"] = result
         print(f"Docker verification complete. Changes summary:\n{result.get('summary', '')}")
         self.state.history.append("verify")
-        self.state.progress = 5
+        self.state.progress = 7
         self._transition(State.USER_REVIEW)
 
     def _user_review(self):
-        """[6] Pause for user review and approval."""
+        """[8] Pause for user review and approval."""
         self.state.history.append("user-review")
         print(f"Issue #{self.issue_number} awaiting user approval before finalization")
         # Agent would exit here, resume triggered by user command
 
     def _finalize(self):
-        """[7] Finalize: commit, push, create PR."""
+        """[9] Finalize: commit, push, create PR."""
         commit_type = self.state.metadata.get("validation", {}).get("commit_type", "fix")
         result = self._call_skill("implementation-finalize", self.issue_number, commit_type=commit_type)
         pr_url = result.get("pr_url")
         print(f"Pull request created: {pr_url}")
         self.state.metadata["pr"] = result
         self.state.history.append("finalize")
-        self.state.progress = 7
+        self.state.progress = 9
         self._transition(State.COMPLETE)
 
     def _transition(self, next_state: State):
