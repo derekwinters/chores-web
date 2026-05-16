@@ -6,6 +6,7 @@ import {
   triggerUpdateCheck,
   configureUpdateChecking,
 } from "../api/client";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import "./Settings.css";
 import "./AdminPanel.css";
 
@@ -15,7 +16,7 @@ export default function SettingsAbout() {
   const [updateCheckEnabledInput, setUpdateCheckEnabledInput] = useState(true);
   const [updateCheckIntervalInput, setUpdateCheckIntervalInput] = useState(24);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
 
   const { data: config } = useQuery({
     queryKey: ["config"],
@@ -50,11 +51,11 @@ export default function SettingsAbout() {
       setUpdateCheckEnabledInput(data.check_enabled);
       setUpdateCheckIntervalInput(data.check_interval_hours);
       queryClient.invalidateQueries({ queryKey: ["config"] });
-      setSuccess(true);
+      triggerSuccess();
       setError(null);
-      setTimeout(() => setSuccess(false), 2000);
     },
     onError: (err) => {
+      triggerError();
       setError(err.message || "Failed to update update check settings");
     },
   });
@@ -63,9 +64,6 @@ export default function SettingsAbout() {
     mutationFn: triggerUpdateCheck,
     onSuccess: () => {
       refetchUpdateCheck();
-      setSuccess(true);
-      setError(null);
-      setTimeout(() => setSuccess(false), 2000);
     },
     onError: (err) => {
       setError(err.message || "Failed to check for updates");
@@ -85,10 +83,11 @@ export default function SettingsAbout() {
     triggerUpdateCheckMutation.mutate();
   };
 
+  const saveBtnClass = saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary";
+
   return (
     <div className="settings-page">
       {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">Settings saved!</div>}
 
       <section className="settings-section">
         <div className="section-row">
@@ -131,7 +130,7 @@ export default function SettingsAbout() {
         <div className="section-row">
           <h3>Update Checker</h3>
           <button
-            className="btn-primary"
+            className={saveBtnClass}
             onClick={handleSaveUpdateCheckConfig}
             disabled={updateCheckConfigMutation.isPending || updateCheckLoading}
           >

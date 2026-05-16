@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getThemes, getDefaultTheme, setDefaultTheme, saveTheme, deleteTheme, renameTheme, updateTheme } from "../api/client";
 import { DEFAULT_THEME_COLORS } from "../utils/theme";
+import Toast from "./Toast";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import "./ThemeSettings.css";
 
 const DEFAULT_THEME_IDS = ["dark", "light", "charcoal", "paper", "pink", "frog"];
@@ -21,6 +23,8 @@ export default function ThemeSettings() {
   const [customColors, setCustomColors] = useState({});
   const [hexInputs, setHexInputs] = useState({});
   const [error, setError] = useState(null);
+  const [toast, setToast] = useState(null); // null | { message, variant }
+  const { saveStatus: themeSaveStatus, triggerSuccess: triggerThemeSave, triggerError: triggerThemeSaveError, reset: resetThemeSave } = useSaveStatus();
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [renameTarget, setRenameTarget] = useState(null);
   const [renameName, setRenameName] = useState("");
@@ -48,20 +52,26 @@ export default function ThemeSettings() {
     },
   });
 
+  const closeThemeEditor = () => {
+    setCustomizing(false);
+    setCustomizingTheme(null);
+    setCustomName("");
+    setCustomColors({});
+    setHexInputs({});
+  };
+
   const saveThemeMutation = useMutation({
     mutationFn: (data) => saveTheme(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["themes"] });
       queryClient.invalidateQueries({ queryKey: ["default-theme"] });
-      setCustomizing(false);
-      setCustomizingTheme(null);
-      setCustomName("");
-      setCustomColors({});
-      setHexInputs({});
       setError(null);
+      triggerThemeSave();
+      setTimeout(closeThemeEditor, 1000);
     },
     onError: (err) => {
-      setError(err.message || "Failed to save theme");
+      triggerThemeSaveError();
+      setToast({ message: err.message || "Failed to save theme", variant: "error" });
     },
   });
 
@@ -70,15 +80,13 @@ export default function ThemeSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["themes"] });
       queryClient.invalidateQueries({ queryKey: ["default-theme"] });
-      setCustomizing(false);
-      setCustomizingTheme(null);
-      setCustomName("");
-      setCustomColors({});
-      setHexInputs({});
       setError(null);
+      triggerThemeSave();
+      setTimeout(closeThemeEditor, 1000);
     },
     onError: (err) => {
-      setError(err.message || "Failed to update theme");
+      triggerThemeSaveError();
+      setToast({ message: err.message || "Failed to update theme", variant: "error" });
     },
   });
 
@@ -115,6 +123,7 @@ export default function ThemeSettings() {
       setHexInputs({ ...themeToCustomize.colors });
       setCustomName(theme ? themeToCustomize.name : `${themeToCustomize.name} Custom`);
       setCustomizingTheme(theme ? themeToCustomize.id : null);
+      resetThemeSave();
       setCustomizing(true);
     }
   };
@@ -125,6 +134,7 @@ export default function ThemeSettings() {
       setHexInputs({ ...theme.colors });
       setCustomName(`${theme.name} Copy`);
       setCustomizingTheme(null);
+      resetThemeSave();
       setCustomizing(true);
     }
   };
@@ -313,7 +323,7 @@ export default function ThemeSettings() {
 
           <div className="editor-actions">
             <button
-              className="btn-primary"
+              className={themeSaveStatus === "success" ? "btn-success" : themeSaveStatus === "error" ? "btn-error" : "btn-primary"}
               onClick={handleSaveCustom}
               disabled={saveThemeMutation.isPending || updateThemeMutation.isPending}
             >
@@ -413,6 +423,14 @@ export default function ThemeSettings() {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          variant={toast.variant}
+          onDone={() => setToast(null)}
+        />
       )}
     </div>
   );

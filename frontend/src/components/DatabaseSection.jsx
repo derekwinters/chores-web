@@ -7,6 +7,7 @@ import {
   getPeople,
 } from "../api/client";
 import Modal from "./Modal";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import "../pages/Settings.css";
 
 const PAGE_SIZE = 20;
@@ -20,6 +21,7 @@ export default function DatabaseSection() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const { saveStatus: rowSaveStatus, triggerSuccess: triggerRowSuccess, triggerError: triggerRowError } = useSaveStatus();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-points-log", offset],
@@ -41,12 +43,12 @@ export default function DatabaseSection() {
       updateAdminPointsLog(id, { points: Number(points), person }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-points-log"] });
-      setEditId(null);
-      setSuccess("Entry updated.");
+      triggerRowSuccess();
       setError(null);
-      setTimeout(() => setSuccess(null), 3000);
+      setTimeout(() => setEditId(null), 1000);
     },
     onError: (err) => {
+      triggerRowError();
       setError(err.message || "Failed to update entry.");
     },
   });
@@ -173,7 +175,7 @@ export default function DatabaseSection() {
                         <td>{new Date(item.completed_at).toLocaleString()}</td>
                         <td className="db-actions">
                           <button
-                            className="btn-primary"
+                            className={rowSaveStatus === "success" ? "btn-success" : rowSaveStatus === "error" ? "btn-error" : "btn-primary"}
                             onClick={() => saveEdit(item.id)}
                             disabled={updateMutation.isPending}
                           >

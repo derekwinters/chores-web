@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext } from "react-router-dom";
 import { getConfig, updateConfig } from "../api/client";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import "./Settings.css";
 import "./AdminPanel.css";
 
@@ -26,7 +27,7 @@ export default function SettingsGeneral() {
   const [title, setTitle] = useState("");
   const [timezone, setTimezone] = useState("UTC");
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
 
   const { data: config, isLoading: configLoading } = useQuery({
     queryKey: ["config"],
@@ -46,11 +47,11 @@ export default function SettingsGeneral() {
       setTitle(data.title);
       onTitleUpdate?.(data.title);
       queryClient.invalidateQueries({ queryKey: ["config"] });
-      setSuccess(true);
+      triggerSuccess();
       setError(null);
-      setTimeout(() => setSuccess(false), 2000);
     },
     onError: (err) => {
+      triggerError();
       setError(err.message || "Failed to update settings");
     },
   });
@@ -63,18 +64,19 @@ export default function SettingsGeneral() {
     generalMutation.mutate({ title, timezone });
   };
 
+  const saveBtnClass = saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary";
+
   if (configLoading) return <div className="loading">Loading settings…</div>;
 
   return (
     <div className="settings-page">
       {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">Settings saved!</div>}
 
       <section className="settings-section">
         <div className="section-row">
           <h3>App Title</h3>
           <button
-            className="btn-primary"
+            className={saveBtnClass}
             onClick={handleSaveGeneral}
             disabled={generalMutation.isPending}
           >
@@ -101,7 +103,7 @@ export default function SettingsGeneral() {
         <div className="section-row">
           <h3>Date &amp; Time</h3>
           <button
-            className="btn-primary"
+            className={saveBtnClass}
             onClick={handleSaveGeneral}
             disabled={generalMutation.isPending || !title.trim()}
           >

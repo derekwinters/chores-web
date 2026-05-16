@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getConfig, updateConfig } from "../api/client";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import "./Settings.css";
 import "./AdminPanel.css";
 
@@ -9,7 +10,7 @@ export default function SettingsChores() {
 
   const [dueSoonDaysInput, setDueSoonDaysInput] = useState("");
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
 
   const { data: config, isLoading: configLoading } = useQuery({
     queryKey: ["config"],
@@ -27,11 +28,11 @@ export default function SettingsChores() {
     onSuccess: (data) => {
       setDueSoonDaysInput(String(data.due_soon_days));
       queryClient.invalidateQueries({ queryKey: ["config"] });
-      setSuccess(true);
+      triggerSuccess();
       setError(null);
-      setTimeout(() => setSuccess(false), 2000);
     },
     onError: (err) => {
+      triggerError();
       setError(err.message || "Failed to update due soon threshold");
     },
   });
@@ -45,18 +46,19 @@ export default function SettingsChores() {
     dueSoonDaysMutation.mutate(days);
   };
 
+  const saveBtnClass = saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary";
+
   if (configLoading) return <div className="loading">Loading settings…</div>;
 
   return (
     <div className="settings-page">
       {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">Settings saved!</div>}
 
       <section className="settings-section">
         <div className="section-row">
           <h3>Due Soon Threshold</h3>
           <button
-            className="btn-primary"
+            className={saveBtnClass}
             onClick={handleSaveDueSoonDays}
             disabled={dueSoonDaysMutation.isPending}
           >

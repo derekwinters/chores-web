@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import MUIDatePicker from "./MUIDatePicker";
+import { useSaveStatus } from "../hooks/useSaveStatus";
 import "./ChoreForm.css";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -165,10 +166,18 @@ function validate(s) {
   return null;
 }
 
-export default function ChoreForm({ initial, people, onSubmit, onCancel, submitLabel = "Save" }) {
+export default function ChoreForm({ initial, people, onSubmit, onCancel, onSaveSuccess, submitLabel = "Save" }) {
   const [s, setS] = useState(initial ? choreToState(initial) : emptyState());
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
+  const { saveStatus, triggerSuccess, triggerError } = useSaveStatus();
+  const closeTimerRef = useRef(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
 
   const initialState = initial ? choreToState(initial) : emptyState();
   const hasInitialConstraints = initialState.cond_even || initialState.cond_odd || initialState.cond_weekdays.length > 0;
@@ -204,9 +213,16 @@ export default function ChoreForm({ initial, people, onSubmit, onCancel, submitL
     setError(null);
     try {
       await onSubmit(stateToPayload(s, { isEditing: Boolean(initial) }));
+      triggerSuccess();
+      if (onSaveSuccess) {
+        closeTimerRef.current = setTimeout(onSaveSuccess, 1000);
+      } else {
+        closeTimerRef.current = setTimeout(() => setBusy(false), 1000);
+      }
     } catch (ex) {
       setError(ex.message);
       setBusy(false);
+      triggerError();
     }
   };
 
@@ -601,8 +617,12 @@ export default function ChoreForm({ initial, people, onSubmit, onCancel, submitL
         <button type="button" className="btn-secondary" onClick={onCancel} disabled={busy}>
           Cancel
         </button>
-        <button type="submit" className="btn-primary" disabled={busy}>
-          {busy ? "Saving…" : submitLabel}
+        <button
+          type="submit"
+          className={saveStatus === "success" ? "btn-success" : saveStatus === "error" ? "btn-error" : "btn-primary"}
+          disabled={busy}
+        >
+          {busy && !saveStatus ? "Saving…" : submitLabel}
         </button>
       </div>
     </form>

@@ -415,6 +415,7 @@ export default function Manage() {
             people={people}
             submitLabel={modal.mode === "create" ? "Create" : "Save changes"}
             onCancel={() => setModal(null)}
+            onSaveSuccess={() => setModal(null)}
             onSubmit={async (payload) => {
               if (modal.mode === "create") {
                 await createMut.mutateAsync(payload);
