@@ -1,7 +1,7 @@
 export const DEFAULT_THEME_COLORS = {
   bg: "#f0ede6",
-  surface: "#f5f0e9",
-  surface2: "#faf8f3",
+  surface: "#faf8f3",
+  surface2: "#f0ede6",
   accent: "#b8860b",
   primary: "#8b6914",
   secondary: "#7a7a6a",
