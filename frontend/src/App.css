@@ -109,11 +109,11 @@
 
 .nav-btn:hover {
   color: var(--text);
-  background: var(--surface2);
+  background: var(--surface);
 }
 
 .nav-active {
-  background: var(--surface2);
+  background: var(--surface);
   color: var(--text);
   border: none;
   border-radius: 0;
