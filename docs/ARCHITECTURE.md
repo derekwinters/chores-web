@@ -445,16 +445,26 @@ graph TB
 
 - **Award:** Chore completion = Chore.points awarded to person
 - **Tracking:** PointsLog record created with (person, points, chore_id, completed_at)
-- **Aggregation:** Person.points = sum of all PointsLog entries for that person
+- **Aggregation:** Person.points maintained as running total; incremented on completion, adjusted on admin edit/delete
 - **Goals:** Rolling 7-day and 30-day windows calculated from PointsLog timestamps
 - **Reset:** Goals reset automatically at week/month boundaries based on completed_at timestamps
 
 ### Models
 
-- **Person.points** – Total lifetime points (sum of all PointsLog)
+- **Person.points** – Total lifetime points (running total, floor 0)
 - **Person.goal_7d** – Target points for 7-day rolling window
 - **Person.goal_30d** – Target points for 30-day rolling window
 - **PointsLog** – Transaction log: (id, person, points, chore_id, completed_at)
+  - `person` stores **username** (not display name)
+
+### Admin Points Log Management
+
+When an admin edits or deletes a PointsLog entry via `PATCH /admin/db/points-log/{id}` or `DELETE /admin/db/points-log/{id}`, `Person.points` is adjusted to maintain consistency:
+
+- **Points change only** (same person): `Person.points` adjusted by delta (`new - old`), floored at 0
+- **Person reassignment** (different person, points same or changed): old person loses `old_points`, new person gains `new_points` — no double adjustment
+- **Delete**: person loses the log's points, floored at 0
+- **Missing person**: if the username has no matching `Person` row, that side's adjustment is silently skipped; operation still succeeds
 
 ## Deployment Architecture
 
