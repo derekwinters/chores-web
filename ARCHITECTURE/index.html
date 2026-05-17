@@ -883,6 +883,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#admin-points-log-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Admin Points Log Management
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1339,6 +1348,15 @@
   <a href="#models" class="md-nav__link">
     <span class="md-ellipsis">
       Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-points-log-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Admin Points Log Management
     </span>
   </a>
   
@@ -1963,18 +1981,29 @@
     GoalCheck --&gt;|display| UI["Dashboard&lt;br/&gt;Points Card"]</code></pre>
 <h3 id="point-calculation">Point Calculation<a class="headerlink" href="#point-calculation" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Award:</strong> Chore completion = Chore.points awarded to person</li>
-<li><strong>Tracking:</strong> PointsLog record created with (person, points, chore_id, completed_at)</li>
-<li><strong>Aggregation:</strong> Person.points = sum of all PointsLog entries for that person</li>
+<li><strong>Award:</strong> Chore completion = Chore.points awarded to person (by username)</li>
+<li><strong>Tracking:</strong> PointsLog record created with (person=username, points, chore_id, completed_at)</li>
+<li><strong>Display:</strong> <code>display_points = sum(PointsLog.points for person) - points_redeemed</code> — computed live from PointsLog</li>
+<li><strong>Person.points:</strong> Running total kept in sync with PointsLog; incremented on completion, adjusted on admin edit/delete</li>
 <li><strong>Goals:</strong> Rolling 7-day and 30-day windows calculated from PointsLog timestamps</li>
-<li><strong>Reset:</strong> Goals reset automatically at week/month boundaries based on completed_at timestamps</li>
 </ul>
 <h3 id="models">Models<a class="headerlink" href="#models" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Person.points</strong> – Total lifetime points (sum of all PointsLog)</li>
+<li><strong>Person.points</strong> – Running total (floor 0); kept in sync with PointsLog sum</li>
 <li><strong>Person.goal_7d</strong> – Target points for 7-day rolling window</li>
 <li><strong>Person.goal_30d</strong> – Target points for 30-day rolling window</li>
 <li><strong>PointsLog</strong> – Transaction log: (id, person, points, chore_id, completed_at)</li>
+<li><code>person</code> stores <strong>username</strong> (not display name)</li>
+<li>Legacy entries with display name are normalized to username at startup</li>
+</ul>
+<h3 id="admin-points-log-management">Admin Points Log Management<a class="headerlink" href="#admin-points-log-management" title="Permanent link">&para;</a></h3>
+<p>When an admin edits or deletes a PointsLog entry via <code>PATCH /admin/db/points-log/{id}</code> or <code>DELETE /admin/db/points-log/{id}</code>, <code>Person.points</code> is adjusted to maintain consistency:</p>
+<ul>
+<li><strong>Points change only</strong> (same person): <code>Person.points</code> adjusted by delta (<code>new - old</code>), floored at 0</li>
+<li><strong>Person reassignment</strong> (different person, points same or changed): old person loses <code>old_points</code>, new person gains <code>new_points</code> — no double adjustment</li>
+<li><strong>Delete</strong>: person loses the log's points, floored at 0</li>
+<li><strong>Person lookup</strong>: matched by username or display name — handles any legacy entries not yet normalized</li>
+<li><strong>Missing person</strong>: if no matching <code>Person</code> row found, that side's adjustment is silently skipped; operation still succeeds</li>
 </ul>
 <h2 id="deployment-architecture">Deployment Architecture<a class="headerlink" href="#deployment-architecture" title="Permanent link">&para;</a></h2>
 <h3 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h3>
