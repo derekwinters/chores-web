@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/derekwinters/chores-web/compare/v1.4.0...v1.5.0) (2026-05-17)
+
+
+### Features
+
+* Add chore status filtering ([#247](https://github.com/derekwinters/chores-web/issues/247)) ([1c1de37](https://github.com/derekwinters/chores-web/commit/1c1de3737c85cd2fd8f6162545717a877e1e989d))
+
+
+### Bug Fixes
+
+* DueSoon now only shows upcoming chores ([1c1de37](https://github.com/derekwinters/chores-web/commit/1c1de3737c85cd2fd8f6162545717a877e1e989d)), closes [#246](https://github.com/derekwinters/chores-web/issues/246) [#228](https://github.com/derekwinters/chores-web/issues/228) [#220](https://github.com/derekwinters/chores-web/issues/220)
+
 ## [1.4.0](https://github.com/derekwinters/chores-web/compare/v1.3.0...v1.4.0) (2026-05-16)
 
 
