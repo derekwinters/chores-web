@@ -1,15 +1,39 @@
 ---
 name: grill-with-docs
-description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions.
+description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions. When invoked as "/grill-with-docs issue <N>", also gates on ready-to-grill label and finalizes by posting a structured comment and flipping labels.
 ---
 
 <what-to-do>
+
+## Entry Point
+
+If invoked as `/grill-with-docs issue <N>` (with an issue number):
+
+1. **Label gate**: Fetch issue via `gh issue view <N>`. If `ready-to-grill` label is missing, warn the user and ask whether to continue anyway before proceeding.
+2. **Load issue context**: Read the issue title, body, and any existing comments to prime the grilling session.
+3. Run the full grilling session below.
+4. **Finalize**: After the session concludes, post a structured grilling comment to the issue, remove `ready-to-grill`, apply `ready-for-work`.
+
+If invoked without an issue number (generic plan grilling), skip the label gate and finalization steps.
+
+## Grilling Session
 
 Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
 
 Ask the questions one at a time, waiting for feedback on each question before continuing.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
+
+## Area Checklist
+
+Every grilling session MUST explicitly cover all four areas. Work through them as part of the conversation, not just in the output:
+
+- [ ] **Backend** — API changes, service logic, auth, validation
+- [ ] **Database** — schema changes, migrations, new fields, indexes
+- [ ] **Frontend** — UI changes, new components, state management, routing
+- [ ] **Docs** — DEVELOPER.md, API.md, CONTEXT.md, ADRs, any other affected docs
+
+If an area has no changes, state that explicitly ("Database: no changes needed") so it's clear it was considered, not skipped.
 
 </what-to-do>
 
@@ -84,5 +108,40 @@ Only offer to create an ADR when all three are true:
 3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons
 
 If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
+
+## Finalization (issue grilling only)
+
+After the session is complete and the user confirms the decisions are captured, post this structured comment to the issue and flip labels.
+
+### Comment format
+
+```markdown
+## Grilling Session — Issue #N
+
+### Decisions & Clarifications
+- [resolved decisions from session]
+
+### Impact Areas
+| Area | Changes | Notes |
+|------|---------|-------|
+| Backend | ... | ... |
+| Database | ... | ... |
+| Frontend | ... | ... |
+| Docs | ... | ... |
+
+### Behaviors to Implement
+- [ ] Behavior 1 (area: backend)
+- [ ] Behavior 2 (area: frontend)
+
+### CONTEXT.md Updates
+- New terms added: ...
+- ADRs created: ...
+```
+
+### Label flip
+
+```bash
+gh issue edit <N> --remove-label "ready-to-grill" --add-label "ready-for-work"
+```
 
 </supporting-info>

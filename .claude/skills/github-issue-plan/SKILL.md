@@ -1,16 +1,13 @@
 ---
 name: github-issue-plan
-description: Lightweight issue planning (see @agent-github-issue-plan-orchestrator for full planning)
+description: Lightweight pre-grilling issue review. Use /grill-with-docs issue <N> for the full grilling session that produces the implementation contract.
 ---
 
 # GitHub Issue Planning (Lightweight)
 
-⚠️ **Recommended**: Use `@agent-github-issue-plan-orchestrator <issue-number>` for comprehensive planning instead.
+> **Recommended entry point**: `/grill-with-docs issue <N>` — full grilling session that covers all 4 impact areas, posts structured comment, and flips labels to `ready-for-work`.
 
-This lightweight skill reviews GitHub issue content and works with user to determine the right implementation approach. The agent provides:
-- Deeper codebase exploration (reads actual files)
-- State machine with progress tracking (resumable)
-- More thorough affected-files analysis
+This lightweight skill is a quick sanity-check: it reviews issue content and surfaces any obvious gaps before grilling. Use it when you want a fast read-through before committing to a full grilling session.
 
 ## Usage
 
@@ -21,55 +18,13 @@ This lightweight skill reviews GitHub issue content and works with user to deter
 ## Workflow
 
 1. **Fetch issue**: Get complete issue details from GitHub
-2. **Check status**: 
-   - Require `ready-to-plan` label
-   - Skip if `ready-for-work` or `ready-for-implementation` labels exist
-3. **Review requirements**: Analyze acceptance criteria and context
-4. **Propose solution**: Suggest implementation approach with:
-   - Affected files/components
-   - High-level steps
-   - Potential challenges or trade-offs
-5. **Discuss with user**: Refine approach based on feedback
-6. **Agree on plan**: Get explicit user sign-off ("Do you agree?")
-7. **Post plan**: Add finalized plan as issue comment
-8. **Update labels**: Remove `ready-to-plan`, add `ready-for-work`
-
-**⚠️ CRITICAL**: This skill defines and documents the plan only. It does NOT initiate implementation under any circumstances. User confirmation of the plan is NOT authorization to implement. Implementation can only begin when the `/github-issue-assign` skill is explicitly invoked.
-
-## Solution Elements
-
-Propose:
-- **Components affected**: Check all three layers:
-  - **Database**: Schema changes, migrations, state tracking
-  - **Backend**: API endpoints, routes, business logic, state management
-  - **Frontend**: UI components, API calls, state handling, user flow
-- **Files to change**: Which components/modules need updates
-- **Implementation steps**: 3-5 key steps to address issue
-- **Testing approach**: How to verify the fix/feature (unit tests + end-to-end UI validation)
-- **Potential issues**: Edge cases or considerations
-- **Alternatives**: Other approaches considered and why chosen
-
-## Labels
-
-- **ready-to-plan**: Issue complete, ready for planning (from `/github-issue-review`)
-- **ready-for-work**: Solution planned, ready for implementation (added by this skill)
-- **ready-for-work** or **ready-for-implementation**: Already present, skip this workflow
-
-## Examples
-
-```
-/github-issue-plan 42
-```
-Reviews issue #42, proposes solution, adds ready-for-work label after agreement
+2. **Check status**: Require `ready-to-grill` label. Warn if missing.
+3. **Review requirements**: Summarize issue intent, flag any ambiguities
+4. **Surface gaps**: Call out missing context (acceptance criteria, scope boundaries, affected areas)
+5. **Recommend grilling**: Suggest running `/grill-with-docs issue <N>` to proceed
 
 ## Notes
 
-- Don't modify if already labeled for implementation
-- Seek clarification if requirements are unclear
-- Be specific in proposed solution, not vague
-- Ask user questions to refine approach
-- **Check all three components**: Always consider database, backend, AND frontend changes needed
-- **End-to-end validation**: Plan must include how to verify UI works, not just backend tests
-- **NEVER start implementation** — only define and document the plan
-- User agreement with plan ≠ authorization to implement
-- Implementation begins ONLY when `/github-issue-assign` skill is invoked
+- Does NOT add labels or post comments — that is the grilling session's job
+- Does NOT initiate implementation under any circumstances
+- Use `/grill-with-docs issue <N>` to move the issue to `ready-for-work`

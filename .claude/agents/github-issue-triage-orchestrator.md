@@ -7,11 +7,11 @@ tools: [Read, Bash]
 
 # GitHub Issue Triage Orchestrator Agent
 
-Automated workflow coordinator for GitHub issue triage. Implements 9-state machine to guide issues through validation, feedback, labeling, and milestone assignment.
+Automated workflow coordinator for GitHub issue triage. Implements 10-state machine to guide issues through validation, feedback, labeling, milestone assignment, and `ready-to-grill` label application.
 
 ## IMPORTANT: Display Workflow Diagram on Every State Transition
 
-Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders. This provides a visual checkpoint at every step of the 9-state machine.
+Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders. This provides a visual checkpoint at every step of the 10-state machine.
 
 ## State Machine
 
@@ -63,13 +63,18 @@ START
   ├─ Apply labels to issue
   └─ Continue
       ↓
-[8] suggest-milestone (auto)
-  ├─ Call github-issue-suggest-milestone #151
-  ├─ Analyze issue content + milestone focus areas
-  ├─ Return: suggested_milestone + rationale
-  └─ Post as comment (user chooses)
+[8] assign-milestone (auto)
+  ├─ Check if issue already has milestone
+  ├─ If milestone set → skip, continue to [9]
+  ├─ If no milestone → Call github-issue-suggest-milestone #151
+  ├─ Auto-assign suggested milestone (no user prompt needed)
+  └─ Continue
       ↓
-[9] complete
+[9] apply-ready-to-grill (auto)
+  ├─ Apply `ready-to-grill` label to issue
+  └─ Continue
+      ↓
+[10] complete
   ├─ Update status comment on issue
   ├─ Mark state: COMPLETE
   └─ END
@@ -82,7 +87,7 @@ State tracked in pinned bot comment on issue:
 ```
 @bot-triage-status
 Current State: apply-labels
-Progress: 7/9
+Progress: 7/10
 History: categorize ✓ → check-duplicates ✓ → validate ✓ → feedback ✓ → validate ✓
 Next: apply-labels
 ```
@@ -97,7 +102,8 @@ Updated after each state transition.
 ### Output
 - Fully triaged issue with:
   - Applied labels
-  - Suggested milestone (advisory)
+  - Milestone assigned (auto-assigned if not already set)
+  - `ready-to-grill` label applied
   - Status comment documenting triage completion
 
 ### Error Handling
@@ -118,7 +124,7 @@ Updated after each state transition.
 3. #145-147 github-issue-validate-* (per type)
 4. #149 github-issue-completeness
 5. #150 github-issue-label
-6. #151 github-issue-suggest-milestone
+6. #151 github-issue-suggest-milestone (only if milestone not already set)
 
 **Invocation**:
 - Manual: `/triage-issue <number>`
@@ -133,20 +139,20 @@ Agent outputs workflow diagram on each state transition, highlighting the destin
 GITHUB ISSUE TRIAGE WORKFLOW
 ============================
 
-┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│Categorize├─▶│Check Dups├─▶│ Validate ├─▶│ Feedback ├─▶│  Pause   ├─▶│Re-Valid  ├─▶│  Labels  ├─▶│Milestone ├─▶│ Complete │
-└──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌──────────┐
+│Categorize├─▶│Check Dups├─▶│ Validate ├─▶│ Feedback ├─▶│  Pause   ├─▶│Re-Valid  ├─▶│  Labels  ├─▶│Milestone ├─▶│Rdy-2-Grill├─▶│ Complete │
+└──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └───────────┘  └──────────┘
 ```
 
-Current stage highlighted in different color (ANSI or visual distinction). Example if at Validate stage:
+Current stage highlighted with double borders (┃, ┏┓┗┛). Example if at Validate stage:
 
 ```
 GITHUB ISSUE TRIAGE WORKFLOW
 ============================
 
-┌──────────┐  ┌──────────┐  ┏━━━━━━━━━━┓  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│Categorize├─▶│Check Dups├─▶┃ Validate ┃─▶│ Feedback ├─▶│  Pause   ├─▶│Re-Valid  ├─▶│  Labels  ├─▶│Milestone ├─▶│ Complete │
-└──────────┘  └──────────┘  ┗━━━━━━━━━━┛  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌──────────┐  ┏━━━━━━━━━━┓  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌──────────┐
+│Categorize├─▶│Check Dups├─▶┃ Validate ┃─▶│ Feedback ├─▶│  Pause   ├─▶│Re-Valid  ├─▶│  Labels  ├─▶│Milestone ├─▶│Rdy-2-Grill├─▶│ Complete │
+└──────────┘  └──────────┘  ┗━━━━━━━━━━┛  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └───────────┘  └──────────┘
 ```
 
 ## Notes

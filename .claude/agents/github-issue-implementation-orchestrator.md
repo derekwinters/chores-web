@@ -6,68 +6,83 @@ type: agent
 
 # GitHub Issue Implementation Orchestrator Agent
 
-Automated workflow coordinator for implementing GitHub issues end-to-end. Implements 10-state machine to guide issues through branch creation, documentation, implementation, testing, and pull request creation.
+Automated workflow coordinator for implementing GitHub issues end-to-end. Implements 11-state machine: validate, prepare, doc-pre, TDD loop, test, docker-verify, user-review, code-commit, doc-validate, finalize, complete.
 
 ## IMPORTANT: Display Workflow Diagram on Every State Transition
 
-Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders. This provides a visual checkpoint at every step of the 10-state machine.
+Display the workflow diagram each time you transition to a new state, immediately before executing that state's work. Highlight the destination state with heavy borders (┃, ┏┓┗┛). This provides a visual checkpoint at every step.
 
-## State Machine & Skill Orchestration
+## State Machine
 
 ```
 START
   ↓
 [1] validate
   ├─ Call: /implementation-validate <issue-number>
-  ├─ Validates: ready-for-work label, OPEN state, determines commit type
-  └─ Result: PASS → Continue, FAIL → ABORT
+  ├─ Checks: ready-for-work label, grilling comment, OPEN state, milestone
+  ├─ Action: swap ready-for-work → in-development
+  └─ Result: PASS → Continue, ABORT if grilling comment missing or any check fails
           ↓
 [2] prepare
   ├─ Call: /implementation-prepare <issue-number> <commit-type>
   ├─ Creates: <type>-issue-<number> branch from updated main
-  └─ Result: Branch ready for implementation
+  └─ Result: Branch ready
           ↓
 [3] doc-pre
-  ├─ Read affected doc pages from plan's documentation section
-  ├─ Draft documentation changes for the planned feature/fix
-  └─ Result: Doc drafts staged for review alongside code
+  ├─ Read grilling comment to identify affected doc pages
+  ├─ Draft and apply documentation changes in docs/
+  ├─ Commit: `docs: update docs for #<N> pre-implementation`
+  └─ Result: Doc changes committed
           ↓
-[4] implement
-  ├─ Call: /implementation-implement <issue-number>
-  ├─ Executes: Code changes across DB, backend, frontend, tests
-  ├─ Follows: Implementation plan from planning phase
-  └─ Result: Files modified, implementation complete
+[4] tdd-loop (fully autonomous)
+  ├─ Read "Behaviors to Implement" checklist from grilling comment
+  ├─ For each unchecked behavior:
+  │   ├─ RED: write failing test for this behavior only
+  │   ├─ GREEN: write minimum code to make test pass
+  │   └─ REFACTOR: clean up if needed, re-run tests
+  ├─ Adaptive: minor deviations handled silently, note all deviations for doc-validate
+  ├─ No per-cycle pauses — runs fully autonomously until all behaviors implemented
+  └─ Result: All behaviors implemented, deviations list ready
           ↓
 [5] test
   ├─ Call: /implementation-test
-  ├─ Executes: pytest (backend), frontend tests if applicable
+  ├─ Run: full test suite
   └─ Branch:
       ├─ PASS → Continue to [6]
-      └─ FAIL → PAUSE for fixes, return to [3]
+      └─ FAIL → PAUSE, show errors, return to [4]
           ↓
-[6] verify
+[6] docker-verify
   ├─ Call: /implementation-verify <issue-number>
-  ├─ Executes: Docker rebuild, shows changes summary
+  ├─ Rebuilds containers, shows changes summary
   └─ PAUSE: Awaits user approval
           ↓
-[7] User Review & Approval
+[7] user-review
   ├─ User decides:
-  │  ├─ Approve → Continue to [8]
-  │  ├─ Request changes → Return to [3]
-  │  └─ Abort → END
+  │   ├─ Approve → Continue to [8]
+  │   ├─ Request changes → Return to [4]
+  │   └─ Abort → END
           ↓
-[8] doc-post
-  ├─ Re-read modified doc pages to verify accuracy against actual implementation
+[8] code-commit
+  ├─ Stage all code changes (exclude docs/ — already committed in [3])
+  ├─ Commit: `<type>: <description> (#<N>)`
+  ├─ Body: why, decisions, context
+  └─ Footer: Co-Authored-By
+          ↓
+[9] doc-validate
+  ├─ Re-read all modified doc pages
+  ├─ Compare against actual implementation
   ├─ Correct any discrepancies between docs and code
-  └─ Add missing doc coverage for new behavior
+  ├─ Add missing doc coverage for new behavior
+  ├─ If corrections needed: commit `docs: reconcile docs with implementation #<N>`
+  └─ If no corrections: skip commit
           ↓
-[9] finalize
+[10] finalize
   ├─ Call: /implementation-finalize <issue-number> <commit-type>
-  ├─ Executes: Commit, push, PR creation
-  ├─ Format: Conventional commit with separate Closes per issue
+  ├─ Push branch, create PR (conventional commit format title)
+  ├─ Remove in-development label
   └─ Result: PR URL returned
           ↓
-[10] complete
+[11] complete
   ├─ Display: PR URL to user
   ├─ Info: Issue auto-closes when merged
   └─ END
@@ -75,49 +90,68 @@ START
 
 ## Output Format
 
-Agent outputs workflow diagram on each state transition, highlighting the destination stage:
+Display workflow diagram on each state transition. Highlight destination with heavy borders:
 
 ```
 GITHUB ISSUE IMPLEMENTATION WORKFLOW
 ====================================
 
-┌──────────┐  ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│ Validate ├─▶│ Prepare ├─▶│ Doc Pre ├─▶│Implement ├─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Doc Post ├─▶│ Finalize ├─▶│ Complete │
-└──────────┘  └─────────┘  └─────────┘  └──────────┘  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌──────┐  ┌────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Prepare ├─▶│ Doc Pre ├─▶│ TDD Loop ├─▶│ Test ├─▶│Docker  ├─▶│User Rev. ├─▶│Code Cmt  ├─▶│Doc Valid ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  └─────────┘  └──────────┘  └──────┘  └────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
 ```
 
-Current stage highlighted with double borders (┃, ┏┓┗┛). Example if at Implement stage:
+Example at TDD Loop stage:
 
 ```
 GITHUB ISSUE IMPLEMENTATION WORKFLOW
 ====================================
 
-┌──────────┐  ┌─────────┐  ┌─────────┐  ┏━━━━━━━━━━┓  ┌──────┐  ┌────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│ Validate ├─▶│ Prepare ├─▶│ Doc Pre ├─▶┃Implement ┃─▶│ Test ├─▶│ Verify ├─▶│ User Rev.  ├─▶│ Doc Post ├─▶│ Finalize ├─▶│ Complete │
-└──────────┘  └─────────┘  └─────────┘  ┗━━━━━━━━━━┛  └──────┘  └────────┘  └────────────┘  └──────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌─────────┐  ┌─────────┐  ┏━━━━━━━━━━┓  ┌──────┐  ┌────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+│ Validate ├─▶│ Prepare ├─▶│ Doc Pre ├─▶┃ TDD Loop ┃─▶│ Test ├─▶│Docker  ├─▶│User Rev. ├─▶│Code Cmt  ├─▶│Doc Valid ├─▶│ Finalize ├─▶│ Complete │
+└──────────┘  └─────────┘  └─────────┘  ┗━━━━━━━━━━┛  └──────┘  └────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
 ```
 
-Also displays issue context:
+Also display issue context at each state:
 
 ```
-Issue #129: Add flexible skip options
-State: [4] Implement
-Progress: 4/10
-Branch: feat-issue-129
+Issue #263: Agent and Skill Refresh
+State: [4] TDD Loop
+Progress: 4/11
+Branch: feat-issue-263
+Behaviors remaining: 6/10
 ```
+
+## TDD Loop Details
+
+The TDD loop is the core of the implementation stage. It runs fully autonomously:
+
+1. Parse the `### Behaviors to Implement` checklist from the grilling comment
+2. For each `- [ ] Behavior (area: X)` item (in order):
+   - **RED**: Write one failing test targeting this behavior. Run it, confirm it fails for the right reason.
+   - **GREEN**: Write the minimum production code to make the test pass. Run all tests, confirm green.
+   - **REFACTOR**: Clean up code if needed. Run tests again to confirm still green.
+3. Track deviations: if a behavior needs to be implemented differently than specified, note it with reason. Do not pause — proceed with best judgment and surface at doc-validate.
+4. After all behaviors complete, summarize any deviations for the user before moving to test stage.
+
+## Commit Strategy
+
+| Stage | Commit type | When |
+|-------|-------------|------|
+| doc-pre [3] | `docs:` | Before TDD, always |
+| code-commit [8] | `feat:/fix:/refactor:` | After user approval |
+| doc-validate [9] | `docs:` | After finalize, only if corrections needed |
 
 ## State Persistence
 
-State tracked in git branch and environment:
-
 ```
 Branch: <type>-issue-<number>
-Status: implementation in progress
-Current step: test or verify
+Current step: tracked by git log and git status
 Modified files: tracked via git
+Deviations: noted in agent context
 ```
 
-Resumable by checking current branch state and git status.
+Resumable by checking branch state and git log.
 
 ## Implementation Details
 
@@ -126,95 +160,78 @@ Resumable by checking current branch state and git status.
 
 ### Output
 - Fully implemented issue with:
-  - Code changes across affected layers (via implementation-implement skill)
+  - All behaviors from grilling checklist implemented via TDD
   - Documentation drafted before coding and verified/corrected after user approval
-  - All tests passing (via implementation-test skill)
-  - Docker containers running with changes (via implementation-verify skill)
-  - Conventional commit with issue reference (via implementation-finalize skill)
-  - Pull request created with auto-close markers (Closes on separate lines)
-  - PR links to issue and implementation plan
+  - All tests passing
+  - Docker containers running with changes
+  - Two or three conventional commits (docs-pre, code, docs-post conditional)
+  - Pull request created with auto-close markers
+  - `in-development` label removed
 
 ### Skills Called (in order)
-
-1. **implementation-validate** - Validate issue readiness
-2. **implementation-prepare** - Create feature branch
-3. *(doc-pre)* - Draft documentation updates before coding
-4. **implementation-implement** - Make code changes
-5. **implementation-test** - Run test suite
-6. **implementation-verify** - Docker rebuild + show summary
+1. **implementation-validate** — validate, label swap
+2. **implementation-prepare** — branch creation
+3. *(doc-pre)* — agent drafts + commits docs directly
+4. *(tdd-loop)* — agent runs TDD autonomously
+5. **implementation-test** — full test suite
+6. **implementation-verify** — Docker rebuild + changes summary
 7. *User review pause*
-8. *(doc-post)* - Review and correct documentation against actual implementation
-9. **implementation-finalize** - Commit, push, create PR
+8. *(code-commit)* — agent commits code directly
+9. *(doc-validate)* — agent reconciles + commits if needed
+10. **implementation-finalize** — push + PR creation
 
 ### Error Handling
 - Invalid issue number → error message
-- Issue missing `ready-for-work` label → ABORT
+- Missing `ready-for-work` label → ABORT
+- Missing grilling comment → ABORT with instruction to run `/grill-with-docs issue <N>` first
 - Issue already closed → ABORT
-- Test failures → PAUSE, show errors, return to doc-pre / implementation
+- Test failures → PAUSE, show errors, return to TDD loop
 - Docker failures → PAUSE, show errors
 - Git push failures → PAUSE, investigate
 
-### Agent Responsibilities
-
-Orchestrator:
-- Calls skills in sequence
-- Displays state diagram on each state transition
-- Manages pause points for user review
-- Routes loops (e.g., changes requested → return to doc-pre / implement)
-- Returns final PR URL
-
 ## Key Features
 
-**Full Automation**: From branch to PR without manual git commands
+**Grilling-driven TDD**: Behaviors checklist from grilling comment drives the TDD loop
 
-**Test Verification**: All tests must pass before proceeding
+**Fully autonomous TDD**: No per-cycle pauses — complete implementation before user review
 
-**Change Tracking**: Shows exact files modified and impact
+**Two-phase docs**: `docs:` commit before coding, verification/correction after approval
 
-**Docker Support**: Verifies changes work in containerized environment
+**Conventional commits throughout**: All commits and PR title follow conventional format
 
-**Conventional Commits**: Auto-generates formatted commits with issue reference
+**Label lifecycle**: `ready-for-work` → `in-development` at validate; `in-development` removed at finalize
 
-**Auto-Close**: PR body includes "Closes #<number>" on separate line per issue for GitHub auto-closing
-
-**User Control**: Pause point after verification allows review before doc-post and commit
-
-**State Progress**: Displays current state and progress at start of every response
+**Auto-Close**: PR body includes "Closes #<number>" on its own line for GitHub auto-closing
 
 ## Integration Points
 
 **Invocation**:
 - Manual: `@agent-github-issue-implementation-orchestrator <issue-number>`
-- Via `/github-issue-assign` skill redirect
 
-**Prerequisite**: Issue must have `ready-for-work` label (set by planning orchestrator)
+**Prerequisite**: Issue must have `ready-for-work` label AND a grilling comment
 
 **Workflow Chain**:
-1. `github-issue-triage-orchestrator` → labels as `ready-to-plan`
-2. `github-issue-plan-orchestrator` → labels as `ready-for-work`
+1. `github-issue-triage-orchestrator` → labels as `ready-to-grill`
+2. `/grill-with-docs issue <N>` → labels as `ready-for-work`
 3. `github-issue-implementation-orchestrator` → implements and creates PR
 
 ## Related Agents & Skills
 
 ### Agents
-- **github-issue-triage-orchestrator**: Validates and labels issues as `ready-to-plan`
-- **github-issue-plan-orchestrator**: Creates structured implementation plans, labels as `ready-for-work`
+- **github-issue-triage-orchestrator**: Triages issues, assigns milestones, labels as `ready-to-grill`
 
 ### Supporting Skills
-- **implementation-validate**: Issue validation and commit type determination
+- **implementation-validate**: Issue validation and label swap
 - **implementation-prepare**: Branch creation and setup
-- **implementation-implement**: Code change execution
 - **implementation-test**: Test suite verification
 - **implementation-verify**: Docker rebuild and changes summary
-- **implementation-finalize**: Commit, push, and PR creation
-
-Each skill has independent entry points and can be called standalone if needed.
+- **implementation-finalize**: Push and PR creation
 
 ## Notes
 
 - Agent idempotent: safe to re-run from failed state
 - All git operations happen on isolated `<type>-issue-<number>` branch
 - Tests must pass before user review pause
-- User has final approval before doc-post and commit/push
-- PR auto-closes issue when merged (with separate Closes line per issue)
-- Implementation plan from planning phase guides actual code changes
+- User has final approval before code commit and push
+- PR auto-closes issue when merged
+- Grilling comment is the source of truth for behaviors to implement
