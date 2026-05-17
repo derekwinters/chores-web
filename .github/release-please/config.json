@@ -1,14 +1,19 @@
 {
   "bootstrap-sha": "b4b2f4f",
   "packages": {
-    "frontend": {
-      "changelog-path": "CHANGELOG.md",
+    ".": {
+      "changelog-path": "frontend/CHANGELOG.md",
       "release-type": "node",
       "bump-minor-pre-major": false,
       "bump-patch-for-minor-pre-major": false,
       "prerelease-type": "pre",
       "include-component-in-tag": false,
       "extra-files": [
+        {
+          "type": "json",
+          "path": "frontend/package.json",
+          "jsonpath": "$.version"
+        },
         {
           "type": "generic",
           "path": "backend/app/config.py"
