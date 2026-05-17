@@ -1,13 +1,12 @@
 {
   "bootstrap-sha": "b4b2f4f",
   "packages": {
-    ".": {
-      "changelog-path": "CHANGELOG.md",
+    "frontend": {
+      "changelog-path": "../CHANGELOG.md",
       "release-type": "node",
       "bump-minor-pre-major": false,
       "bump-patch-for-minor-pre-major": false,
-      "prerelease-type": "pre",
-      "version-file": "frontend/package.json"
+      "prerelease-type": "pre"
     }
   },
   "changelog-sections": [
