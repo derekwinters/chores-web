@@ -762,6 +762,57 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#issue-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue Lifecycle
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Issue Lifecycle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agents-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agents &amp; Entry Points
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grilling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grilling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#development-workflow" class="md-nav__link">
     <span class="md-ellipsis">
       Development Workflow
@@ -1152,6 +1203,57 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#issue-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issue Lifecycle
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Issue Lifecycle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agents-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agents &amp; Entry Points
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grilling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Grilling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#development-workflow" class="md-nav__link">
     <span class="md-ellipsis">
       Development Workflow
@@ -1500,6 +1602,88 @@ npm<span class="w"> </span>run<span class="w"> </span>dev
 <li>Frontend will redirect to setup page if no users exist</li>
 <li>Create first admin user through setup page</li>
 <li>Login with created credentials</li>
+</ol>
+<h2 id="issue-lifecycle">Issue Lifecycle<a class="headerlink" href="#issue-lifecycle" title="Permanent link">&para;</a></h2>
+<p>All work in this repository follows a 4-stage lifecycle controlled by GitHub issue labels.</p>
+<h3 id="stages">Stages<a class="headerlink" href="#stages" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Concept</td>
+<td><em>(none)</em></td>
+<td>Raw idea recorded, not yet triaged</td>
+</tr>
+<tr>
+<td>2. Context &amp; Assignment</td>
+<td><code>ready-to-grill</code></td>
+<td>Triage complete, milestone assigned</td>
+</tr>
+<tr>
+<td>3. Grilling Complete</td>
+<td><code>ready-for-work</code></td>
+<td>Grilling done, implementation contract exists</td>
+</tr>
+<tr>
+<td>4. In Development</td>
+<td><code>in-development</code></td>
+<td>Agent actively working on the issue</td>
+</tr>
+</tbody>
+</table>
+<p>A stage must not begin unless the proper label is assigned.</p>
+<h3 id="agents-entry-points">Agents &amp; Entry Points<a class="headerlink" href="#agents-entry-points" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Trigger</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github-issue-triage-orchestrator</code></td>
+<td>Manual or webhook</td>
+<td>Triages issue, assigns milestone, applies <code>ready-to-grill</code></td>
+</tr>
+<tr>
+<td><code>/grill-with-docs issue &lt;N&gt;</code></td>
+<td>Manual</td>
+<td>Runs grilling session, posts structured comment, flips label to <code>ready-for-work</code></td>
+</tr>
+<tr>
+<td><code>github-issue-implementation-orchestrator</code></td>
+<td>Manual</td>
+<td>Implements issue end-to-end via TDD, creates PR</td>
+</tr>
+</tbody>
+</table>
+<h3 id="grilling">Grilling<a class="headerlink" href="#grilling" title="Permanent link">&para;</a></h3>
+<p>Grilling is required before development begins. Run <code>/grill-with-docs issue &lt;N&gt;</code> to:</p>
+<ol>
+<li>Conduct a structured session covering all 4 areas: backend, database, frontend, docs</li>
+<li>Post a structured grilling comment on the issue (decisions, impact areas, behaviors checklist)</li>
+<li>Remove <code>ready-to-grill</code>, apply <code>ready-for-work</code></li>
+</ol>
+<h3 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h3>
+<p>The implementation orchestrator handles all development autonomously:</p>
+<ol>
+<li>Validates <code>ready-for-work</code> label and grilling comment presence</li>
+<li>Creates <code>&lt;type&gt;-issue-&lt;N&gt;</code> branch from updated main</li>
+<li>Drafts documentation updates (<code>docs:</code> commit)</li>
+<li>Runs TDD loop — derives behaviors from grilling checklist, red-green-refactor cycles</li>
+<li>Full test suite must pass</li>
+<li>Docker verify + user approval pause</li>
+<li>Code commit (<code>feat:/fix:/refactor:</code>)</li>
+<li>Doc-validate — reconciles docs against implementation</li>
+<li>Push + PR creation (removes <code>in-development</code>)</li>
 </ol>
 <h2 id="development-workflow">Development Workflow<a class="headerlink" href="#development-workflow" title="Permanent link">&para;</a></h2>
 <h3 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h3>
