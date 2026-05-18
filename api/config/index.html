@@ -916,15 +916,16 @@
 <p>Get current update check status. Admin only.</p>
 <p><strong>Response (200):</strong>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;last_check&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ISO8601|null&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;available_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string|null&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;is_checking&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">boolea</span><span class="kc">n</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">boolea</span><span class="kc">n</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;interval_hours&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger</span>
+<span class="w">  </span><span class="nt">&quot;last_checked_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ISO8601|null&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;latest_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string|null&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;update_available&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">boolea</span><span class="kc">n</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;check_enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">boolea</span><span class="kc">n</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;check_interval_hours&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger</span>
 <span class="p">}</span>
 </code></pre></div></p>
 <h2 id="post-configupdatescheck">POST /config/updates/check<a class="headerlink" href="#post-configupdatescheck" title="Permanent link">&para;</a></h2>
 <p>Manually trigger an update check. Admin only.</p>
+<p>Always performs a real check against GitHub — bypasses both the interval throttle and in-memory version cache regardless of when the last check ran.</p>
 <p><strong>Response (200):</strong> Updated status (see above)</p>
 <h2 id="put-configupdatesconfig">PUT /config/updates/config<a class="headerlink" href="#put-configupdatesconfig" title="Permanent link">&para;</a></h2>
 <p>Configure automatic update checking. Admin only.</p>
