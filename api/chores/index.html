@@ -1193,12 +1193,17 @@
 <p><strong>Response (204):</strong> No content</p>
 <hr />
 <h2 id="post-choreschore_idcomplete">POST /chores/{chore_id}/complete<a class="headerlink" href="#post-choreschore_idcomplete" title="Permanent link">&para;</a></h2>
-<p>Mark chore completed, award points.</p>
+<p>Mark chore completed, award points. The Completer receives the Credit.</p>
 <p><strong>Request:</strong>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;completed_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string|null&quot;</span>
+<span class="w">  </span><span class="nt">&quot;completed_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string (optional)&quot;</span>
 <span class="p">}</span>
 </code></pre></div></p>
+<ul>
+<li><code>completed_by</code>: Username of the <strong>Completer</strong>. Optional — omit or pass <code>null</code> to fall back to the authenticated user.</li>
+<li>When <code>current_assignee === null</code> (no Assignee), the frontend enforces a required <strong>Completer</strong> selection before calling this endpoint.</li>
+<li>The Completer receives the Credit (Points Log entry), regardless of which user made the HTTP request.</li>
+</ul>
 <p><strong>Response (200):</strong> Updated chore</p>
 <h2 id="post-choreschore_idskip">POST /chores/{chore_id}/skip<a class="headerlink" href="#post-choreschore_idskip" title="Permanent link">&para;</a></h2>
 <p>Skip chore (no points), calculate next due date.</p>
