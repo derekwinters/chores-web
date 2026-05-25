@@ -939,6 +939,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#prometheus-scraping" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Scraping
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1472,6 +1481,15 @@
   <a href="#metrics" class="md-nav__link">
     <span class="md-ellipsis">
       Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-scraping" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Scraping
     </span>
   </a>
   
@@ -2015,6 +2033,27 @@ docker-compose<span class="w"> </span>logs<span class="w"> </span>-f
 <p>Monitor via docker stats:
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>stats
 </code></pre></div></p>
+<h3 id="prometheus-scraping">Prometheus Scraping<a class="headerlink" href="#prometheus-scraping" title="Permanent link">&para;</a></h3>
+<p>The backend exposes a Prometheus metrics endpoint at <code>GET /metrics</code> (public, no authentication).</p>
+<p>Example <code>prometheus.yml</code> scrape configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">scrape_configs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chores-web</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">backend:8000</span><span class="w">   </span><span class="c1"># use your backend host/port</span>
+<span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/metrics</span>
+<span class="w">    </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30s</span>
+</code></pre></div>
+<p>Available application metrics:
+- <code>chores_total{state, disabled}</code> — chore counts by state and disabled flag
+- <code>chores_due_now_total</code> — chores currently due
+- <code>chores_due_soon_total</code> — chores due within the configured <code>due_soon_days</code> window
+- <code>chores_due_now_by_person{person}</code> — due chores per assignee
+- <code>people_total</code> — registered user count
+- <code>points_awarded_total</code> — total points across all PointsLog entries
+- <code>chore_completions_by_person{person, window}</code> — completions per person for 7d and 30d windows</p>
+<p>Process and HTTP request metrics are also included automatically.</p>
+<p>No Docker Compose Prometheus service is bundled — add your own Prometheus container or use an external Prometheus instance pointing at the backend.</p>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="port-already-in-use">Port Already in Use<a class="headerlink" href="#port-already-in-use" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Find process using port</span>

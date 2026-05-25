@@ -855,6 +855,30 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Observability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metrics-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metrics Endpoint
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#api-development" class="md-nav__link">
     <span class="md-ellipsis">
       API Development
@@ -1285,6 +1309,30 @@
   <a href="#commit-guidelines" class="md-nav__link">
     <span class="md-ellipsis">
       Commit Guidelines
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Observability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metrics-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metrics Endpoint
     </span>
   </a>
   
@@ -1740,6 +1788,67 @@ Frontend tests: 205/205 passing ✓
 
 Co-Authored-By: Claude Haiku 4.5 &lt;noreply@anthropic.com&gt;
 </code></pre></div></p>
+<h2 id="observability">Observability<a class="headerlink" href="#observability" title="Permanent link">&para;</a></h2>
+<h3 id="metrics-endpoint">Metrics Endpoint<a class="headerlink" href="#metrics-endpoint" title="Permanent link">&para;</a></h3>
+<p>The backend exposes a Prometheus-compatible metrics endpoint:</p>
+<p><strong><code>GET /metrics</code></strong> — Returns metrics in Prometheus text format. Public, no authentication required.</p>
+<p>Available metrics:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Type</th>
+<th>Labels</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>chores_total</code></td>
+<td>Gauge</td>
+<td><code>state</code>, <code>disabled</code></td>
+<td>Total chores grouped by state and disabled flag</td>
+</tr>
+<tr>
+<td><code>chores_due_now_total</code></td>
+<td>Gauge</td>
+<td>—</td>
+<td>Chores where <code>state='due'</code></td>
+</tr>
+<tr>
+<td><code>chores_due_soon_total</code></td>
+<td>Gauge</td>
+<td>—</td>
+<td>Chores where <code>next_due &lt;= today + due_soon_days</code></td>
+</tr>
+<tr>
+<td><code>chores_due_now_by_person</code></td>
+<td>Gauge</td>
+<td><code>person</code></td>
+<td>Due chores grouped by current assignee</td>
+</tr>
+<tr>
+<td><code>people_total</code></td>
+<td>Gauge</td>
+<td>—</td>
+<td>Total user count</td>
+</tr>
+<tr>
+<td><code>points_awarded_total</code></td>
+<td>Gauge</td>
+<td>—</td>
+<td>Sum of all PointsLog entries</td>
+</tr>
+<tr>
+<td><code>chore_completions_by_person</code></td>
+<td>Gauge</td>
+<td><code>person</code>, <code>window</code></td>
+<td>Completions in 7d and 30d windows</td>
+</tr>
+</tbody>
+</table>
+<p>Process metrics (CPU, memory, file descriptors) are provided automatically by <code>prometheus_client</code>.</p>
+<p>HTTP request metrics (request count, duration histogram by path) are provided by <code>starlette-prometheus</code> middleware.</p>
 <h2 id="api-development">API Development<a class="headerlink" href="#api-development" title="Permanent link">&para;</a></h2>
 <h3 id="adding-a-new-endpoint">Adding a New Endpoint<a class="headerlink" href="#adding-a-new-endpoint" title="Permanent link">&para;</a></h3>
 <ol>
