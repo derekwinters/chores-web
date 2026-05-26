@@ -165,10 +165,9 @@ The upgrade regression test validates that data seeded against a previous releas
 1. **Pull previous release**: The job resolves the latest published GHCR tag dynamically at runtime.
 2. **Start old backend + Postgres**: Brings up `docker-compose.test-upgrade.yml` with the previous release image.
 3. **Seed comprehensive data**: Runs `backend/seed.py` against the old backend — creates People, Chores, Completions, Skips, Reassignments, and Amendments.
-4. **Stop old backend**: Shuts down the old backend container; Postgres volume is preserved.
-5. **Start new backend**: Builds the backend image from the current branch and starts it against the same Postgres volume.
-6. **Validate**: Runs `backend/validate_upgrade.py` — API assertions (entity counts, assignees, points log, activity log, health) plus raw SQL FK/count integrity checks.
-7. **Result**: Non-zero exit on any failure fails the CI job.
+4. **Start new backend**: Builds the backend image from the current branch and starts it against the same Postgres volume after seeding completes.
+5. **Validate**: Runs `backend/validate_upgrade.py` — API assertions (entity counts, assignees, points log, activity log, health) plus raw SQL FK/count integrity checks.
+6. **Result**: Non-zero exit on any failure fails the CI job.
 
 ### Files
 
@@ -186,7 +185,10 @@ The upgrade regression test validates that data seeded against a previous releas
 PREV_TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName')
 
 # Run the upgrade test
-PREV_TAG=$PREV_TAG docker compose -f docker-compose.test-upgrade.yml up --build --abort-on-container-exit
+PREV_TAG=$PREV_TAG docker compose -f docker-compose.test-upgrade.yml up \
+  --build \
+  --abort-on-container-exit \
+  --exit-code-from validate
 ```
 
 ### Failure Mode
