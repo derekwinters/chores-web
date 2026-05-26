@@ -114,3 +114,45 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  upgrade-regression:
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-tests]
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Log in to GHCR
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Resolve latest published GHCR tag
+        id: prev-tag
+        run: |
+          PREV_TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName' | sed 's/^v//')
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous release found; skipping upgrade regression test" >&2
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Previous release tag: $PREV_TAG"
+            echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run upgrade regression test
+        if: steps.prev-tag.outputs.skip == 'false'
+        env:
+          PREV_TAG: ${{ steps.prev-tag.outputs.prev_tag }}
+        run: |
+          docker compose -f docker-compose.test-upgrade.yml up --build -d
+          docker compose -f docker-compose.test-upgrade.yml wait validate
+      - name: Collect validate service logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker-compose.test-upgrade.yml logs new-backend validate || true
+      - name: Tear down upgrade test containers
+        if: always()
+        run: |
+          docker compose -f docker-compose.test-upgrade.yml down --volumes --remove-orphans || true
