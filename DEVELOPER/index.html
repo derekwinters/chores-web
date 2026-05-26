@@ -855,6 +855,57 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#upgrade-regression-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrade Regression Test
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrade Regression Test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How It Works
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Locally
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failure-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failure Mode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#observability" class="md-nav__link">
     <span class="md-ellipsis">
       Observability
@@ -1309,6 +1360,57 @@
   <a href="#commit-guidelines" class="md-nav__link">
     <span class="md-ellipsis">
       Commit Guidelines
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade-regression-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrade Regression Test
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrade Regression Test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How It Works
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Locally
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failure-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failure Mode
     </span>
   </a>
   
@@ -1788,6 +1890,56 @@ Frontend tests: 205/205 passing ✓
 
 Co-Authored-By: Claude Haiku 4.5 &lt;noreply@anthropic.com&gt;
 </code></pre></div></p>
+<h2 id="upgrade-regression-test">Upgrade Regression Test<a class="headerlink" href="#upgrade-regression-test" title="Permanent link">&para;</a></h2>
+<p>The upgrade regression test validates that data seeded against a previous release migrates correctly when the new backend starts against the same Postgres volume. It runs as a CI job on every PR to <code>main</code>.</p>
+<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Pull previous release</strong>: The job resolves the latest published GHCR tag dynamically at runtime.</li>
+<li><strong>Start old backend + Postgres</strong>: Brings up <code>docker-compose.test-upgrade.yml</code> with the previous release image.</li>
+<li><strong>Seed comprehensive data</strong>: Runs <code>backend/seed.py</code> against the old backend — creates People, Chores, Completions, Skips, Reassignments, and Amendments.</li>
+<li><strong>Start new backend</strong>: Builds the backend image from the current branch and starts it against the same Postgres volume after seeding completes.</li>
+<li><strong>Validate</strong>: Runs <code>backend/validate_upgrade.py</code> — API assertions (entity counts, assignees, points log, activity log, health) plus raw SQL FK/count integrity checks.</li>
+<li><strong>Result</strong>: Non-zero exit on any failure fails the CI job.</li>
+</ol>
+<h3 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker-compose.test-upgrade.yml</code></td>
+<td>Upgrade test orchestration: Postgres + old backend + new backend services</td>
+</tr>
+<tr>
+<td><code>backend/seed.py</code></td>
+<td>Comprehensive seeding: auth login + People, Chores, Completions, Skips, Reassignments, Amendments</td>
+</tr>
+<tr>
+<td><code>backend/validate_upgrade.py</code></td>
+<td>Validation script: API assertions + raw SQL FK/count checks</td>
+</tr>
+<tr>
+<td><code>.github/workflows/test.yml</code></td>
+<td>CI: <code>upgrade-regression</code> job added, triggered on PRs to <code>main</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="running-locally">Running Locally<a class="headerlink" href="#running-locally" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Resolve the latest GHCR tag</span>
+<span class="nv">PREV_TAG</span><span class="o">=</span><span class="k">$(</span>gh<span class="w"> </span>release<span class="w"> </span>list<span class="w"> </span>--limit<span class="w"> </span><span class="m">1</span><span class="w"> </span>--json<span class="w"> </span>tagName<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;.[0].tagName&#39;</span><span class="k">)</span>
+
+<span class="c1"># Run the upgrade test</span>
+<span class="nv">PREV_TAG</span><span class="o">=</span><span class="nv">$PREV_TAG</span><span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.test-upgrade.yml<span class="w"> </span>up<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--build<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--abort-on-container-exit<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--exit-code-from<span class="w"> </span>validate
+</code></pre></div>
+<h3 id="failure-mode">Failure Mode<a class="headerlink" href="#failure-mode" title="Permanent link">&para;</a></h3>
+<p>The job exits non-zero and fails CI. Check the <code>validate</code> service logs for specific assertion failures.</p>
 <h2 id="observability">Observability<a class="headerlink" href="#observability" title="Permanent link">&para;</a></h2>
 <h3 id="metrics-endpoint">Metrics Endpoint<a class="headerlink" href="#metrics-endpoint" title="Permanent link">&para;</a></h3>
 <p>The backend exposes a Prometheus-compatible metrics endpoint:</p>
