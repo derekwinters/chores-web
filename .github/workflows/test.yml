@@ -115,6 +115,28 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  release-notes:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Check for release notes on release PRs
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if echo "$PR_TITLE" | grep -qE '^chore\(main\): release v'; then
+            VERSION=$(echo "$PR_TITLE" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+')
+            RELEASE_FILE="docs/blog/posts/release-${VERSION}.md"
+            if [ ! -f "$RELEASE_FILE" ]; then
+              echo "Release PR detected for ${VERSION} but release notes file is missing: ${RELEASE_FILE}"
+              echo "Please create ${RELEASE_FILE} before merging this release PR."
+              exit 1
+            else
+              echo "Release notes found: ${RELEASE_FILE}"
+            fi
+          else
+            echo "Non-release PR — skipping release notes check."
+          fi
+
   upgrade-regression:
     runs-on: ubuntu-latest
     needs: [frontend-tests, backend-tests]
