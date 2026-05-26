@@ -146,14 +146,12 @@ jobs:
         env:
           PREV_TAG: ${{ steps.prev-tag.outputs.prev_tag }}
         run: |
-          docker compose -f docker-compose.test-upgrade.yml up \
-            --build \
-            --abort-on-container-exit \
-            --exit-code-from validate
+          docker compose -f docker-compose.test-upgrade.yml up --build -d
+          docker compose -f docker-compose.test-upgrade.yml wait validate
       - name: Collect validate service logs on failure
         if: failure()
         run: |
-          docker compose -f docker-compose.test-upgrade.yml logs validate || true
+          docker compose -f docker-compose.test-upgrade.yml logs new-backend validate || true
       - name: Tear down upgrade test containers
         if: always()
         run: |

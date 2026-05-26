@@ -5,8 +5,8 @@
 #
 # Usage (CI resolves PREV_TAG dynamically; local example shown below):
 #
-#   export PREV_TAG=v1.6.0
-#   docker compose -f docker-compose.test-upgrade.yml up --build --abort-on-container-exit
+#   export PREV_TAG=1.6.0
+#   docker compose -f docker-compose.test-upgrade.yml up --build -d && docker compose -f docker-compose.test-upgrade.yml wait validate
 #
 # Services:
 #   db         — Postgres (volume kept between old and new backend starts)
