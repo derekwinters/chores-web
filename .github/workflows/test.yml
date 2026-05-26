@@ -130,7 +130,7 @@ jobs:
       - name: Resolve latest published GHCR tag
         id: prev-tag
         run: |
-          PREV_TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName')
+          PREV_TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName' | sed 's/^v//')
           if [ -z "$PREV_TAG" ]; then
             echo "No previous release found; skipping upgrade regression test" >&2
             echo "skip=true" >> "$GITHUB_OUTPUT"
