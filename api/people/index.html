@@ -1315,7 +1315,7 @@
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;is_admin&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">boolea</span><span class="kc">n</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#RRGGBB&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#RRGGBB&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1">// deprecated — will be removed in next major version</span>
 <span class="w">  </span><span class="nt">&quot;goal_7d&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;goal_30d&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;points&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger</span><span class="p">,</span>
@@ -1340,7 +1340,7 @@
 <p>Update person settings. Admin or self only.</p>
 <p><strong>Request:</strong>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#RRGGBB|null&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#RRGGBB|null&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1">// deprecated — will be removed in next major version</span>
 <span class="w">  </span><span class="nt">&quot;goal_7d&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger|</span><span class="kc">null</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;goal_30d&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger|</span><span class="kc">null</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;preferred_theme&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string|null&quot;</span>
