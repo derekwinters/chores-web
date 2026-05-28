@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Depends
+import logging
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
@@ -12,6 +15,8 @@ from ..services.update_check_service import (
     configure_update_check,
 )
 from ..services.scheduler import reschedule_transition
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/config", tags=["config"])
 
@@ -150,7 +155,19 @@ async def update_config(body: ConfigUpdate, current_user: str = Depends(get_curr
             settings_row = Settings(key="update_check_interval", value=str(body.update_check_interval))
             db.add(settings_row)
 
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError as e:
+        await db.rollback()
+        if e.orig and "UniqueViolationError" in type(e.orig).__name__:
+            logger.warning("Unique constraint violation updating config")
+            raise HTTPException(status_code=409, detail="Conflict updating config")
+        logger.exception("Unexpected integrity error updating config")
+        raise HTTPException(status_code=500, detail="Database error while updating config")
+    except Exception:
+        await db.rollback()
+        logger.exception("Unexpected error updating config")
+        raise
 
     title = await _get_setting(db, "title", "Family Chores")
     auth_enabled = await _get_auth_enabled(db)
