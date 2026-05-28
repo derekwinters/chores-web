@@ -11,6 +11,7 @@ from ..services.update_check_service import (
     get_update_status,
     configure_update_check,
 )
+from ..services.scheduler import reschedule_transition
 
 router = APIRouter(prefix="/config", tags=["config"])
 
@@ -55,12 +56,20 @@ async def _get_update_check_interval(db: AsyncSession) -> int:
     return int(settings_row.value) if settings_row else 24
 
 
+async def _get_due_time_hour(db: AsyncSession) -> int:
+    """Get due_time_hour setting from database. Default to 6 if not set."""
+    result = await db.execute(select(Settings).where(Settings.key == "due_time_hour"))
+    settings_row = result.scalar_one_or_none()
+    return int(settings_row.value) if settings_row else 6
+
+
 @router.get("", response_model=ConfigOut)
 async def get_config(current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     title = await _get_setting(db, "title", "Family Chores")
     auth_enabled = await _get_auth_enabled(db)
     timezone = await _get_timezone(db)
     due_soon_days = await _get_due_soon_days(db)
+    due_time_hour = await _get_due_time_hour(db)
     update_check_enabled = await _get_update_check_enabled(db)
     update_check_interval = await _get_update_check_interval(db)
     return ConfigOut(
@@ -68,6 +77,7 @@ async def get_config(current_user: str = Depends(get_current_user), db: AsyncSes
         auth_enabled=auth_enabled,
         timezone=timezone,
         due_soon_days=due_soon_days,
+        due_time_hour=due_time_hour,
         update_check_enabled=update_check_enabled,
         update_check_interval=update_check_interval,
     )
@@ -75,6 +85,8 @@ async def get_config(current_user: str = Depends(get_current_user), db: AsyncSes
 
 @router.put("", response_model=ConfigOut)
 async def update_config(body: ConfigUpdate, current_user: str = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    should_reschedule = body.due_time_hour is not None or body.timezone is not None
+
     if body.title is not None:
         result = await db.execute(select(Settings).where(Settings.key == "title"))
         settings_row = result.scalar_one_or_none()
@@ -111,6 +123,15 @@ async def update_config(body: ConfigUpdate, current_user: str = Depends(get_curr
             settings_row = Settings(key="due_soon_days", value=str(body.due_soon_days))
             db.add(settings_row)
 
+    if body.due_time_hour is not None:
+        result = await db.execute(select(Settings).where(Settings.key == "due_time_hour"))
+        settings_row = result.scalar_one_or_none()
+        if settings_row:
+            settings_row.value = str(body.due_time_hour)
+        else:
+            settings_row = Settings(key="due_time_hour", value=str(body.due_time_hour))
+            db.add(settings_row)
+
     if body.update_check_enabled is not None:
         result = await db.execute(select(Settings).where(Settings.key == "update_check_enabled"))
         settings_row = result.scalar_one_or_none()
@@ -135,13 +156,19 @@ async def update_config(body: ConfigUpdate, current_user: str = Depends(get_curr
     auth_enabled = await _get_auth_enabled(db)
     timezone = await _get_timezone(db)
     due_soon_days = await _get_due_soon_days(db)
+    due_time_hour = await _get_due_time_hour(db)
     update_check_enabled = await _get_update_check_enabled(db)
     update_check_interval = await _get_update_check_interval(db)
+
+    if should_reschedule:
+        reschedule_transition(due_time_hour, timezone)
+
     return ConfigOut(
         title=title,
         auth_enabled=auth_enabled,
         timezone=timezone,
         due_soon_days=due_soon_days,
+        due_time_hour=due_time_hour,
         update_check_enabled=update_check_enabled,
         update_check_interval=update_check_interval,
     )
