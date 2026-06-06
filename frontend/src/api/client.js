@@ -1,6 +1,6 @@
 import { getToken, clearToken } from "../utils/auth";
 
-const BASE = import.meta.env.VITE_API_URL ?? "/api";
+const BASE = import.meta.env.VITE_API_URL ?? "/api/v1";
 
 // Fallback error messages for HTTP status codes
 const STATUS_CODE_FALLBACK = {
