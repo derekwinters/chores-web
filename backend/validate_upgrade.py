@@ -212,15 +212,34 @@ async def check_sql_integrity() -> None:
 async def validate(base_url: str = BASE) -> None:
     print(f"Running upgrade validation against {base_url}\n")
 
-    # Authenticate first
+    # Authenticate first — handle password reset required (403) from bcrypt migration
     async with httpx.AsyncClient(base_url=base_url, timeout=30) as c:
         login_r = await c.post("/v1/auth/login", json={"username": "admin", "password": "adminpass123"})
-        if login_r.status_code != 200:
+        if login_r.status_code == 403:
+            body = login_r.json()
+            reset_token = body.get("reset_token") or (body.get("detail", {}) or {}).get("reset_token")
+            if reset_token:
+                reset_r = await c.put(
+                    "/v1/auth/password/reset",
+                    json={"new_password": "adminpass123"},
+                    headers={"Authorization": f"Bearer {reset_token}"},
+                )
+                if reset_r.status_code != 200:
+                    fail(f"Password reset failed: {reset_r.status_code} {reset_r.text}")
+                    _report_results()
+                    return
+                token = reset_r.json()["access_token"]
+            else:
+                fail(f"Login failed: {login_r.status_code} {login_r.text}")
+                _report_results()
+                return
+        elif login_r.status_code != 200:
             fail(f"Login failed: {login_r.status_code} {login_r.text}")
             _report_results()
             return
+        else:
+            token = login_r.json()["access_token"]
 
-        token = login_r.json()["access_token"]
         c.headers.update({"Authorization": f"Bearer {token}"})
 
         await check_health(c)
