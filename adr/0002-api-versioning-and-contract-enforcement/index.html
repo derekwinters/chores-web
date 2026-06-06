@@ -11,10 +11,6 @@
       
       
       
-        <link rel="prev" href="../points/">
-      
-      
-        <link rel="next" href="../themes/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -22,7 +18,7 @@
     
     
       
-        <title>Log - Chores Documentation</title>
+        <title>ADR 0002: URL versioning strategy and OpenAPI contract enforcement - Chores Documentation</title>
       
     
     
@@ -76,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#log" class="md-skip">
+        <a href="#adr-0002-url-versioning-strategy-and-openapi-contract-enforcement" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Log
+              ADR 0002: URL versioning strategy and OpenAPI contract enforcement
             
           </span>
         </div>
@@ -259,26 +255,6 @@
           
   
   User Guide
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-    
-  
-  
-    
-    
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
-          
-  
-  API Reference
 
         </a>
       </li>
@@ -539,327 +515,6 @@
       
   
   
-    
-  
-  
-  
-    
-    
-    
-      
-        
-        
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
-            
-  
-  <span class="md-ellipsis">
-    API Reference
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            API Reference
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Overview & Auth
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../chores/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Chores
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../people/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    People
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../points/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Points
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Log
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    Log
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#get-log" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /log
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="GET /log">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#action-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      Action Types
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#get-logretention" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /log/retention
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#post-logretention" class="md-nav__link">
-    <span class="md-ellipsis">
-      POST /log/retention
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../themes/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Themes
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../config/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Config & Health
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../export/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Export
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../import/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Import
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
   
   
     
@@ -873,10 +528,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -887,8 +542,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Architecture
           </label>
@@ -981,10 +636,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -995,8 +650,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Developer Guide
           </label>
@@ -1089,10 +744,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1103,8 +758,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Deployment
           </label>
@@ -1207,42 +862,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#get-log" class="md-nav__link">
+  <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
-      GET /log
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="GET /log">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#action-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      Action Types
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#get-logretention" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /log/retention
+      Context
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#post-logretention" class="md-nav__link">
+  <a href="#decision" class="md-nav__link">
     <span class="md-ellipsis">
-      POST /log/retention
+      Decision
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rationale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consequences
     </span>
   </a>
   
@@ -1266,95 +915,56 @@
   
 
 
-<h1 id="log">Log<a class="headerlink" href="#log" title="Permanent link">&para;</a></h1>
-<h2 id="get-log">GET /log<a class="headerlink" href="#get-log" title="Permanent link">&para;</a></h2>
-<p>Chore action log with optional filters. Returns both chore actions (ChoreLog) and user management actions (UserLog).</p>
-<p><strong>Query Parameters:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>person</code></td>
-<td>string</td>
-<td>Filter by person (actor or affected person)</td>
-</tr>
-<tr>
-<td><code>chore_id</code></td>
-<td>string</td>
-<td>Filter by chore ID. Use <code>0</code> for user management actions only. Omit for all logs.</td>
-</tr>
-<tr>
-<td><code>action</code></td>
-<td>string</td>
-<td>Filter by single action type (see action list below)</td>
-</tr>
-<tr>
-<td><code>actions</code></td>
-<td>list[string]</td>
-<td>Filter by multiple action types (comma-separated or multiple params)</td>
-</tr>
-<tr>
-<td><code>start_date</code></td>
-<td>YYYY-MM-DD</td>
-<td>Filter from date (inclusive)</td>
-</tr>
-<tr>
-<td><code>end_date</code></td>
-<td>YYYY-MM-DD</td>
-<td>Filter to date (inclusive)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="action-types">Action Types<a class="headerlink" href="#action-types" title="Permanent link">&para;</a></h3>
-<p><strong>Chore Actions:</strong>
-- <code>completed</code> — Chore marked complete
-- <code>skipped</code> — Chore skipped
-- <code>reassigned</code> — Chore reassigned to another person
-- <code>marked_due</code> — Chore marked as due (manually)
-- <code>marked_due_by_schedule</code> — Chore auto-marked due by schedule</p>
-<p><strong>User Actions:</strong>
-- <code>person_created</code> — Person added
-- <code>person_modified</code> — Person details updated
-- <code>person_deleted</code> — Person removed</p>
-<p><strong>Response (200):</strong>
-<div class="highlight"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;chore_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string|null&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;chore_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string|null&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;person&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ISO8601&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;reassigned_to&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string|null&quot;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div></p>
-<h2 id="get-logretention">GET /log/retention<a class="headerlink" href="#get-logretention" title="Permanent link">&para;</a></h2>
-<p>Get current log retention policy.</p>
-<p><strong>Response (200):</strong>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;retention_days&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<p>Logs older than <code>retention_days</code> are automatically purged.</p>
-<h2 id="post-logretention">POST /log/retention<a class="headerlink" href="#post-logretention" title="Permanent link">&para;</a></h2>
-<p>Update log retention policy. Admin only.</p>
-<p><strong>Request:</strong>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;retention_days&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<p><strong>Response (200):</strong>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;retention_days&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">i</span><span class="kc">nte</span><span class="err">ger</span>
-<span class="p">}</span>
-</code></pre></div></p>
+<h1 id="adr-0002-url-versioning-strategy-and-openapi-contract-enforcement">ADR 0002: URL versioning strategy and OpenAPI contract enforcement<a class="headerlink" href="#adr-0002-url-versioning-strategy-and-openapi-contract-enforcement" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Accepted<br />
+<strong>Date:</strong> 2026-06-05<br />
+<strong>Issue:</strong> #6</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>The frontend and backend were tightly coupled — the frontend called <code>/api/...</code>
+paths that had no versioning, and the API was documented only in hand-written
+Markdown files that drifted from the actual implementation. There was no
+automated way to detect when a code change broke the API contract.</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>URL versioning:</strong> All API routes are prefixed with <code>/v1/</code> (e.g.,
+   <code>/api/v1/chores</code>). Status and metrics endpoints remain unversioned.
+   The current version is recorded in <code>API_VERSION</code> at the repo root.</p>
+</li>
+<li>
+<p><strong>OpenAPI golden snapshot:</strong> <code>docs/api/openapi.json</code> is a committed
+   snapshot generated by <code>scripts/generate_openapi.py</code>. It is the source
+   of truth for the current API contract.</p>
+</li>
+<li>
+<p><strong>CI enforcement:</strong> A <code>api-contracts</code> CI job generates a fresh OpenAPI
+   schema on every PR and runs <code>oasdiff breaking</code> against the committed
+   snapshot. Breaking changes cause CI to fail unless <code>API_VERSION</code> has
+   been incremented.</p>
+</li>
+<li>
+<p><strong>Hand-written docs removed:</strong> <code>docs/api/*.md</code> files are deleted.
+   The FastAPI <code>/docs</code> UI (Swagger) and the committed <code>openapi.json</code> replace
+   them as the authoritative API reference.</p>
+</li>
+</ol>
+<h2 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h2>
+<ul>
+<li>URL versioning is simple, explicit, and visible in logs and URLs.</li>
+<li>Committing the OpenAPI snapshot makes breaking changes reviewable in PRs.</li>
+<li><code>oasdiff</code> is a well-maintained, standard tool for OpenAPI diff/breaking
+  change detection.</li>
+<li>Removing hand-written docs eliminates the drift problem at its source.</li>
+</ul>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<ul>
+<li>All frontend API calls use <code>/api/v1/</code> prefix. The <code>VITE_API_URL</code>
+  environment variable should point to the versioned base (<code>/api/v1</code>).</li>
+<li>To introduce a breaking API change: increment <code>API_VERSION</code>, mount new
+  routes under <code>/api/v{N}/</code>, and regenerate <code>openapi.json</code>.</li>
+<li>Existing tokens become invalid when the JWT secret is rotated (acceptable,
+  documented in deployment docs as a v2.0.0 breaking change).</li>
+</ul>
 
 
 
