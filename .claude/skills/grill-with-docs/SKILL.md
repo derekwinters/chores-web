@@ -26,14 +26,15 @@ If a question can be answered by exploring the codebase, explore the codebase in
 
 ## Area Checklist
 
-Every grilling session MUST explicitly cover all four areas. Work through them as part of the conversation, not just in the output:
+Every grilling session MUST explicitly cover all five areas. Work through them as part of the conversation, not just in the output:
 
 - [ ] **Backend** — API changes, service logic, auth, validation
 - [ ] **Database** — schema changes, migrations, new fields, indexes
 - [ ] **Frontend** — UI changes, new components, state management, routing
+- [ ] **Dependencies** — new packages (pip/npm), external tools (CLI binaries, services), and whether each is reflected in CI (install steps, env vars, secrets)
 - [ ] **Docs** — DEVELOPER.md, API.md, CONTEXT.md, ADRs, any other affected docs
 
-If an area has no changes, state that explicitly ("Database: no changes needed") so it's clear it was considered, not skipped.
+If an area has no changes, state that explicitly ("Dependencies: no changes needed") so it's clear it was considered, not skipped.
 
 </what-to-do>
 
@@ -127,6 +128,7 @@ After the session is complete and the user confirms the decisions are captured, 
 | Backend | ... | ... |
 | Database | ... | ... |
 | Frontend | ... | ... |
+| Dependencies | ... | ... |
 | Docs | ... | ... |
 
 ### Behaviors to Implement

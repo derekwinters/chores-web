@@ -55,6 +55,8 @@ jobs:
         run: |
           cd backend
           pytest --cov=app --cov-report=xml
+        env:
+          JWT_SECRET: ci-test-secret
       - name: Upload coverage
         uses: codecov/codecov-action@0f8570b1a125f4937846a11fcfa3bcd548bd8c97 # v4.6.0
         if: matrix.python-version == '3.12'
@@ -136,6 +138,38 @@ jobs:
           else
             echo "Non-release PR — skipping release notes check."
           fi
+
+  api-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Generate current OpenAPI snapshot
+        run: cd backend && python ../scripts/generate_openapi.py --output /tmp/openapi-current.json
+        env:
+          JWT_SECRET: ci-check-only
+      - name: Install oasdiff
+        run: |
+          OASDIFF_VERSION=$(curl -s https://api.github.com/repos/oasdiff/oasdiff/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+          OASDIFF_VERSION_TRIMMED=${OASDIFF_VERSION#v}
+          curl -sSfL "https://github.com/oasdiff/oasdiff/releases/download/${OASDIFF_VERSION}/oasdiff_${OASDIFF_VERSION_TRIMMED}_linux_amd64.tar.gz" -o /tmp/oasdiff.tar.gz
+          tar -xzf /tmp/oasdiff.tar.gz -C /usr/local/bin oasdiff
+          chmod +x /usr/local/bin/oasdiff
+      - name: Check for breaking changes
+        run: |
+          CURRENT_VERSION=$(cat API_VERSION | tr -d '[:space:]')
+          oasdiff breaking docs/api/openapi.json /tmp/openapi-current.json --fail-on ERR
+          echo "API contract check passed (version: $CURRENT_VERSION)"
 
   upgrade-regression:
     runs-on: ubuntu-latest
