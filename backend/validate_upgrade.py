@@ -59,7 +59,7 @@ async def check_health(c: httpx.AsyncClient) -> None:
 
 async def check_people(c: httpx.AsyncClient) -> None:
     print("Checking /people...")
-    r = await c.get("/people")
+    r = await c.get("/v1/people")
     if r.status_code != 200:
         fail(f"/people returned {r.status_code}")
         return
@@ -80,7 +80,7 @@ async def check_people(c: httpx.AsyncClient) -> None:
 async def check_chores(c: httpx.AsyncClient) -> int:
     """Returns number of chores found."""
     print("Checking /chores...")
-    r = await c.get("/chores")
+    r = await c.get("/v1/chores")
     if r.status_code != 200:
         fail(f"/chores returned {r.status_code}")
         return 0
@@ -100,7 +100,7 @@ async def check_chores(c: httpx.AsyncClient) -> int:
 
 async def check_points(c: httpx.AsyncClient) -> None:
     print("Checking /points (leaderboard)...")
-    r = await c.get("/points")
+    r = await c.get("/v1/points")
     if r.status_code != 200:
         fail(f"/points returned {r.status_code}")
         return
@@ -113,7 +113,7 @@ async def check_points(c: httpx.AsyncClient) -> None:
 
 async def check_activity_log(c: httpx.AsyncClient) -> None:
     print("Checking /log for expected action types...")
-    r = await c.get("/log")
+    r = await c.get("/v1/log")
     if r.status_code != 200:
         fail(f"/log returned {r.status_code}")
         return
@@ -214,7 +214,7 @@ async def validate(base_url: str = BASE) -> None:
 
     # Authenticate first
     async with httpx.AsyncClient(base_url=base_url, timeout=30) as c:
-        login_r = await c.post("/auth/login", json={"username": "admin", "password": "adminpass123"})
+        login_r = await c.post("/v1/auth/login", json={"username": "admin", "password": "adminpass123"})
         if login_r.status_code != 200:
             fail(f"Login failed: {login_r.status_code} {login_r.text}")
             _report_results()
