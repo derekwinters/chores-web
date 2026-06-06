@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { MdFilterList } from "react-icons/md";
 import { getAuthLog } from "../api/client";
-import "./Settings.css";
-import "./AdminPanel.css";
+import "../components/Log.css";
 
 const ACTION_OPTIONS = [
   { value: "", label: "All actions" },
@@ -13,130 +14,179 @@ const ACTION_OPTIONS = [
   { value: "user_created", label: "User created" },
 ];
 
-function formatTimestamp(ts) {
-  return new Date(ts).toLocaleString();
-}
+const PAGE_SIZE = 20;
 
 function actionLabel(action) {
   const match = ACTION_OPTIONS.find((o) => o.value === action);
   return match ? match.label : action;
 }
 
-export default function SettingsAuthLog() {
-  const [username, setUsername] = useState("");
-  const [action, setAction] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [filters, setFilters] = useState({});
+function formatTimestamp(ts) {
+  return new Date(ts).toLocaleString();
+}
 
-  const { data: entries = [], isLoading, error } = useQuery({
+export default function SettingsAuthLog() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const [page, setPage] = useState(0);
+
+  const filters = (() => {
+    const f = {};
+    const username = searchParams.get("username");
+    const action = searchParams.get("action");
+    const start_date = searchParams.get("start_date");
+    const end_date = searchParams.get("end_date");
+
+    if (username) f.username = username;
+    if (action) f.action = action;
+    if (start_date && /^\d{4}-\d{2}-\d{2}$/.test(start_date)) f.start_date = start_date;
+    if (end_date && /^\d{4}-\d{2}-\d{2}$/.test(end_date)) f.end_date = end_date;
+
+    return f;
+  })();
+
+  const { data: entries = [], isLoading, isError, error } = useQuery({
     queryKey: ["auth-log", filters],
     queryFn: () => getAuthLog(filters),
   });
 
-  const handleFilter = (e) => {
-    e.preventDefault();
-    setFilters({
-      ...(username ? { username } : {}),
-      ...(action ? { action } : {}),
-      ...(startDate ? { start_date: startDate } : {}),
-      ...(endDate ? { end_date: endDate } : {}),
+  const handleFilterChange = useCallback((key, value) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value) {
+        next.set(key, value);
+      } else {
+        next.delete(key);
+      }
+      return next;
     });
-  };
+    setPage(0);
+  }, [setSearchParams]);
 
-  const handleClear = () => {
-    setUsername("");
-    setAction("");
-    setStartDate("");
-    setEndDate("");
-    setFilters({});
+  const handleClearFilters = () => {
+    setSearchParams({});
+    setPage(0);
   };
 
   return (
-    <div className="settings-page">
-      <section className="settings-section">
-        <div className="section-row">
-          <h3>Auth Event Log</h3>
-        </div>
-        <hr />
-        <form onSubmit={handleFilter} style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "flex-end" }}>
-          <div className="setting-group" style={{ flex: "1 1 160px" }}>
-            <label>Username</label>
+    <div className="log">
+      <div className="page-header">
+        <h2>Auth Event Log</h2>
+        <button
+          className="btn-secondary"
+          onClick={() => setFiltersExpanded(!filtersExpanded)}
+          title={filtersExpanded ? "Hide filters" : "Show filters"}
+        >
+          <MdFilterList className="action-icon" />
+          <span className="action-text">{filtersExpanded ? "Hide filters" : "Show filters"}</span>
+        </button>
+      </div>
+
+      {filtersExpanded && (
+        <div className="log-filters">
+          <div className="filter-group">
+            <label htmlFor="filter-auth-user">Filter by username</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="filter-auth-user"
+              type="search"
+              autoComplete="off"
+              value={searchParams.get("username") || ""}
+              onChange={(e) => handleFilterChange("username", e.target.value)}
               placeholder="Filter by username"
             />
           </div>
-          <div className="setting-group" style={{ flex: "1 1 180px" }}>
-            <label>Action</label>
-            <select value={action} onChange={(e) => setAction(e.target.value)}>
+
+          <div className="filter-group">
+            <label htmlFor="filter-action">Filter by action</label>
+            <select
+              id="filter-action"
+              value={searchParams.get("action") || ""}
+              onChange={(e) => handleFilterChange("action", e.target.value)}
+            >
               {ACTION_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
           </div>
-          <div className="setting-group" style={{ flex: "1 1 140px" }}>
-            <label>Start date</label>
+
+          <div className="filter-group">
+            <label htmlFor="filter-start-date">Start date</label>
             <input
+              id="filter-start-date"
               type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              value={searchParams.get("start_date") || ""}
+              onChange={(e) => handleFilterChange("start_date", e.target.value)}
             />
           </div>
-          <div className="setting-group" style={{ flex: "1 1 140px" }}>
-            <label>End date</label>
+
+          <div className="filter-group">
+            <label htmlFor="filter-end-date">End date</label>
             <input
+              id="filter-end-date"
               type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              value={searchParams.get("end_date") || ""}
+              onChange={(e) => handleFilterChange("end_date", e.target.value)}
             />
           </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button type="submit" className="btn-primary">Filter</button>
-            <button type="button" className="btn-secondary" onClick={handleClear}>Clear</button>
-          </div>
-        </form>
 
-        {isLoading && <div className="loading">Loading auth log...</div>}
-        {error && <div className="error-message">{error.message}</div>}
+          <button className="btn-secondary" onClick={handleClearFilters}>
+            Clear filters
+          </button>
+        </div>
+      )}
 
-        {!isLoading && !error && (
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+      {isError && <div className="error-state">{error.message}</div>}
+
+      <div className="log-entries">
+        {isLoading ? (
+          <div className="loading">Loading auth log…</div>
+        ) : isError ? null : entries.length === 0 ? (
+          <div className="empty-state">No auth events found.</div>
+        ) : (
+          <>
+            <table className="log-table">
               <thead>
-                <tr style={{ borderBottom: "1px solid var(--border)", textAlign: "left" }}>
-                  <th style={{ padding: "0.5rem 0.75rem", color: "var(--text-muted, var(--text))" }}>Timestamp</th>
-                  <th style={{ padding: "0.5rem 0.75rem", color: "var(--text-muted, var(--text))" }}>Username</th>
-                  <th style={{ padding: "0.5rem 0.75rem", color: "var(--text-muted, var(--text))" }}>Action</th>
-                  <th style={{ padding: "0.5rem 0.75rem", color: "var(--text-muted, var(--text))" }}>Changed By</th>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Username</th>
+                  <th>Action</th>
+                  <th>Changed By</th>
                 </tr>
               </thead>
               <tbody>
-                {entries.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} style={{ padding: "1rem 0.75rem", color: "var(--text-muted, var(--text))", textAlign: "center" }}>
-                      No auth events found.
-                    </td>
+                {entries.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((entry) => (
+                  <tr key={entry.id}>
+                    <td>{formatTimestamp(entry.timestamp)}</td>
+                    <td>{entry.username}</td>
+                    <td>{actionLabel(entry.action)}</td>
+                    <td>{entry.changed_by ?? "—"}</td>
                   </tr>
-                ) : (
-                  entries.map((entry) => (
-                    <tr key={entry.id} style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "0.5rem 0.75rem", whiteSpace: "nowrap" }}>{formatTimestamp(entry.timestamp)}</td>
-                      <td style={{ padding: "0.5rem 0.75rem" }}>{entry.username}</td>
-                      <td style={{ padding: "0.5rem 0.75rem" }}>{actionLabel(entry.action)}</td>
-                      <td style={{ padding: "0.5rem 0.75rem", color: entry.changed_by ? "inherit" : "var(--text-muted, var(--text))" }}>
-                        {entry.changed_by ?? "—"}
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
-          </div>
+
+            <div className="log-pagination">
+              <button
+                className="btn-secondary"
+                onClick={() => setPage(page - 1)}
+                disabled={page === 0}
+              >
+                ← Previous
+              </button>
+              <span className="page-info">
+                Page {page + 1} of {Math.ceil(entries.length / PAGE_SIZE)}
+              </span>
+              <button
+                className="btn-secondary"
+                onClick={() => setPage(page + 1)}
+                disabled={(page + 1) * PAGE_SIZE >= entries.length}
+              >
+                Next →
+              </button>
+            </div>
+          </>
         )}
-      </section>
+      </div>
     </div>
   );
 }
