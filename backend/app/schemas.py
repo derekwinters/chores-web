@@ -313,6 +313,18 @@ class UpdateCheckStatus(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── Auth Log ─────────────────────────────────────────────────────────────────
+
+class AuthLogOut(BaseModel):
+    id: int
+    username: str
+    action: str
+    changed_by: Optional[str] = None
+    timestamp: datetime
+
+    model_config = {"from_attributes": True}
+
+
 # ── Admin DB ─────────────────────────────────────────────────────────────────
 
 class PointsLogUpdate(BaseModel):

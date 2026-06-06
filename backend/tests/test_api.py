@@ -960,18 +960,24 @@ class TestUserLogAPI:
         assert len(person_goal_entries) == 0
 
     @pytest.mark.asyncio
-    async def test_password_change_masked_in_log(self, authenticated_client):
+    async def test_password_change_logged_to_auth_log(self, authenticated_client):
+        """Admin password change should appear in auth_log, not user_log/chore_log."""
         r = await authenticated_client.post("/people", json={"name": "Dave", "username": "dave"})
         person_id = r.json()["id"]
 
         await authenticated_client.put(f"/people/{person_id}", json={"password": "newpassword123"})
 
+        # Check auth log for password_changed event
+        r = await authenticated_client.get("/auth/log")
+        auth_logs = r.json()
+        pw_entries = [e for e in auth_logs if e.get("action") == "password_changed" and e.get("username") == "dave"]
+        assert len(pw_entries) >= 1
+
+        # Verify it does NOT appear in user_log (GET /log) as a field_name=password entry
         r = await authenticated_client.get("/log")
         logs = r.json()
-        pw_entries = [e for e in logs if e.get("field_name") == "password"]
-        assert len(pw_entries) >= 1
-        assert pw_entries[0]["old_value"] == "changed"
-        assert pw_entries[0]["new_value"] == "changed"
+        pw_field_entries = [e for e in logs if e.get("field_name") == "password"]
+        assert len(pw_field_entries) == 0
 
     @pytest.mark.asyncio
     async def test_person_log_uses_sentinel_chore_id(self, authenticated_client):

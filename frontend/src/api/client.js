@@ -136,6 +136,16 @@ export const logout = () =>
 export const changePassword = (oldPassword, newPassword) =>
   request("PUT", "/auth/password", { old_password: oldPassword, new_password: newPassword });
 
+export const getAuthLog = (filters = {}) => {
+  const params = new URLSearchParams();
+  if (filters.username) params.append("username", filters.username);
+  if (filters.action) params.append("action", filters.action);
+  if (filters.start_date) params.append("start_date", filters.start_date);
+  if (filters.end_date) params.append("end_date", filters.end_date);
+  const queryString = params.toString();
+  return request("GET", `/auth/log${queryString ? `?${queryString}` : ""}`);
+};
+
 export const resetPassword = (resetToken, newPassword) => {
   // Use raw fetch since request() would strip the 403 response
   return fetch(`${BASE}/auth/password/reset`, {

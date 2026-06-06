@@ -1,16 +1,22 @@
 """Authentication routes."""
-from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Depends, HTTPException, Header
+from datetime import datetime, date, timedelta, timezone
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Header, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
 from ..database import get_db
-from ..models import Person, TokenBlacklist
-from ..schemas import LoginRequest, LoginResponse, UserInfo, PasswordChangeRequest, PasswordResetRequest, PasswordResetRequired
+from ..models import Person, TokenBlacklist, AuthLog
+from ..schemas import (
+    LoginRequest, LoginResponse, UserInfo,
+    PasswordChangeRequest, PasswordResetRequest, PasswordResetRequired,
+    AuthLogOut,
+)
 from ..security import hash_password, verify_password
 from ..config import settings
-from ..dependencies import _decode_jwt_token, get_current_user
+from ..dependencies import _decode_jwt_token, get_current_user, require_admin
+from ..services.logging import log_auth_event
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -65,6 +71,7 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
 
     If no users exist in the database, the first login auto-creates the user as admin.
     Returns 403 with a short-lived reset token if the user must change their password.
+    Logs login_succeeded or login_failed to auth_log.
     """
     # Check if user exists
     result = await db.execute(select(Person).where(Person.username == body.username))
@@ -86,24 +93,34 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
                 requires_password_reset=False,
             )
             db.add(person)
+            await log_auth_event(body.username, "user_created", db, changed_by="system")
             await db.commit()
             await db.refresh(person)
         else:
-            # User doesn't exist and it's not the first user
+            # User doesn't exist and it's not the first user — always same message
+            await log_auth_event(body.username, "login_failed", db)
+            await db.commit()
             raise HTTPException(status_code=401, detail="Invalid username or password")
     else:
         # User exists, verify password
         if not verify_password(body.password, person.password_hash):
+            await log_auth_event(body.username, "login_failed", db)
+            await db.commit()
             raise HTTPException(status_code=401, detail="Invalid username or password")
         is_admin = person.is_admin
 
     # If a forced reset is required, return 403 with a short-lived reset token
     if person.requires_password_reset:
         reset_token = _create_reset_jwt_token(body.username)
+        # Don't log login_succeeded here — success happens after reset
         raise HTTPException(
             status_code=403,
             detail=PasswordResetRequired(reset_token=reset_token).model_dump(),
         )
+
+    # Log successful login
+    await log_auth_event(body.username, "login_succeeded", db)
+    await db.commit()
 
     # Generate normal JWT token
     token = _create_jwt_token(body.username, is_admin)
@@ -183,6 +200,7 @@ async def change_password(
 
     person.password_hash = hash_password(body.new_password)
     db.add(person)
+    await log_auth_event(username, "password_changed", db)
     await db.commit()
 
     return {"message": "Password changed successfully"}
@@ -227,12 +245,46 @@ async def reset_password(
     person.password_hash = hash_password(body.new_password)
     person.requires_password_reset = False
     db.add(person)
+    await log_auth_event(username, "password_reset", db)
     await db.commit()
 
     # Issue a normal JWT now that the reset is complete
+    # Also log the successful login
+    await log_auth_event(username, "login_succeeded", db)
+    await db.commit()
+
     normal_token = _create_jwt_token(username, person.is_admin)
     return LoginResponse(
         access_token=normal_token,
         token_type="bearer",
         user=UserInfo(username=username, is_admin=person.is_admin),
     )
+
+
+@router.get("/log", response_model=list[AuthLogOut])
+async def get_auth_log(
+    username: Optional[str] = Query(None),
+    action: Optional[str] = Query(None),
+    start_date: Optional[date] = Query(None),
+    end_date: Optional[date] = Query(None),
+    current_user: str = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get auth event log. Admin only.
+
+    Filter by username, action (login_succeeded, login_failed, password_changed,
+    password_reset, user_created), start_date, end_date.
+    """
+    query = select(AuthLog).order_by(AuthLog.timestamp.desc())
+
+    if username:
+        query = query.where(AuthLog.username.ilike(username))
+    if action:
+        query = query.where(AuthLog.action == action)
+    if start_date:
+        query = query.where(AuthLog.timestamp >= datetime.combine(start_date, datetime.min.time()))
+    if end_date:
+        query = query.where(AuthLog.timestamp <= datetime.combine(end_date, datetime.max.time()))
+
+    result = await db.execute(query)
+    return result.scalars().all()

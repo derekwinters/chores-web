@@ -114,6 +114,16 @@ class UserLog(Base):
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class AuthLog(Base):
+    __tablename__ = "auth_log"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(Text, nullable=False)
+    action: Mapped[str] = mapped_column(Text, nullable=False)
+    changed_by: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
+
+
 class Settings(Base):
     __tablename__ = "settings"
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useOutletContext, useBlocker } from "react-router-dom";
+import { useOutletContext, useBlocker, Link } from "react-router-dom";
 import { getConfig, updateConfig } from "../api/client";
 import "./Settings.css";
 import "./AdminPanel.css";
@@ -76,6 +76,21 @@ export default function SettingsAuth() {
   return (
     <div className="settings-page">
       {error && <div className="error-message">{error}</div>}
+
+      <section className="settings-section">
+        <div className="section-row">
+          <h3>Auth Event Log</h3>
+        </div>
+        <hr />
+        <div className="section-content">
+          <p className="setting-description">
+            View authentication events: logins, failed attempts, password changes, and user creation.
+          </p>
+          <Link to="/settings/auth/log" className="btn-secondary" style={{ display: "inline-block", marginTop: "0.25rem" }}>
+            View Auth Log
+          </Link>
+        </div>
+      </section>
 
       <section className="settings-section">
         <div className="section-row">
