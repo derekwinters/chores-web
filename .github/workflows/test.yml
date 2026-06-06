@@ -55,6 +55,8 @@ jobs:
         run: |
           cd backend
           pytest --cov=app --cov-report=xml
+        env:
+          JWT_SECRET: ci-test-secret
       - name: Upload coverage
         uses: codecov/codecov-action@0f8570b1a125f4937846a11fcfa3bcd548bd8c97 # v4.6.0
         if: matrix.python-version == '3.12'
@@ -158,7 +160,10 @@ jobs:
           JWT_SECRET: ci-check-only
       - name: Install oasdiff
         run: |
-          curl -sSfL https://raw.githubusercontent.com/oasdiff/oasdiff/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+          OASDIFF_VERSION=$(curl -s https://api.github.com/repos/oasdiff/oasdiff/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+          curl -sSfL "https://github.com/oasdiff/oasdiff/releases/download/${OASDIFF_VERSION}/oasdiff_linux_amd64.tar.gz" -o /tmp/oasdiff.tar.gz
+          tar -xzf /tmp/oasdiff.tar.gz -C /usr/local/bin oasdiff
+          chmod +x /usr/local/bin/oasdiff
       - name: Check for breaking changes
         run: |
           CURRENT_VERSION=$(cat API_VERSION | tr -d '[:space:]')
