@@ -75,22 +75,8 @@ export default function SettingsAuth() {
 
   return (
     <div className="settings-page">
+      <h2>Auth</h2>
       {error && <div className="error-message">{error}</div>}
-
-      <section className="settings-section">
-        <div className="section-row">
-          <h3>Auth Event Log</h3>
-        </div>
-        <hr />
-        <div className="section-content">
-          <p className="setting-description">
-            View authentication events: logins, failed attempts, password changes, and user creation.
-          </p>
-          <Link to="/settings/auth/log" className="btn-secondary" style={{ display: "inline-block", marginTop: "0.25rem" }}>
-            View Auth Log
-          </Link>
-        </div>
-      </section>
 
       <section className="settings-section">
         <div className="section-row">
@@ -122,6 +108,16 @@ export default function SettingsAuth() {
                 : "App is accessible without authentication"}
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <div className="section-row">
+          <h3>Auth Event Log</h3>
+        </div>
+        <hr />
+        <div className="section-content">
+          <Link to="/settings/auth/log">View Auth Event Log →</Link>
         </div>
       </section>
     </div>
