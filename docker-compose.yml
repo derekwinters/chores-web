@@ -18,6 +18,7 @@ services:
     build: ./backend
     environment:
       DATABASE_URL: postgresql+asyncpg://chores:chores@db/chores
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "0.0.0.0:8000:8000"
     depends_on:
