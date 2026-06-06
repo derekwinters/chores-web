@@ -39,6 +39,7 @@ async def create_person(body: PersonCreate, current_user: str = Depends(require_
         username=body.username,
         password_hash=hash_password(body.password or ""),
         is_admin=False,
+        requires_password_reset=False,
         color=body.color or "#3B82F6"  # TODO: Remove color field in next major version
     )
     db.add(person)
@@ -93,6 +94,9 @@ async def update_person(person_id: int, body: PersonUpdate, current_user: str = 
     if body.password:
         old_pw = person.password_hash
         person.password_hash = hash_password(body.password)
+        # When admin changes another user's password, require them to reset it on next login
+        if current_user != person.username:
+            person.requires_password_reset = True
         await log_person_change(
             person_id=person.id,
             person_name=person.name,

@@ -29,9 +29,33 @@ class LoginResponse(BaseModel):
     user: UserInfo
 
 
+class PasswordResetRequired(BaseModel):
+    """Returned as the body of a 403 when requires_password_reset is True."""
+    reset_token: str
+    detail: str = "Password change required"
+
+
 class PasswordChangeRequest(BaseModel):
     old_password: str
     new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
+
+
+class PasswordResetRequest(BaseModel):
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
 
 
 # ── People ────────────────────────────────────────────────────────────────────
@@ -41,6 +65,13 @@ class PersonCreate(BaseModel):
     username: str
     password: Optional[str] = None
     color: Optional[str] = None  # TODO: Remove color field in next major version
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
 
 
 class PersonUpdate(BaseModel):
@@ -53,6 +84,13 @@ class PersonUpdate(BaseModel):
     preferred_theme: Optional[str] = None
     password: Optional[str] = None
 
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
+
 
 class PersonRedemption(BaseModel):
     amount: int
@@ -62,6 +100,7 @@ class PersonOut(BaseModel):
     id: int
     name: str
     username: str
+    requires_password_reset: bool
     is_admin: bool
     color: str
     goal_7d: int

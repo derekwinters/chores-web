@@ -136,6 +136,50 @@ export const logout = () =>
 export const changePassword = (oldPassword, newPassword) =>
   request("PUT", "/auth/password", { old_password: oldPassword, new_password: newPassword });
 
+export const resetPassword = (resetToken, newPassword) => {
+  // Use raw fetch since request() would strip the 403 response
+  return fetch(`${BASE}/auth/password/reset`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${resetToken}`,
+    },
+    body: JSON.stringify({ new_password: newPassword }),
+  }).then(async (res) => {
+    if (!res.ok) {
+      const detail = await res.json().catch(() => ({}));
+      throw new Error(detail.detail ?? `Error: ${res.statusText}`);
+    }
+    return res.json();
+  });
+};
+
+/**
+ * Login with 403/password-reset detection.
+ * Returns the normal LoginResponse on success, or
+ * { requiresReset: true, resetToken: string } when the server requests a password reset.
+ */
+export async function loginWithResetSupport(username, password) {
+  const res = await fetch(`${BASE}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (res.status === 403) {
+    const body = await res.json();
+    const detail = typeof body.detail === "object" ? body.detail : body;
+    return { requiresReset: true, resetToken: detail.reset_token };
+  }
+
+  if (!res.ok) {
+    const detail = await res.json().catch(() => ({}));
+    throw new Error(detail.detail ?? "Invalid credentials");
+  }
+
+  return res.json();
+}
+
 // Redemptions
 export const redeemPoints = (personId, amount) =>
   request("POST", `/people/${personId}/redeem`, { amount });

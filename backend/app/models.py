@@ -16,6 +16,7 @@ class Person(Base):
     name: Mapped[str] = mapped_column(Text, nullable=False)
     username: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(Text, nullable=False)
+    requires_password_reset: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_admin: Mapped[bool] = mapped_column(Integer, nullable=False, default=False)
     color: Mapped[str] = mapped_column(Text, nullable=False, default="#004272")
     goal_7d: Mapped[int] = mapped_column(Integer, nullable=False, default=20)
