@@ -70,7 +70,13 @@ START
   ├─ gh pr ready <pr_number>
   └─ Result: PR marked ready for review
           ↓
-[9] complete
+[9] ci-watch
+  ├─ Poll gh pr checks <pr_number> every 30s until all checks are non-pending
+  ├─ If all pass → proceed to complete
+  ├─ If any fail → diagnose and fix (see CI Fix Loop below)
+  └─ Result: all CI checks green
+          ↓
+[10] complete
   ├─ Display PR URL
   ├─ Info: All milestone issues auto-close when PR merges
   └─ END
@@ -82,20 +88,20 @@ START
 MILESTONE IMPLEMENTATION WORKFLOW
 ==================================
 
-┌────────────────┐  ┌───────────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│ Parse Milestone├─▶│ Bulk Validate ├─▶│  Dep. Order  ├─▶│ Branch Setup ├─▶│ Rel. Commit ├─▶│ Draft PR ├─▶│Impl Loop ├─▶│ Finalize ├─▶│ Complete │
-└────────────────┘  └───────────────┘  └──────────────┘  └──────────────┘  └─────────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
+┌────────────────┐  ┌───────────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+│ Parse Milestone├─▶│ Bulk Validate ├─▶│  Dep. Order  ├─▶│ Branch Setup ├─▶│ Rel. Commit ├─▶│ Draft PR ├─▶│Impl Loop ├─▶│ Finalize ├─▶│ CI Watch ├─▶│ Complete │
+└────────────────┘  └───────────────┘  └──────────────┘  └──────────────┘  └─────────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
 ```
 
 Also display milestone context at each state:
 
 ```
 Milestone: v1.9.0 (#7)
-State: [7] Implement Issues
-Progress: 7/9
+State: [9] CI Watch
+Progress: 9/10
 Branch: feat/milestone-1.9.0
-Issues: 3/8 complete
-Current: #301 Add user notifications
+Issues: 8/8 complete
+CI: 4/6 passing  (fix attempt 1/3)
 ```
 
 ## Version Extraction
@@ -164,6 +170,57 @@ Pass to each `github-issue-implementation-orchestrator` invocation:
 
 The issue orchestrator's `in-development` label removal at finalize is SKIPPED in milestone mode — this orchestrator removes it after each issue completes.
 
+## CI Watch
+
+### Poll loop
+
+```bash
+# Repeat until all checks are non-pending or timeout
+gh pr checks <pr_number>
+```
+
+Poll every 30 seconds. Display a check table on each poll:
+
+```
+CI Status (attempt 4, elapsed 2m00s):
+  backend-tests (3.11)   pass   ✅
+  backend-tests (3.12)   pass   ✅
+  frontend-tests (18.x)  pass   ✅
+  frontend-tests (20.x)  pass   ✅
+  api-contracts          fail   ❌
+  validate               pending ⏳
+```
+
+Timeout after 40 polls (~20 minutes). On timeout: HALT and report.
+
+### CI Fix Loop
+
+When one or more checks fail, enter the fix loop (max 3 fix attempts total):
+
+1. For each failing check, fetch logs: `gh run view <run_id> --log-failed`
+2. Diagnose root cause from log output
+3. Apply targeted fixes to source files
+4. Commit fixes: `git commit -m "fix: resolve CI failure in <check-name>"`
+5. Push: `git push origin <branch>`
+6. Re-enter poll loop and wait for new run to start (confirm new run ID appears)
+
+On fix attempt 3 failure: HALT with full diagnosis report and list of failing checks. Do not attempt a 4th fix — require manual intervention.
+
+### What the CI fix loop may fix autonomously
+
+- Missing env vars in CI workflow steps
+- Broken file references in docs/nav config
+- Wrong tool install commands (binary names, asset URLs, paths)
+- Test failures caused by code introduced in this milestone
+- OpenAPI snapshot out of sync (`cd backend && python ../scripts/generate_openapi.py`)
+
+### What requires HALT (do not attempt to fix autonomously)
+
+- Flaky/infrastructure failures (runner OOM, network timeouts, GitHub Actions outage)
+- Test failures in code predating this milestone (not caused by these changes)
+- Security scan failures requiring policy decisions
+- Failures in checks not present before this PR
+
 ## Error Handling
 
 | Error | Action |
@@ -174,6 +231,8 @@ The issue orchestrator's `in-development` label removal at finalize is SKIPPED i
 | Branch already exists | ABORT — re-run safety; delete branch to restart |
 | Issue orchestrator fails | HALT — report failed issue, branch, PR URL for manual intervention |
 | Push fails | PAUSE — investigate, report |
+| CI fix loop exhausted (3 attempts) | HALT — report all failing checks with log excerpts |
+| CI poll timeout (40 polls) | HALT — report last known check states |
 
 On issue orchestrator failure, report:
 ```
@@ -209,6 +268,7 @@ Manual steps: resolve issue on branch, then re-invoke from #<N>
 6. *(draft-pr)* — agent runs gh pr create --draft
 7. **github-issue-implementation-orchestrator** × N — one per issue, with existing_branch + existing_pr
 8. *(finalize)* — agent runs gh pr ready
+9. *(ci-watch)* — agent polls gh pr checks, diagnoses failures, applies fixes, commits, pushes
 
 ## Workflow Chain
 
