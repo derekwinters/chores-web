@@ -172,47 +172,38 @@ The issue orchestrator's `in-development` label removal at finalize is SKIPPED i
 
 ## CI Watch
 
-### Poll loop
-
-```bash
-# Repeat until all checks are non-pending or timeout
-gh pr checks <pr_number>
-```
-
-Poll every 30 seconds. Display a check table on each poll:
+Invoke the **ci-watch** skill after finalize:
 
 ```
-CI Status (attempt 4, elapsed 2m00s):
-  backend-tests (3.11)   pass   ✅
-  backend-tests (3.12)   pass   ✅
-  frontend-tests (18.x)  pass   ✅
-  frontend-tests (20.x)  pass   ✅
-  api-contracts          fail   ❌
-  validate               pending ⏳
+/ci-watch <pr_number>
 ```
 
-Timeout after 40 polls (~20 minutes). On timeout: HALT and report.
+The skill polls until all checks resolve and returns a structured `CI_WATCH_RESULT` block.
 
-### CI Fix Loop
+### On PASSED
 
-When one or more checks fail, enter the fix loop (max 3 fix attempts total):
+Proceed to complete.
 
-1. For each failing check, fetch logs: `gh run view <run_id> --log-failed`
-2. Diagnose root cause from log output
-3. Apply targeted fixes to source files
-4. Commit fixes: `git commit -m "fix: resolve CI failure in <check-name>"`
-5. Push: `git push origin <branch>`
-6. Re-enter poll loop and wait for new run to start (confirm new run ID appears)
+### On FAILED
 
-On fix attempt 3 failure: HALT with full diagnosis report and list of failing checks. Do not attempt a 4th fix — require manual intervention.
+Read the `FAILURES` section from the skill result. Enter the fix loop (max 3 attempts):
 
-### What the CI fix loop may fix autonomously
+1. Diagnose from the `log_excerpt` in each failure
+2. Apply targeted fixes to source files
+3. Commit: `git commit -m "fix: resolve CI failure in <check-name>"`
+4. Push: `git push origin <branch>`
+5. Re-invoke `/ci-watch <pr_number>`
 
-- Missing env vars in CI workflow steps
+On attempt 3 failure: HALT with the full CI_WATCH_RESULT. Do not attempt a 4th fix — require manual intervention.
+
+### What the fix loop may fix autonomously
+
+- Missing env vars in CI workflow steps or docker-compose files
 - Broken file references in docs/nav config
 - Wrong tool install commands (binary names, asset URLs, paths)
 - Test failures caused by code introduced in this milestone
 - OpenAPI snapshot out of sync (`cd backend && python ../scripts/generate_openapi.py`)
+- API path prefix mismatches in test/seed/validate scripts
 
 ### What requires HALT (do not attempt to fix autonomously)
 
@@ -220,6 +211,10 @@ On fix attempt 3 failure: HALT with full diagnosis report and list of failing ch
 - Test failures in code predating this milestone (not caused by these changes)
 - Security scan failures requiring policy decisions
 - Failures in checks not present before this PR
+
+### On TIMEOUT
+
+HALT and report. Do not push fixes — the runner may be degraded.
 
 ## Error Handling
 
@@ -268,7 +263,7 @@ Manual steps: resolve issue on branch, then re-invoke from #<N>
 6. *(draft-pr)* — agent runs gh pr create --draft
 7. **github-issue-implementation-orchestrator** × N — one per issue, with existing_branch + existing_pr
 8. *(finalize)* — agent runs gh pr ready
-9. *(ci-watch)* — agent polls gh pr checks, diagnoses failures, applies fixes, commits, pushes
+9. **ci-watch** skill — polls gh pr checks, reports pass/fail/timeout; caller handles fixes
 
 ## Workflow Chain
 
