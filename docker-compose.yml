@@ -1,3 +1,14 @@
+# Runs the chores-web stack from published images.
+#
+# Development now happens in the split repositories:
+#   https://github.com/derekwinters/chores-web-backend
+#   https://github.com/derekwinters/chores-web-frontend
+#
+# Images default to :latest. To pin a version, replace the tags below
+# (e.g. ghcr.io/derekwinters/chores-web-backend:2.1.0). Published versions:
+#   https://github.com/derekwinters/chores-web-backend/releases
+#   https://github.com/derekwinters/chores-web-frontend/releases
+
 services:
   db:
     image: postgres:16-alpine
@@ -15,7 +26,7 @@ services:
       retries: 10
 
   backend:
-    build: ./backend
+    image: ghcr.io/derekwinters/chores-web-backend:latest
     environment:
       DATABASE_URL: postgresql+asyncpg://chores:chores@db/chores
       JWT_SECRET: ${JWT_SECRET}
@@ -27,7 +38,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    image: ghcr.io/derekwinters/chores-web-frontend:latest
     ports:
       - "0.0.0.0:3000:80"
     depends_on:
